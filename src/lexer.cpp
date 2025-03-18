@@ -13,29 +13,53 @@ Lexer::Lexer(const std::string &input)
     };
 
 Token Lexer::nextToken() {
-    Token token;
+    if(isspace(this->currChar)) this->skipWhitespace();
+
     if(this->currChar == ';') {
-        token = Token {
-            .type = TokenType::SEMI,
-            .value = ";"
-        };
-    } else if (std::isdigit(this->currChar)) {
-        // read whole number
+        this->advanceChar();
+        return Token(TokenType::SEMI, ";");
+    }
+
+    if (isdigit(this->currChar)) {
         auto num = this->readNumber();
-        return Token {
-            .type = TokenType::INT,
-            .value = num
-        };
-    } else {
-        token = Token {
-            .type = TokenType::ILLEGAL,
-            .value = std::to_string(this->currChar),
-        };
+        return Token(TokenType::INT, num);
+    }
+
+    if (isalpha(this->currChar)) {
+        auto alpha = this->readAlpha();
+
+        // check if keyword
+        std::string keyword;
+        for(char c : alpha) {
+            keyword.push_back(tolower(c));
+        }
+
+        if(contains<std::string>(KEYWORDS, keyword)) {
+            return Token(TokenType::KEYWORD, alpha);
+        }
+        return Token(TokenType::IDENT, alpha);
+    }
+
+    if(contains<char>(OPERATORS, this->currChar)) {
+        std::string val{this->currChar};
+        this->advanceChar();
+        return Token(TokenType::OPERATOR, val);
+    }
+
+    if(contains<char>(SYMBOLS, this->currChar)) {
+        auto symbol = this->readSymbol();
+        return Token(TokenType::SYMBOL, symbol);
+    }
+
+
+    if(this->currChar == '\0') {
+        std::string val{this->currChar};
+        this->advanceChar();
+        return Token(TokenType::END_OF_FILE, val);
     }
 
     this->advanceChar();
-
-    return token;
+    return Token(TokenType::ILLEGAL, std::string{this->currChar});
 }
 
 void Lexer::advanceChar() {
@@ -50,13 +74,41 @@ void Lexer::advanceChar() {
 
 std::string Lexer::readNumber() {
     size_t start = this->pos;
-    while(std::isdigit(this->currChar)) {
+    while(isdigit(this->currChar)) {
         this->advanceChar();
     }
-    auto num = this->input.substr(start, this->pos);
+    auto num = this->input.substr(start, (this->pos - start));
     return num;
 }
+std::string Lexer::readAlpha() {
+    size_t start = this->pos;
+    while(isalpha(this->currChar)) {
+        this->advanceChar();
+    }
+    auto alpha = this->input.substr(start, (this->pos - start));
+    return alpha;
+}
 
+std::string Lexer::readSymbol() {
+    std::string sym = std::string{this->currChar};
+    if(this->currChar == '=') {
+        sym = std::string{this->currChar};
+        this->advanceChar();
+        if(this->currChar == '=') {
+            sym.push_back(this->currChar);
+            this->advanceChar();
+        }
+    } else {
+        this->advanceChar();
+    }
+    return sym;
+}
+
+void Lexer::skipWhitespace() {
+    while(isspace(this->currChar)) {
+        this->advanceChar();
+    }
+}
 
 
 

@@ -1,28 +1,38 @@
 #pragma once
 
-
+#include <span>
 #include <string>
-#include <string_view>
+#include <concepts>
+#include <iostream>
 enum class TokenType {
-    KEYWORD = 0,
-    IDENTIFIER,
-    OPERATOR,
+    KEYWORD,
+    IDENT,
     INT,
+    OPERATOR,
     SYMBOL,
     SEMI,
     ILLEGAL,
     END_OF_FILE,
 };
-constexpr std::string_view TokenTypes[] = {
-    "KEYWORD",
-    "IDENTIFIER",
-    "OPERATOR",
-    "INT",
-    "SYMBOL",
-    "SEMI",
-    "ILLEGAL",
-    "END_OF_FILE",
+
+const char OPERATORS[] = {
+    '+', '-', '/', '*', '%',
 };
+const char SYMBOLS[] = {
+    '=', '[', ']', '(', ')', '{', '}'
+};
+const std::string KEYWORDS[] = {
+    "for", "if", "else", "return", "fn"
+};
+
+template <typename T>
+requires std::equality_comparable<T>
+bool contains(std::span<const T> arr, const T& el) {
+    for(const auto& e: arr) {
+        if (e == el) return true;
+    }
+    return false;
+}
 
 struct Token {
     TokenType type;
@@ -42,6 +52,9 @@ class Lexer {
         Token nextToken();
         void advanceChar();
         std::string readNumber();
+        std::string readSymbol();
+        std::string readAlpha();
+        void skipWhitespace();
 };
 
 
