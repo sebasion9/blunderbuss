@@ -1,34 +1,51 @@
 #pragma once
 
 #include <string>
+#include <variant>
 
 namespace LANG {
     const char OPERATORS[] = {
         '+', '-', '/', '*', '%',
     };
+    // todo: add < > <= >=
     const char SYMBOLS[] = {
-        '=', '[', ']', '(', ')', '{', '}', '"', '\''
+        '=', '[', ']', '(', ')', '{', '}', '"', '\'', ',', ';',
     };
     const std::string KEYWORDS[] = {
-        "for", "if", "else", "return", "fn", "let"
+        "for", "if", "else", "return", "fn", "let",
     };
 
 }
 
 enum class TokenType {
+    // str tokens
     KEYWORD,
     IDENT,
+
     INT,
-    OPERATOR,
-    SYMBOL,
-    SEMI,
+    DOUBLE,
+
+    // operators
+    PLUS, MINUS, DIV, MULT, MOD,
+
+    // symbols
+    ASSIGN, EQUALS, LSPAREN, RSPAREN, LPAREN, RPAREN, LCPAREN, RCPAREN, QUOTE, SQUOTE, COMMA, SEMI,
+
+    // other
     ILLEGAL,
     END_OF_FILE,
 };
 
+
 struct Token {
     TokenType type;
-    std::string value;
+    std::variant<std::monostate, std::string, int, double> value;
+
+    Token(TokenType type) : type(type), value(std::monostate{}) {};
+    Token(TokenType type, std::string val) : type(type), value(val) {};
+    Token(TokenType type, int val) : type(type), value(val) {};
+    Token(TokenType type, double val) : type(type), value(val) {};
+
     bool operator==(const Token &other) const = default;
 };
 

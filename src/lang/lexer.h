@@ -15,12 +15,19 @@ class Lexer {
 
     public:
         Lexer(const std::string &input);
+        void setPos(size_t newpos);
         Token nextToken();
         void advanceChar();
-        std::string readNumber();
-        std::string readSymbol();
-        std::string readAlpha();
+        void retreatChar();
         void skipWhitespace();
+
+        std::string readAlpha();
+        TokenType readOperator();
+        TokenType readSymbol();
+
+        double* parseDouble();
+        int* parseInt();
+
 };
 
 

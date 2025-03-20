@@ -20,7 +20,6 @@ int main() {
     std::cout << token.type;
 
     while(token.type != TokenType::ILLEGAL && token.type != TokenType::END_OF_FILE) {
-        std::cout << token.value << "\n";
         token = lexer.nextToken();
     }
 

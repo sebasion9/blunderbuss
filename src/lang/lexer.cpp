@@ -1,5 +1,9 @@
 #include "lexer.h"
 #include "../util.h"
+#include "tokens.h"
+#include <cctype>
+#include <cstdlib>
+#include <string>
 
 
 Lexer::Lexer(const std::string &input)
@@ -10,24 +14,30 @@ Lexer::Lexer(const std::string &input)
             this->currChar = input[0];
         }
     };
+void Lexer::setPos(size_t newpos) {
+    this->pos = newpos;
+    this->nextPos = newpos+1;
+
+}
 
 Token Lexer::nextToken() {
     if(isspace(this->currChar)) this->skipWhitespace();
 
-    if(this->currChar == ';') {
-        this->advanceChar();
-        return Token(TokenType::SEMI, ";");
-    }
-
     if(this->currChar == '\0') {
-        std::string val{this->currChar};
         this->advanceChar();
-        return Token(TokenType::END_OF_FILE, val);
+        return Token(TokenType::END_OF_FILE);
     }
 
     if (isdigit(this->currChar)) {
-        auto num = this->readNumber();
-        return Token(TokenType::INT, num);
+        double* d = this->parseDouble();
+        if(d != nullptr) {
+            return Token(TokenType::DOUBLE, *d);
+        }
+        int* i = this->parseInt();
+        if(i != nullptr) {
+            return Token(TokenType::INT, *i);
+        }
+        return Token(TokenType::ILLEGAL);
     }
 
     if (isalpha(this->currChar)) {
@@ -45,14 +55,13 @@ Token Lexer::nextToken() {
     }
 
     if(contains<char>(LANG::OPERATORS, this->currChar)) {
-        std::string val{this->currChar};
-        this->advanceChar();
-        return Token(TokenType::OPERATOR, val);
+        auto op = this->readOperator();
+        return Token(op);
     }
 
     if(contains<char>(LANG::SYMBOLS, this->currChar)) {
         auto symbol = this->readSymbol();
-        return Token(TokenType::SYMBOL, symbol);
+        return Token(symbol);
     }
 
 
@@ -71,15 +80,91 @@ void Lexer::advanceChar() {
     this->pos = this->nextPos;
     this->nextPos++;
 }
+void Lexer::retreatChar() {
+    if(this->pos > 0) {
+        this->pos--;
+        this->nextPos--;
+    }
+    this->currChar = input[this->pos];
+}
 
-std::string Lexer::readNumber() {
+TokenType Lexer::readOperator() {
+    auto currChar = this->currChar;
+    this->advanceChar();
+    switch(currChar) {
+        case '+': return TokenType::PLUS;
+        case '-': return TokenType::MINUS;
+        case '/': return TokenType::DIV;
+        case '*': return TokenType::MULT;
+        case '%': return TokenType::MOD;
+    }
+    return TokenType::ILLEGAL;
+}
+
+TokenType Lexer::readSymbol() {
+    auto currChar = this->currChar;
+    this->advanceChar();
+    switch(currChar) {
+        case '[': return TokenType::LSPAREN;
+        case ']': return TokenType::RSPAREN;
+        case '(': return TokenType::LPAREN;
+        case ')': return TokenType::RPAREN;
+        case '{': return TokenType::LCPAREN;
+        case '}': return TokenType::RCPAREN;
+        case '"': return TokenType::QUOTE;
+        case ';': return TokenType::SEMI;
+        case ',': return TokenType::COMMA;
+        case '\'': return TokenType::SQUOTE;
+        case '=': {
+            if(this->currChar == '=') {
+                this->advanceChar();
+                return TokenType::EQUALS;
+            }
+            return TokenType::ASSIGN;
+        }
+    }
+    return TokenType::ILLEGAL;
+}
+double* Lexer::parseDouble() {
     size_t start = this->pos;
     while(isdigit(this->currChar)) {
         this->advanceChar();
     }
-    auto num = this->input.substr(start, (this->pos - start));
-    return num;
+    if(this->currChar != '.') {
+        for(size_t i = 0; i < this->pos - start; i++) {
+            this->retreatChar();
+        }
+        return nullptr;
+    } else this->advanceChar();
+    while(isdigit(this->currChar)) {
+        this->advanceChar();
+    }
+    auto str = this->input.substr(start, (this->pos - start));
+    double d = stod(str);
+    double* d_ptr = &d;
+    return d_ptr;
 }
+
+int* Lexer::parseInt() {
+    size_t start = this->pos;
+    while(isdigit(this->currChar)) {
+        this->advanceChar();
+    }
+    auto str = this->input.substr(start, (this->pos - start));
+    int i = stoi(str);
+    int* i_ptr = &i;
+    return i_ptr;
+}
+
+// std::string Lexer::readNumber() {
+//     size_t start = this->pos;
+//     while(isdigit(this->currChar)) {
+//         this->advanceChar();
+//     }
+//     auto num = this->input.substr(start, (this->pos - start));
+//     return num;
+// }
+
 std::string Lexer::readAlpha() {
     size_t start = this->pos;
     while(isalpha(this->currChar)) {
@@ -89,20 +174,6 @@ std::string Lexer::readAlpha() {
     return alpha;
 }
 
-std::string Lexer::readSymbol() {
-    std::string sym = std::string{this->currChar};
-    if(this->currChar == '=') {
-        sym = std::string{this->currChar};
-        this->advanceChar();
-        if(this->currChar == '=') {
-            sym.push_back(this->currChar);
-            this->advanceChar();
-        }
-    } else {
-        this->advanceChar();
-    }
-    return sym;
-}
 
 void Lexer::skipWhitespace() {
     while(isspace(this->currChar)) {
