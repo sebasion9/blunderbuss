@@ -1,6 +1,5 @@
 #include "lexer.h"
-#include <cctype>
-#include <string>
+#include "../util.h"
 
 
 Lexer::Lexer(const std::string &input)
@@ -20,6 +19,12 @@ Token Lexer::nextToken() {
         return Token(TokenType::SEMI, ";");
     }
 
+    if(this->currChar == '\0') {
+        std::string val{this->currChar};
+        this->advanceChar();
+        return Token(TokenType::END_OF_FILE, val);
+    }
+
     if (isdigit(this->currChar)) {
         auto num = this->readNumber();
         return Token(TokenType::INT, num);
@@ -28,38 +33,33 @@ Token Lexer::nextToken() {
     if (isalpha(this->currChar)) {
         auto alpha = this->readAlpha();
 
-        // check if keyword
         std::string keyword;
         for(char c : alpha) {
             keyword.push_back(tolower(c));
         }
 
-        if(contains<std::string>(KEYWORDS, keyword)) {
+        if(contains<std::string>(LANG::KEYWORDS, keyword)) {
             return Token(TokenType::KEYWORD, alpha);
         }
         return Token(TokenType::IDENT, alpha);
     }
 
-    if(contains<char>(OPERATORS, this->currChar)) {
+    if(contains<char>(LANG::OPERATORS, this->currChar)) {
         std::string val{this->currChar};
         this->advanceChar();
         return Token(TokenType::OPERATOR, val);
     }
 
-    if(contains<char>(SYMBOLS, this->currChar)) {
+    if(contains<char>(LANG::SYMBOLS, this->currChar)) {
         auto symbol = this->readSymbol();
         return Token(TokenType::SYMBOL, symbol);
     }
 
 
-    if(this->currChar == '\0') {
-        std::string val{this->currChar};
-        this->advanceChar();
-        return Token(TokenType::END_OF_FILE, val);
-    }
 
+    std::string val{this->currChar};
     this->advanceChar();
-    return Token(TokenType::ILLEGAL, std::string{this->currChar});
+    return Token(TokenType::ILLEGAL, val);
 }
 
 void Lexer::advanceChar() {

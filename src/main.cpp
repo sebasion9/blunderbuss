@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "lang/lexer.h"
 #include <fstream>
 #include <iostream>
 #include <cstdio>
@@ -17,6 +17,7 @@ int main() {
 
     auto lexer = Lexer(input);
     auto token = lexer.nextToken();
+    std::cout << token.type;
 
     while(token.type != TokenType::ILLEGAL && token.type != TokenType::END_OF_FILE) {
         std::cout << token.value << "\n";
