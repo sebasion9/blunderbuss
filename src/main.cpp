@@ -16,12 +16,7 @@ int main() {
     //
 
     auto lexer = Lexer(input);
-    auto token = lexer.nextToken();
-    std::cout << token.type;
-
-    while(token.type != TokenType::ILLEGAL && token.type != TokenType::END_OF_FILE) {
-        token = lexer.nextToken();
-    }
+    auto tokens = lexer.tokenize();
 
 
     return 0;

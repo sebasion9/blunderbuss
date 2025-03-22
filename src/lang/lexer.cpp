@@ -70,6 +70,18 @@ Token Lexer::nextToken() {
     this->advanceChar();
     return Token(TokenType::ILLEGAL, val);
 }
+std::vector<Token> Lexer::tokenize() {
+    std::vector<Token> tokens;
+    tokens.reserve(this->input.length());
+    for(;;) {
+        auto token = this->nextToken();
+        if(token.type == TokenType::END_OF_FILE) {
+            break;
+        }
+        tokens.push_back(token);
+    }
+    return tokens;
+}
 
 void Lexer::advanceChar() {
     if(this->nextPos >= this->input.length()) {
@@ -156,14 +168,6 @@ int* Lexer::parseInt() {
     return i_ptr;
 }
 
-// std::string Lexer::readNumber() {
-//     size_t start = this->pos;
-//     while(isdigit(this->currChar)) {
-//         this->advanceChar();
-//     }
-//     auto num = this->input.substr(start, (this->pos - start));
-//     return num;
-// }
 
 std::string Lexer::readAlpha() {
     size_t start = this->pos;
