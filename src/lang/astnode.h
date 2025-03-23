@@ -26,5 +26,15 @@ struct AssignStatement : public ASTNode {
     AssignStatement(std::string ident, std::unique_ptr<ASTNode> expr) : ident(ident), expr(dynamic_cast<BinaryExpression*>(expr.release())) {};
 };
 
+struct ForStatement : public ASTNode {
+    std::unique_ptr<AssignStatement> assign;
+    std::unique_ptr<BinaryExpression> condition;
+    std::unique_ptr<AssignStatement> endstmt;
+    ForStatement(std::unique_ptr<ASTNode> assign, std::unique_ptr<ASTNode> condition, std::unique_ptr<ASTNode> endstmt) :
+        assign(dynamic_cast<AssignStatement*>(assign.release())),
+        condition(dynamic_cast<BinaryExpression*>(condition.release())),
+        endstmt(dynamic_cast<AssignStatement*>(endstmt.release())) {};
+};
+
 
 

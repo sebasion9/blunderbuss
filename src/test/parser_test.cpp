@@ -57,6 +57,23 @@ TEST(Expr, NumExpr2) {
     auto right_val = std::get<double>(right->value);
     EXPECT_EQ(right_val, 3.14);
 }
+
+TEST(Expr, SingleVal) {
+    auto input = "3;";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto ast = parser.parseExpression();
+    ASSERT_NE(ast, nullptr);
+    // ast nullptr?
+
+    auto* expr = dynamic_cast<Literal*>(ast.get());
+    ASSERT_NE(expr, nullptr);
+    EXPECT_EQ(std::get<int>(expr->value), 3);
+
+}
+
 TEST(Expr, IdentExpr) {
     auto input = "num + 3";
     LOG_INPUT(input);
@@ -133,6 +150,26 @@ TEST(Stmt, LetNoKeyword) {
     EXPECT_EQ(expr->op, TokenType::MULT);
     EXPECT_EQ(std::get<int>(left->value), 3);
     EXPECT_EQ(std::get<int>(right->value), 2);
+
+}
+
+TEST(Stmt, For) {
+    auto input = "for let i = 0; i <= len; i = i + 1;";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto ast = parser.parseStatement();
+    ASSERT_NE(ast, nullptr);
+    auto* stmt = dynamic_cast<ForStatement*>(ast.get());
+    ASSERT_NE(stmt, nullptr);
+
+    auto* assign = dynamic_cast<AssignStatement*>(stmt->assign.get());
+    ASSERT_NE(assign, nullptr);
+    auto* con = dynamic_cast<BinaryExpression*>(stmt->condition.get());
+    ASSERT_NE(con, nullptr);
+    auto* endstmt = dynamic_cast<AssignStatement*>(stmt->endstmt.get());
+    ASSERT_NE(endstmt, nullptr);
 
 }
 

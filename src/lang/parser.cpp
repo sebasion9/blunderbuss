@@ -39,25 +39,45 @@ std::unique_ptr<ASTNode> Parser::parseExpression() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseStatement() {
+    bool parseAssign;
+    bool parseFor;
     std::string ident;
-    // assign statement
     if(this->currToken.type == TokenType::KEYWORD) {
         auto keyword = std::get<std::string>(this->currToken.value);
+        this->advanceToken();
         if(keyword == "let") {
-            this->advanceToken();
+            parseAssign = true;
         }
+        if(keyword == "for") {
+            parseFor = true;
+        }
+    } else if (this->currToken.type == TokenType::IDENT) {
+        parseAssign = true;
     }
-    if(this->currToken.type == TokenType::IDENT) {
+    if(parseAssign && this->currToken.type == TokenType::IDENT) {
         auto ident = std::get<std::string>(this->currToken.value);
         this->advanceToken();
         if(this->currToken.type == TokenType::ASSIGN) {
             this->advanceToken();
             auto expr = this->parseExpression();
             return std::make_unique<AssignStatement>(ident, std::move(expr));
-        }
+        } else return nullptr;
     }
+    if(parseFor) {
+        auto stmt = parseStatement();
+        auto* assign = dynamic_cast<AssignStatement*>(stmt.get());
+        if(assign == nullptr) {
+            return nullptr;
+        }
+        this->advanceToken();
+        auto condition = parseExpression();
+        this->advanceToken();
+        auto endstmt = parseStatement();
+        this->advanceToken();
+        return std::make_unique<ForStatement>(std::move(stmt), std::move(condition), std::move(endstmt));
+    }
+
     return nullptr;
 }
-
 
 
