@@ -1,4 +1,5 @@
 #include "lang/lexer.h"
+#include "lang/parser.h"
 #include <fstream>
 #include <iostream>
 #include <cstdio>
@@ -16,7 +17,8 @@ int main() {
     //
 
     auto lexer = Lexer(input);
-    auto tokens = lexer.tokenize();
+    auto parser = Parser(lexer);
+    auto ast = parser.parseExpression();
 
 
     return 0;

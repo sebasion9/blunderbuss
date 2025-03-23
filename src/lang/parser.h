@@ -1,4 +1,5 @@
 #pragma once
+#include "astnode.h"
 #include "lexer.h"
 
 
@@ -11,6 +12,7 @@ class Parser {
     public:
         Parser(Lexer &l);
         void advanceToken();
-        void parseExpression();
-
+        std::unique_ptr<ASTNode> parseSingle();
+        std::unique_ptr<ASTNode> parseExpression();
+        std::unique_ptr<ASTNode> parseStatement();
 };

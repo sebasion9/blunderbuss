@@ -9,11 +9,17 @@ namespace LANG {
     };
     // todo: add < > <= >=
     const char SYMBOLS[] = {
-        '=', '[', ']', '(', ')', '{', '}', '"', '\'', ',', ';',
+        '=', '[', ']', '(', ')', '{', '}', '"', '\'', ',', ';', '<', '>', '&', '|', '!', '^',
     };
     const std::string KEYWORDS[] = {
         "for", "if", "else", "return", "fn", "let",
     };
+    // let ident assign expression
+    // for assign_stmt semi condition(expression != 0) assign_stmt
+    // if condition(expression != 0)
+    // else
+    // return expression
+    // fn ident ???
 
 }
 
@@ -29,12 +35,22 @@ enum class TokenType {
     PLUS, MINUS, DIV, MULT, MOD,
 
     // symbols
-    ASSIGN, EQUALS, LSPAREN, RSPAREN, LPAREN, RPAREN, LCPAREN, RCPAREN, QUOTE, SQUOTE, COMMA, SEMI,
+    ASSIGN, LSPAREN, RSPAREN, LPAREN, RPAREN, LCPAREN, RCPAREN, QUOTE, SQUOTE, COMMA, SEMI,
+
+    // comp
+    EQUALS, LESS_THAN, GREATER_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL,
+
+    // logic
+    OR, AND, NOT, XOR,
 
     // other
     ILLEGAL,
     END_OF_FILE,
+
 };
+
+bool isSymbol(const char &token);
+bool isExprOperator(const TokenType &type);
 
 
 struct Token {

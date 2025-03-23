@@ -59,7 +59,7 @@ Token Lexer::nextToken() {
         return Token(op);
     }
 
-    if(contains<char>(LANG::SYMBOLS, this->currChar)) {
+    if(isSymbol(this->currChar)) {
         auto symbol = this->readSymbol();
         return Token(symbol);
     }
@@ -127,12 +127,30 @@ TokenType Lexer::readSymbol() {
         case ';': return TokenType::SEMI;
         case ',': return TokenType::COMMA;
         case '\'': return TokenType::SQUOTE;
+        case '&': return TokenType::AND;
+        case '|': return TokenType::OR;
+        case '!': return TokenType::NOT;
+        case '^': return TokenType::XOR;
         case '=': {
             if(this->currChar == '=') {
                 this->advanceChar();
                 return TokenType::EQUALS;
             }
             return TokenType::ASSIGN;
+        }
+        case '<': {
+            if(this->currChar == '=') {
+                this->advanceChar();
+                return TokenType::LESS_THAN_EQUAL;
+            }
+            return TokenType::LESS_THAN;
+        }
+        case '>': {
+            if(this->currChar == '=') {
+                this->advanceChar();
+                return TokenType::GREATER_THAN_EQUAL;
+            }
+            return TokenType::GREATER_THAN;
         }
     }
     return TokenType::ILLEGAL;
