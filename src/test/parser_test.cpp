@@ -66,7 +66,6 @@ TEST(Expr, SingleVal) {
     auto parser = Parser(lexer);
     auto ast = parser.parseExpression();
     ASSERT_NE(ast, nullptr);
-    // ast nullptr?
 
     auto* expr = dynamic_cast<Literal*>(ast.get());
     ASSERT_NE(expr, nullptr);
@@ -121,7 +120,7 @@ TEST(Stmt, Let) {
     ASSERT_NE(stmt, nullptr);
     EXPECT_EQ(stmt->ident, "a");
 
-    auto* expr = stmt->expr.get();
+    auto* expr = dynamic_cast<BinaryExpression*>(stmt->expr.get());
     ASSERT_NE(expr, nullptr);
     auto* left = dynamic_cast<Literal*>(expr->left.get());
     auto* right = dynamic_cast<Literal*>(expr->right.get());
@@ -142,7 +141,7 @@ TEST(Stmt, LetNoKeyword) {
     ASSERT_NE(stmt, nullptr);
     EXPECT_EQ(stmt->ident, "a");
 
-    auto* expr = stmt->expr.get();
+    auto* expr = dynamic_cast<BinaryExpression*>(stmt->expr.get());
     ASSERT_NE(expr, nullptr);
     auto* left = dynamic_cast<Literal*>(expr->left.get());
     auto* right = dynamic_cast<Literal*>(expr->right.get());
@@ -173,6 +172,47 @@ TEST(Stmt, For) {
 
 }
 
+TEST(Stmt, IfSingle) {
+    auto input = "if 1";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto ast = parser.parseStatement();
+    ASSERT_NE(ast, nullptr);
+
+    auto* stmt = dynamic_cast<IfStatement*>(ast.get());
+    ASSERT_NE(stmt, nullptr);
+
+    auto* expr = dynamic_cast<Literal*>(stmt->expr.get());
+    ASSERT_NE(expr, nullptr);
+    auto val = std::get<int>(expr->value);
+    EXPECT_EQ(val, 1);
+}
+
+TEST(Stmt, IfGreater) {
+    auto input = "if a>5";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto ast = parser.parseStatement();
+    ASSERT_NE(ast, nullptr);
+
+    auto* stmt = dynamic_cast<IfStatement*>(ast.get());
+    ASSERT_NE(stmt, nullptr);
+
+    auto* expr = dynamic_cast<BinaryExpression*>(stmt->expr.get());
+    ASSERT_NE(expr, nullptr);
+    auto* left = dynamic_cast<Literal*>(expr->left.get());
+    auto* right= dynamic_cast<Literal*>(expr->right.get());
+    auto op = expr->op;
+
+    EXPECT_EQ(std::get<std::string>(left->value), "a");
+    EXPECT_EQ(std::get<int>(right->value), 5);
+    EXPECT_EQ(op, TokenType::GREATER_THAN);
+
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

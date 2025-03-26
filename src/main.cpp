@@ -16,7 +16,7 @@ int main() {
     // auto input = buffer.str();
     // //
 
-    auto input = "for let a = 2; a < 1; a == a + 1;";
+    auto input = "if 1";
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);

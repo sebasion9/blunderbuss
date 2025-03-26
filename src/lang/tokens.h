@@ -15,9 +15,9 @@ namespace LANG {
         "for", "if", "else", "return", "fn", "let",
     };
     // let ident assign expression
-    // for assign_stmt semi condition(expression != 0) assign_stmt
-    // if condition(expression != 0)
-    // else
+    // for assign_stmt semi condition(expression != 0) assign_stmt -> block
+    // if expression != 0 -> block
+    // else -> block
     // return expression
     // fn ident ???
 

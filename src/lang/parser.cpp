@@ -10,7 +10,7 @@ void Parser::advanceToken() {
     this->currToken = this->lexer.nextToken();
 }
 
-std::unique_ptr<ASTNode> Parser::parseSingle() {
+std::unique_ptr<Expression> Parser::parseSingle() {
     if(this->currToken.type == TokenType::INT || this->currToken.type == TokenType::DOUBLE || this->currToken.type == TokenType::IDENT) {
         auto value = this->currToken.value;
         this->advanceToken();
@@ -25,7 +25,7 @@ std::unique_ptr<ASTNode> Parser::parseSingle() {
     return nullptr;
 }
 
-std::unique_ptr<ASTNode> Parser::parseExpression() {
+std::unique_ptr<Expression> Parser::parseExpression() {
     auto left = this->parseSingle();
     auto currType = this->currToken.type;
     while(isExprOperator(currType)) {
@@ -39,8 +39,9 @@ std::unique_ptr<ASTNode> Parser::parseExpression() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseStatement() {
-    bool parseAssign;
-    bool parseFor;
+    bool parseAssign = false;
+    bool parseFor = false;
+    bool parseIf = false;
     std::string ident;
     if(this->currToken.type == TokenType::KEYWORD) {
         auto keyword = std::get<std::string>(this->currToken.value);
@@ -50,6 +51,9 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
         }
         if(keyword == "for") {
             parseFor = true;
+        }
+        if(keyword == "if") {
+            parseIf = true;
         }
     } else if (this->currToken.type == TokenType::IDENT) {
         parseAssign = true;
@@ -76,7 +80,13 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
         this->advanceToken();
         return std::make_unique<ForStatement>(std::move(stmt), std::move(condition), std::move(endstmt));
     }
-
+    if(parseIf) {
+        auto expr = parseExpression();
+        if(expr == nullptr) {
+            return nullptr;
+        }
+        return std::make_unique<IfStatement>(std::move(expr));
+    }
     return nullptr;
 }
 
