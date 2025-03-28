@@ -10,17 +10,18 @@ const std::string INPUT_PATH = "input.bs";
 int main() {
 
     // read input
-    // std::ifstream t(INPUT_PATH);
-    // std::stringstream buffer;
-    // buffer << t.rdbuf();
-    // auto input = buffer.str();
+    std::ifstream t(INPUT_PATH);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    auto input = buffer.str();
     // //
 
-    auto input = "if 1";
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto topLevel = parser.parseBlock();
+
+
 
     return 0;
 }

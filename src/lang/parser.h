@@ -15,4 +15,5 @@ class Parser {
         std::unique_ptr<Expression> parseSingle();
         std::unique_ptr<Expression> parseExpression();
         std::unique_ptr<ASTNode> parseStatement();
+        std::vector<std::unique_ptr<ASTNode>> parseBlock();
 };

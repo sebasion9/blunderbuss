@@ -152,8 +152,8 @@ TEST(Stmt, LetNoKeyword) {
 
 }
 
-TEST(Stmt, For) {
-    auto input = "for let i = 0; i <= len; i = i + 1;";
+TEST(Stmt, ForBlock) {
+    auto input = "for let i = 0; i <= len; i = i + 1; { let a = 1; let b = 3; }";
     LOG_INPUT(input);
 
     auto lexer = Lexer(input);
@@ -170,10 +170,25 @@ TEST(Stmt, For) {
     auto* endstmt = dynamic_cast<AssignStatement*>(stmt->endstmt.get());
     ASSERT_NE(endstmt, nullptr);
 
+
+    auto block = std::move(stmt->block);
+    EXPECT_EQ(block.size(), 2);
+
+    auto* astmt1 = dynamic_cast<AssignStatement*>(block[0].get());
+    auto* astmt2 = dynamic_cast<AssignStatement*>(block[1].get());
+
+    ASSERT_NE(astmt1, nullptr);
+    ASSERT_NE(astmt2, nullptr);
+
+    auto ident1 = astmt1->ident;
+    auto ident2 = astmt2->ident;
+    EXPECT_EQ(ident1, "a");
+    EXPECT_EQ(ident2, "b");
+
 }
 
-TEST(Stmt, IfSingle) {
-    auto input = "if 1";
+TEST(Stmt, IfSingleBlock) {
+    auto input = "if 1 { let a = 3; let b = 3;} ";
     LOG_INPUT(input);
 
     auto lexer = Lexer(input);
@@ -188,6 +203,21 @@ TEST(Stmt, IfSingle) {
     ASSERT_NE(expr, nullptr);
     auto val = std::get<int>(expr->value);
     EXPECT_EQ(val, 1);
+
+    auto block = std::move(stmt->thenBlock);
+    EXPECT_EQ(block.size(), 2);
+
+    auto* astmt1 = dynamic_cast<AssignStatement*>(block[0].get());
+    auto* astmt2 = dynamic_cast<AssignStatement*>(block[1].get());
+
+    ASSERT_NE(astmt1, nullptr);
+    ASSERT_NE(astmt2, nullptr);
+
+    auto ident1 = astmt1->ident;
+    auto ident2 = astmt2->ident;
+    EXPECT_EQ(ident1, "a");
+    EXPECT_EQ(ident2, "b");
+
 }
 
 TEST(Stmt, IfGreater) {
@@ -212,6 +242,38 @@ TEST(Stmt, IfGreater) {
     EXPECT_EQ(std::get<int>(right->value), 5);
     EXPECT_EQ(op, TokenType::GREATER_THAN);
 
+}
+
+TEST(Block, BlockAssign) {
+    auto input = "let a = 5; let b = 3;";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto block = parser.parseBlock();
+    ASSERT_EQ(block.size(), 2);
+}
+TEST(Block, ForIf) {
+    auto input = "for let i = 0; i < 1; i = i + 1; { if 1 { let a = b; }; };";
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto ast = parser.parseStatement();
+    ASSERT_NE(ast, nullptr);
+
+
+    auto* stmt = dynamic_cast<ForStatement*>(ast.get());
+    ASSERT_NE(stmt, nullptr);
+
+    auto* assign = dynamic_cast<AssignStatement*>(stmt->assign.get());
+    ASSERT_NE(assign, nullptr);
+    auto* con = dynamic_cast<BinaryExpression*>(stmt->condition.get());
+    ASSERT_NE(con, nullptr);
+    auto* endstmt = dynamic_cast<AssignStatement*>(stmt->endstmt.get());
+    ASSERT_NE(endstmt, nullptr);
+
+    auto block = std::move(stmt->block);
+    ASSERT_EQ(block.size(), 1);
 }
 
 int main(int argc, char **argv) {

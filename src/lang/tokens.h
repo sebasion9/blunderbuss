@@ -19,6 +19,7 @@ namespace LANG {
     // if expression != 0 -> block
     // else -> block
     // return expression
+    // block {}: block contains statements separated by semicolons
     // fn ident ???
 
 }
