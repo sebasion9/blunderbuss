@@ -4,7 +4,7 @@
 #include "../lang/parser.h"
 #include "color.h"
 
-TEST(Expr, NumExpr1) {
+TEST(expr, num_expr1) {
     auto input = "1 + 3.14";
     LOG_INPUT(input);
 
@@ -27,7 +27,7 @@ TEST(Expr, NumExpr1) {
     EXPECT_EQ(right_val, 3.14);
 }
 
-TEST(Expr, NumExpr2) {
+TEST(expr, num_expr) {
     auto input = "3 * 1 + 3.14";
     LOG_INPUT(input);
 
@@ -58,7 +58,7 @@ TEST(Expr, NumExpr2) {
     EXPECT_EQ(right_val, 3.14);
 }
 
-TEST(Expr, SingleVal) {
+TEST(expr, single_val) {
     auto input = "3;";
     LOG_INPUT(input);
 
@@ -73,7 +73,7 @@ TEST(Expr, SingleVal) {
 
 }
 
-TEST(Expr, IdentExpr) {
+TEST(expr, ident_expr) {
     auto input = "num + 3";
     LOG_INPUT(input);
 
@@ -90,7 +90,7 @@ TEST(Expr, IdentExpr) {
     EXPECT_EQ(std::get<int>(right->value), 3);
     EXPECT_EQ(std::get<std::string>(left->value), "num");
 }
-TEST(Expr, CompExpr) {
+TEST(expr, comp_expr) {
     auto input = "num == 2";
     LOG_INPUT(input);
 
@@ -108,7 +108,7 @@ TEST(Expr, CompExpr) {
     EXPECT_EQ(std::get<int>(right->value), 2);
     EXPECT_EQ(std::get<std::string>(left->value), "num");
 }
-TEST(Stmt, Let) {
+TEST(stmt, let) {
     auto input = "let a = 3 * 2";
     LOG_INPUT(input);
 
@@ -129,7 +129,7 @@ TEST(Stmt, Let) {
     EXPECT_EQ(std::get<int>(left->value), 3);
     EXPECT_EQ(std::get<int>(right->value), 2);
 }
-TEST(Stmt, LetNoKeyword) {
+TEST(stmt, let_no_keyword) {
     auto input = "a = 3 * 2";
     LOG_INPUT(input);
 
@@ -152,7 +152,7 @@ TEST(Stmt, LetNoKeyword) {
 
 }
 
-TEST(Stmt, ForBlock) {
+TEST(stmt, for_block) {
     auto input = "for let i = 0; i <= len; i = i + 1; { let a = 1; let b = 3; }";
     LOG_INPUT(input);
 
@@ -187,7 +187,7 @@ TEST(Stmt, ForBlock) {
 
 }
 
-TEST(Stmt, IfSingleBlock) {
+TEST(stmt, if_single_block) {
     auto input = "if 1 { let a = 3; let b = 3;} ";
     LOG_INPUT(input);
 
@@ -220,7 +220,7 @@ TEST(Stmt, IfSingleBlock) {
 
 }
 
-TEST(Stmt, IfGreater) {
+TEST(stmt, if_greater) {
     auto input = "if a>5";
     LOG_INPUT(input);
 
@@ -244,7 +244,7 @@ TEST(Stmt, IfGreater) {
 
 }
 
-TEST(Block, BlockAssign) {
+TEST(block, block_assign) {
     auto input = "let a = 5; let b = 3;";
     LOG_INPUT(input);
 
@@ -253,7 +253,7 @@ TEST(Block, BlockAssign) {
     auto block = parser.parse_block();
     ASSERT_EQ(block.size(), 2);
 }
-TEST(Block, ForIf) {
+TEST(block, for_if) {
     auto input = "for let i = 0; i < 1; i = i + 1; { if 1 { let a = b; }; };";
 
     auto lexer = Lexer(input);

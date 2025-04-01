@@ -142,7 +142,7 @@ std::unique_ptr<AstNode> Parser::parse_stmt() {
 }
 
 std::vector<std::unique_ptr<AstNode>> Parser::parse_block() {
-    std::vector<std::unique_ptr<AstNode>>  block;
+    std::vector<std::unique_ptr<AstNode>> block;
     while(auto stmt = parse_stmt()) {
         if(this->curr_token.type != TokenType::SEMI) {
             break;

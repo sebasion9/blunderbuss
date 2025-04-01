@@ -2,7 +2,7 @@
 #include "../lang/lexer.h"
 #include "color.h"
 
-TEST(LexerTest, TokenizeArithmetic) {
+TEST(lexer_test, tokenize_arithmetic) {
     auto input = "2 + 5;";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -12,7 +12,7 @@ TEST(LexerTest, TokenizeArithmetic) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::SEMI));
 }
 
-TEST(LexerTest, TokenizeIdentifier) {
+TEST(lexer_test, tokenize_identifier) {
     auto input = "abc = 3 + 1;";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -24,7 +24,7 @@ TEST(LexerTest, TokenizeIdentifier) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::SEMI));
 }
 
-TEST(LexerTest, TokenizeComparison) {
+TEST(lexer_test, tokenize_comparison) {
     auto input = "identifier = 1 ==2;";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -36,7 +36,7 @@ TEST(LexerTest, TokenizeComparison) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::SEMI));
 }
 
-TEST(LexerTest, TokenizeSymbol) {
+TEST(lexer_test, tokenize_symbol) {
     auto input = "\"abcd\"([{}])";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -51,7 +51,7 @@ TEST(LexerTest, TokenizeSymbol) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::RPAREN));
 }
 
-TEST(LexerTest, TokenizeKeyword) {
+TEST(lexer_test, tokenize_keyword) {
     auto input = "for each franzl if return;return";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -64,7 +64,7 @@ TEST(LexerTest, TokenizeKeyword) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::KEYWORD, "return"));
 }
 
-TEST(LexerTest, TokenizeEOF) {
+TEST(lexer_test, tokenize_eof) {
     auto input = "\0";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -73,7 +73,7 @@ TEST(LexerTest, TokenizeEOF) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::END_OF_FILE));
 }
 
-TEST(LexerTest, TokenizeILLEGAL) {
+TEST(lexer_test, tokenize_illegal) {
     auto input = "#;";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -82,7 +82,7 @@ TEST(LexerTest, TokenizeILLEGAL) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::END_OF_FILE));
 }
 
-TEST(LexerTest, TokenizeDouble) {
+TEST(lexer_test, tokenize_Double) {
     auto input = "someident = 3.14 + 1. - 2.0 + 0.1111;";
     LOG_INPUT(input);
     auto lexer = Lexer(input);
@@ -97,7 +97,7 @@ TEST(LexerTest, TokenizeDouble) {
     EXPECT_EQ(lexer.next_token(), Token(TokenType::DOUBLE, 0.1111));
 }
 
-TEST(LexerTest, Condtions) {
+TEST(lexer_test, condtions) {
     auto input = "(a > b & a <= c | !a == b)";
     LOG_INPUT(input);
     auto lexer = Lexer(input);

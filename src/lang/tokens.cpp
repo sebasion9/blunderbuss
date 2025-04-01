@@ -1,6 +1,6 @@
 #include "tokens.h"
 #include "ostream"
-#include "../util.h"
+#include "../util/util.h"
 
 std::ostream& operator<<(std::ostream &os, TokenType type) {
     switch(type) {

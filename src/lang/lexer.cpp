@@ -1,5 +1,5 @@
 #include "lexer.h"
-#include "../util.h"
+#include "../util/util.h"
 #include "tokens.h"
 #include <cctype>
 #include <cstdlib>
