@@ -10,7 +10,7 @@ TEST(Expr, NumExpr1) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseExpression();
+    auto ast = parser.parse_expr();
 
     auto* binExpr = dynamic_cast<BinaryExpression*>(ast.get());
     ASSERT_NE(binExpr, nullptr);
@@ -33,7 +33,7 @@ TEST(Expr, NumExpr2) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseExpression();
+    auto ast = parser.parse_expr();
 
     auto* binExpr = dynamic_cast<BinaryExpression*>(ast.get());
     ASSERT_NE(binExpr, nullptr);
@@ -64,7 +64,7 @@ TEST(Expr, SingleVal) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseExpression();
+    auto ast = parser.parse_expr();
     ASSERT_NE(ast, nullptr);
 
     auto* expr = dynamic_cast<Literal*>(ast.get());
@@ -79,7 +79,7 @@ TEST(Expr, IdentExpr) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseExpression();
+    auto ast = parser.parse_expr();
 
     auto* expr = dynamic_cast<BinaryExpression*>(ast.get());
     ASSERT_NE(expr, nullptr);
@@ -96,7 +96,7 @@ TEST(Expr, CompExpr) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseExpression();
+    auto ast = parser.parse_expr();
 
 
     auto* expr = dynamic_cast<BinaryExpression*>(ast.get());
@@ -114,7 +114,7 @@ TEST(Stmt, Let) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
 
     auto* stmt = dynamic_cast<AssignStatement*>(ast.get());
     ASSERT_NE(stmt, nullptr);
@@ -135,7 +135,7 @@ TEST(Stmt, LetNoKeyword) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
 
     auto* stmt = dynamic_cast<AssignStatement*>(ast.get());
     ASSERT_NE(stmt, nullptr);
@@ -158,7 +158,7 @@ TEST(Stmt, ForBlock) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
     ASSERT_NE(ast, nullptr);
     auto* stmt = dynamic_cast<ForStatement*>(ast.get());
     ASSERT_NE(stmt, nullptr);
@@ -193,7 +193,7 @@ TEST(Stmt, IfSingleBlock) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
     ASSERT_NE(ast, nullptr);
 
     auto* stmt = dynamic_cast<IfStatement*>(ast.get());
@@ -204,7 +204,7 @@ TEST(Stmt, IfSingleBlock) {
     auto val = std::get<int>(expr->value);
     EXPECT_EQ(val, 1);
 
-    auto block = std::move(stmt->thenBlock);
+    auto block = std::move(stmt->then_block);
     EXPECT_EQ(block.size(), 2);
 
     auto* astmt1 = dynamic_cast<AssignStatement*>(block[0].get());
@@ -226,7 +226,7 @@ TEST(Stmt, IfGreater) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
     ASSERT_NE(ast, nullptr);
 
     auto* stmt = dynamic_cast<IfStatement*>(ast.get());
@@ -250,7 +250,7 @@ TEST(Block, BlockAssign) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto block = parser.parseBlock();
+    auto block = parser.parse_block();
     ASSERT_EQ(block.size(), 2);
 }
 TEST(Block, ForIf) {
@@ -258,7 +258,7 @@ TEST(Block, ForIf) {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto ast = parser.parseStatement();
+    auto ast = parser.parse_stmt();
     ASSERT_NE(ast, nullptr);
 
 

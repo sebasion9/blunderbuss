@@ -44,11 +44,11 @@ std::ostream& operator<<(std::ostream &os, const Token &token) {
     return os << token.type;
 }
 
-bool isSymbol(const char &ch) {
+bool is_symbol(const char &ch) {
     return contains<char>(LANG::SYMBOLS, ch);
 }
 
-bool isExprOperator(const TokenType &type) {
+bool is_expr_op(const TokenType &type) {
     switch(type) {
         case TokenType::AND: return true;
         case TokenType::OR: return true;

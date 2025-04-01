@@ -4,16 +4,16 @@
 #include <memory>
 #include <variant>
 
-Parser::Parser(Lexer &l) : lexer(l), currToken(l.nextToken()) {};
+Parser::Parser(Lexer &l) : lexer(l), curr_token(l.next_token()) {};
 
-void Parser::advanceToken() {
-    this->currToken = this->lexer.nextToken();
+void Parser::advance_token() {
+    this->curr_token = this->lexer.next_token();
 }
 
-std::unique_ptr<Expression> Parser::parseSingle() {
-    if(this->currToken.type == TokenType::INT || this->currToken.type == TokenType::DOUBLE || this->currToken.type == TokenType::IDENT) {
-        auto value = this->currToken.value;
-        this->advanceToken();
+std::unique_ptr<Expression> Parser::parse_single() {
+    if(this->curr_token.type == TokenType::INT || this->curr_token.type == TokenType::DOUBLE || this->curr_token.type == TokenType::IDENT) {
+        auto value = this->curr_token.value;
+        this->advance_token();
         if(std::get_if<int>(&value)) {
             return std::make_unique<Literal>(std::get<int>(value));
         }
@@ -25,129 +25,129 @@ std::unique_ptr<Expression> Parser::parseSingle() {
     return nullptr;
 }
 
-std::unique_ptr<Expression> Parser::parseExpression() {
-    auto left = this->parseSingle();
-    auto currType = this->currToken.type;
-    while(isExprOperator(currType)) {
+std::unique_ptr<Expression> Parser::parse_expr() {
+    auto left = this->parse_single();
+    auto currType = this->curr_token.type;
+    while(is_expr_op(currType)) {
         TokenType op = currType;
-        this->advanceToken();
-        auto right = parseSingle();
-        currType = this->currToken.type;
+        this->advance_token();
+        auto right = parse_single();
+        currType = this->curr_token.type;
         left = std::make_unique<BinaryExpression>(std::move(left), std::move(right), op);
     }
     return left;
 }
 
-std::unique_ptr<ASTNode> Parser::parseStatement() {
-    bool parseAssign = false;
-    bool parseFor = false;
-    bool parseIf = false;
+std::unique_ptr<AstNode> Parser::parse_stmt() {
+    bool parse_assign = false;
+    bool parse_for = false;
+    bool parse_if = false;
     std::string ident;
-    if(this->currToken.type == TokenType::KEYWORD) {
-        auto keyword = std::get<std::string>(this->currToken.value);
-        this->advanceToken();
+    if(this->curr_token.type == TokenType::KEYWORD) {
+        auto keyword = std::get<std::string>(this->curr_token.value);
+        this->advance_token();
         if(keyword == "let") {
-            parseAssign = true;
+            parse_assign = true;
         }
         if(keyword == "for") {
-            parseFor = true;
+            parse_for = true;
         }
         if(keyword == "if") {
-            parseIf = true;
+            parse_if = true;
         }
-    } else if (this->currToken.type == TokenType::IDENT) {
-        parseAssign = true;
+    } else if (this->curr_token.type == TokenType::IDENT) {
+        parse_assign = true;
     }
-    if(parseAssign && this->currToken.type == TokenType::IDENT) {
-        auto ident = std::get<std::string>(this->currToken.value);
-        this->advanceToken();
-        if(this->currToken.type == TokenType::ASSIGN) {
-            this->advanceToken();
-            auto expr = this->parseExpression();
+    if(parse_assign && this->curr_token.type == TokenType::IDENT) {
+        auto ident = std::get<std::string>(this->curr_token.value);
+        this->advance_token();
+        if(this->curr_token.type == TokenType::ASSIGN) {
+            this->advance_token();
+            auto expr = this->parse_expr();
             return std::make_unique<AssignStatement>(ident, std::move(expr));
         } else return nullptr;
     }
-    if(parseFor) {
-        auto stmt = parseStatement();
-        std::vector<std::unique_ptr<ASTNode>> block;
+    if(parse_for) {
+        auto stmt = parse_stmt();
+        std::vector<std::unique_ptr<AstNode>> block;
         auto* assign = dynamic_cast<AssignStatement*>(stmt.get());
         if(assign == nullptr) {
             return nullptr;
         }
-        this->advanceToken();
-        auto condition = parseExpression();
-        this->advanceToken();
-        auto endstmt = parseStatement();
-        this->advanceToken();
+        this->advance_token();
+        auto condition = parse_expr();
+        this->advance_token();
+        auto endstmt = parse_stmt();
+        this->advance_token();
 
-        if(this->currToken.type == TokenType::LCPAREN) {
+        if(this->curr_token.type == TokenType::LCPAREN) {
             // consume LCPAREN
-            this->advanceToken();
-            block = parseBlock();
+            this->advance_token();
+            block = parse_block();
 
-            if(this->currToken.type != TokenType::RCPAREN) {
+            if(this->curr_token.type != TokenType::RCPAREN) {
                 return nullptr;
             }
             // consume RCPAREN
-            this->advanceToken();
+            this->advance_token();
 
         }
 
         return std::make_unique<ForStatement>(std::move(stmt), std::move(condition), std::move(endstmt), std::move(block));
     }
-    if(parseIf) {
-        auto expr = parseExpression();
-        std::vector<std::unique_ptr<ASTNode>> thenBlock;
-        std::vector<std::unique_ptr<ASTNode>> elseBlock;
+    if(parse_if) {
+        auto expr = parse_expr();
+        std::vector<std::unique_ptr<AstNode>> then_block;
+        std::vector<std::unique_ptr<AstNode>> else_block;
         if(expr == nullptr) {
             return nullptr;
         }
 
-        if(this->currToken.type == TokenType::LCPAREN) {
+        if(this->curr_token.type == TokenType::LCPAREN) {
             // consume LCPAREN
-            this->advanceToken();
-            thenBlock = parseBlock();
+            this->advance_token();
+            then_block = parse_block();
 
-            if(this->currToken.type != TokenType::RCPAREN) {
+            if(this->curr_token.type != TokenType::RCPAREN) {
                 return nullptr;
             }
             // consume RCPAREN
-            this->advanceToken();
+            this->advance_token();
 
         } else {
         // single statement
-            thenBlock.push_back(this->parseStatement());
+            then_block.push_back(this->parse_stmt());
         }
 
-        if(this->currToken.type == TokenType::KEYWORD && std::get<std::string>(this->currToken.value) == "else") {
+        if(this->curr_token.type == TokenType::KEYWORD && std::get<std::string>(this->curr_token.value) == "else") {
             // consume keyword
-            this->advanceToken();
-            if(this->currToken.type == TokenType::LCPAREN) {
+            this->advance_token();
+            if(this->curr_token.type == TokenType::LCPAREN) {
                 // consume LCPAREN
-                this->advanceToken();
-                elseBlock = parseBlock();
+                this->advance_token();
+                else_block = parse_block();
 
-                if(this->currToken.type != TokenType::RCPAREN) {
+                if(this->curr_token.type != TokenType::RCPAREN) {
                     return nullptr;
                 }
                 // consume RCPAREN
-                this->advanceToken();
+                this->advance_token();
             } else {
-                elseBlock.push_back(this->parseStatement());
+                else_block.push_back(this->parse_stmt());
             }
         }
-        return std::make_unique<IfStatement>(std::move(expr), std::move(thenBlock), std::move(elseBlock));
+        return std::make_unique<IfStatement>(std::move(expr), std::move(then_block), std::move(else_block));
     }
     return nullptr;
 }
 
-std::vector<std::unique_ptr<ASTNode>> Parser::parseBlock() {
-    std::vector<std::unique_ptr<ASTNode>>  block;
-    while(auto stmt = parseStatement()) {
-        if(this->currToken.type != TokenType::SEMI) {
+std::vector<std::unique_ptr<AstNode>> Parser::parse_block() {
+    std::vector<std::unique_ptr<AstNode>>  block;
+    while(auto stmt = parse_stmt()) {
+        if(this->curr_token.type != TokenType::SEMI) {
             break;
         }
-        this->advanceToken();
+        this->advance_token();
         block.push_back(std::move(stmt));
     }
     return block;

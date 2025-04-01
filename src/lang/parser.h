@@ -6,14 +6,14 @@
 class Parser {
     private:
         Lexer &lexer;
-        Token currToken;
+        Token curr_token;
 
 
     public:
         Parser(Lexer &l);
-        void advanceToken();
-        std::unique_ptr<Expression> parseSingle();
-        std::unique_ptr<Expression> parseExpression();
-        std::unique_ptr<ASTNode> parseStatement();
-        std::vector<std::unique_ptr<ASTNode>> parseBlock();
+        void advance_token();
+        std::unique_ptr<Expression> parse_single();
+        std::unique_ptr<Expression> parse_expr();
+        std::unique_ptr<AstNode> parse_stmt();
+        std::vector<std::unique_ptr<AstNode>> parse_block();
 };

@@ -12,29 +12,29 @@ class Lexer {
     private:
         std::string input;
         size_t pos;
-        size_t nextPos;
-        char currChar;
+        size_t next_pos;
+        char curr_char;
 
     public:
         // lexer fields
         Lexer(const std::string &input);
-        void setPos(size_t newpos);
+        void set_pos(size_t newpos);
 
         // creating tokens
-        Token nextToken();
+        Token next_token();
         std::vector<Token> tokenize();
 
         // moving around input
-        void advanceChar();
-        void retreatChar();
-        void skipWhitespace();
+        void advance_char();
+        void retreat_char();
+        void skip_ws();
 
         // abstracting text to tokens
-        std::string readAlpha();
-        TokenType readOperator();
-        TokenType readSymbol();
-        double* parseDouble();
-        int* parseInt();
+        std::string read_alpha();
+        TokenType read_op();
+        TokenType read_sym();
+        double* parse_double();
+        int* parse_int();
 
 
 };

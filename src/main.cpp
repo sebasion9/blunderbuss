@@ -19,7 +19,7 @@ int main() {
 
     auto lexer = Lexer(input);
     auto parser = Parser(lexer);
-    auto topLevel = parser.parseBlock();
+    auto topLevel = parser.parse_block();
 
 
 

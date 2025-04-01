@@ -50,8 +50,8 @@ enum class TokenType {
 
 };
 
-bool isSymbol(const char &token);
-bool isExprOperator(const TokenType &type);
+bool is_symbol(const char &token);
+bool is_expr_op(const TokenType &type);
 
 
 struct Token {
