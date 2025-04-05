@@ -275,6 +275,45 @@ TEST(block, for_if) {
     auto block = std::move(stmt->block);
     ASSERT_EQ(block.size(), 1);
 }
+TEST(block, for_lf) {
+    auto input = "let var = 132;\nvar = 111;\n\nfor let i = 0; i<1; i = i + 1; {\n\tif var == 111 {\n\t\tfoo = 1;\n\t} else {\n\t\tbar = 2;\n\t};\n};\n";
+    LOG_INPUT(input);
+
+    auto lexer = Lexer(input);
+    auto parser = Parser(lexer);
+    auto stmts = parser.parse_block();
+    ASSERT_EQ(stmts.size(), 3);
+
+    for(size_t i = 0; i < stmts.size(); i++) {
+        ASSERT_NE(stmts[i], nullptr);
+    }
+    auto* stmt1 = dynamic_cast<AssignStatement*>(stmts[0].get());
+    auto* stmt2 = dynamic_cast<AssignStatement*>(stmts[1].get());
+    auto* stmt3 = dynamic_cast<ForStatement*>(stmts[2].get());
+
+    ASSERT_NE(stmt1, nullptr);
+    ASSERT_NE(stmt2, nullptr);
+    ASSERT_NE(stmt3, nullptr);
+
+
+    // stmt1
+    ASSERT_EQ(stmt1->ident, "var");
+    ASSERT_EQ(std::get<int>(dynamic_cast<Literal*>(stmt1->expr.get())->value), 132);
+
+    // stmt2
+    ASSERT_EQ(stmt2->ident, "var");
+    ASSERT_EQ(std::get<int>(dynamic_cast<Literal*>(stmt2->expr.get())->value), 111);
+
+    // stmt3
+    auto* assign = stmt3->assign.get();
+    auto* condition = dynamic_cast<BinaryExpression*>(stmt3->condition.get());
+    auto* endstmt = stmt3->endstmt.get();
+
+    ASSERT_NE(assign, nullptr);
+    ASSERT_NE(condition, nullptr);
+    ASSERT_NE(endstmt, nullptr);
+
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

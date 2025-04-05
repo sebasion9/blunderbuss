@@ -161,7 +161,8 @@ double* Lexer::parse_double() {
         this->advance_char();
     }
     if(this->curr_char != '.') {
-        for(size_t i = 0; i < this->pos - start; i++) {
+        size_t curr_pos = this->pos;
+        for(size_t i = 0; i < (curr_pos - start); i++) {
             this->retreat_char();
         }
         return nullptr;

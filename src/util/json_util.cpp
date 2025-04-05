@@ -32,7 +32,7 @@ njson::json ForStatement::to_json() const {
     j["condition"] = condition;
     j["end_stmt"] = endstmt;
     j["block"] = block;
-    return {};
+    return j;
 }
 
 njson::json AssignStatement::to_json() const {
@@ -73,7 +73,7 @@ njson::json IfStatement::to_json() const {
     j["type"] = type;
     j["expr"] = expr;
     j["then_block"] = then_block;
-    j["else_blockj"] = else_block;
+    j["else_block"] = else_block;
     return j;
 }
 
