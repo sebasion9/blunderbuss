@@ -1,0 +1,30 @@
+
+cache func add(int a, int b) int {
+    return a + b;
+}
+lazy func two() int {
+    return 1;
+}
+
+func main(int ben, string franzl) double {
+    int number = 2;
+    int b = 3;
+    string str = "dquote string";
+    string str2 = 'squote string\'';
+    string str3 = str + str2 + str;
+    lazy string str4 = "aa";
+    double d = 1.2345;
+    // this is comment
+    int sum = add(a,b);
+    add(a,b);
+    two();
+    safe add(a, b);
+    /* this is block
+
+    comment
+
+    test
+    */
+
+    return -1112.1;
+}
