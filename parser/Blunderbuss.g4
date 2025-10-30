@@ -1,7 +1,8 @@
-grammar blunderbuss;
+grammar Blunderbuss;
 
 program: func+ ;
 
+// todo: arrays and indexing arrays
 
 // func
 func: (CACHE|LAZY)? FUNC ID args TYPE block ;
