@@ -28,9 +28,6 @@ type BlunderbussListener interface {
 	// EnterBlock is called when entering the block production.
 	EnterBlock(c *BlockContext)
 
-	// EnterBody is called when entering the body production.
-	EnterBody(c *BodyContext)
-
 	// EnterExpr is called when entering the expr production.
 	EnterExpr(c *ExprContext)
 
@@ -66,9 +63,6 @@ type BlunderbussListener interface {
 
 	// ExitBlock is called when exiting the block production.
 	ExitBlock(c *BlockContext)
-
-	// ExitBody is called when exiting the body production.
-	ExitBody(c *BodyContext)
 
 	// ExitExpr is called when exiting the expr production.
 	ExitExpr(c *ExprContext)

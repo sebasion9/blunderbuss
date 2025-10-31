@@ -13,8 +13,7 @@ param: TYPE ID ;
 call_args: LPAREN (expr (COMMA expr)*)? RPAREN ;
 func_call: ID call_args ;
 
-block: LBRACE body RBRACE ;
-body: (effect_block|stmt)* ;
+block: LBRACE (effect_block|stmt)* RBRACE ;
 
 expr
     : NUM

@@ -50,90 +50,88 @@ func blunderbussParserInit() {
 	}
 	staticData.RuleNames = []string{
 		"program", "func", "args", "param", "call_args", "func_call", "block",
-		"body", "expr", "stmt", "effect_block", "if_stmt", "for_stmt",
+		"expr", "stmt", "effect_block", "if_stmt", "for_stmt",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 54, 184, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 1, 54, 181, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
-		10, 2, 11, 7, 11, 2, 12, 7, 12, 1, 0, 4, 0, 28, 8, 0, 11, 0, 12, 0, 29,
-		1, 1, 3, 1, 33, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1,
-		2, 1, 2, 5, 2, 45, 8, 2, 10, 2, 12, 2, 48, 9, 2, 3, 2, 50, 8, 2, 1, 2,
-		1, 2, 1, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 1, 4, 5, 4, 61, 8, 4, 10, 4,
-		12, 4, 64, 9, 4, 3, 4, 66, 8, 4, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 6, 1,
-		6, 1, 6, 1, 6, 1, 7, 1, 7, 5, 7, 79, 8, 7, 10, 7, 12, 7, 82, 9, 7, 1, 8,
-		1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8, 91, 8, 8, 1, 8, 1, 8, 1, 8, 5,
-		8, 96, 8, 8, 10, 8, 12, 8, 99, 9, 8, 1, 9, 3, 9, 102, 8, 9, 1, 9, 1, 9,
-		1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9,
-		1, 9, 1, 9, 3, 9, 120, 8, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9, 1, 9,
-		1, 9, 1, 9, 3, 9, 131, 8, 9, 1, 10, 1, 10, 1, 10, 5, 10, 136, 8, 10, 10,
-		10, 12, 10, 139, 9, 10, 1, 10, 1, 10, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11,
-		1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 5, 11, 154, 8, 11, 10, 11, 12,
-		11, 157, 9, 11, 1, 11, 1, 11, 3, 11, 161, 8, 11, 1, 12, 1, 12, 1, 12, 1,
-		12, 1, 12, 1, 12, 3, 12, 169, 8, 12, 1, 12, 1, 12, 3, 12, 173, 8, 12, 1,
-		12, 1, 12, 1, 12, 1, 12, 3, 12, 179, 8, 12, 1, 12, 1, 12, 1, 12, 1, 12,
-		0, 1, 16, 13, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 0, 1, 2, 0,
-		36, 36, 39, 39, 198, 0, 27, 1, 0, 0, 0, 2, 32, 1, 0, 0, 0, 4, 40, 1, 0,
-		0, 0, 6, 53, 1, 0, 0, 0, 8, 56, 1, 0, 0, 0, 10, 69, 1, 0, 0, 0, 12, 72,
-		1, 0, 0, 0, 14, 80, 1, 0, 0, 0, 16, 90, 1, 0, 0, 0, 18, 130, 1, 0, 0, 0,
-		20, 132, 1, 0, 0, 0, 22, 142, 1, 0, 0, 0, 24, 162, 1, 0, 0, 0, 26, 28,
-		3, 2, 1, 0, 27, 26, 1, 0, 0, 0, 28, 29, 1, 0, 0, 0, 29, 27, 1, 0, 0, 0,
-		29, 30, 1, 0, 0, 0, 30, 1, 1, 0, 0, 0, 31, 33, 7, 0, 0, 0, 32, 31, 1, 0,
-		0, 0, 32, 33, 1, 0, 0, 0, 33, 34, 1, 0, 0, 0, 34, 35, 5, 40, 0, 0, 35,
-		36, 5, 54, 0, 0, 36, 37, 3, 4, 2, 0, 37, 38, 5, 44, 0, 0, 38, 39, 3, 12,
-		6, 0, 39, 3, 1, 0, 0, 0, 40, 49, 5, 25, 0, 0, 41, 46, 3, 6, 3, 0, 42, 43,
-		5, 27, 0, 0, 43, 45, 3, 6, 3, 0, 44, 42, 1, 0, 0, 0, 45, 48, 1, 0, 0, 0,
-		46, 44, 1, 0, 0, 0, 46, 47, 1, 0, 0, 0, 47, 50, 1, 0, 0, 0, 48, 46, 1,
-		0, 0, 0, 49, 41, 1, 0, 0, 0, 49, 50, 1, 0, 0, 0, 50, 51, 1, 0, 0, 0, 51,
-		52, 5, 26, 0, 0, 52, 5, 1, 0, 0, 0, 53, 54, 5, 44, 0, 0, 54, 55, 5, 54,
-		0, 0, 55, 7, 1, 0, 0, 0, 56, 65, 5, 25, 0, 0, 57, 62, 3, 16, 8, 0, 58,
-		59, 5, 27, 0, 0, 59, 61, 3, 16, 8, 0, 60, 58, 1, 0, 0, 0, 61, 64, 1, 0,
-		0, 0, 62, 60, 1, 0, 0, 0, 62, 63, 1, 0, 0, 0, 63, 66, 1, 0, 0, 0, 64, 62,
-		1, 0, 0, 0, 65, 57, 1, 0, 0, 0, 65, 66, 1, 0, 0, 0, 66, 67, 1, 0, 0, 0,
-		67, 68, 5, 26, 0, 0, 68, 9, 1, 0, 0, 0, 69, 70, 5, 54, 0, 0, 70, 71, 3,
-		8, 4, 0, 71, 11, 1, 0, 0, 0, 72, 73, 5, 24, 0, 0, 73, 74, 3, 14, 7, 0,
-		74, 75, 5, 23, 0, 0, 75, 13, 1, 0, 0, 0, 76, 79, 3, 20, 10, 0, 77, 79,
-		3, 18, 9, 0, 78, 76, 1, 0, 0, 0, 78, 77, 1, 0, 0, 0, 79, 82, 1, 0, 0, 0,
-		80, 78, 1, 0, 0, 0, 80, 81, 1, 0, 0, 0, 81, 15, 1, 0, 0, 0, 82, 80, 1,
-		0, 0, 0, 83, 84, 6, 8, -1, 0, 84, 91, 5, 22, 0, 0, 85, 91, 5, 3, 0, 0,
-		86, 91, 5, 54, 0, 0, 87, 91, 3, 10, 5, 0, 88, 89, 5, 1, 0, 0, 89, 91, 3,
-		16, 8, 1, 90, 83, 1, 0, 0, 0, 90, 85, 1, 0, 0, 0, 90, 86, 1, 0, 0, 0, 90,
-		87, 1, 0, 0, 0, 90, 88, 1, 0, 0, 0, 91, 97, 1, 0, 0, 0, 92, 93, 10, 2,
-		0, 0, 93, 94, 5, 2, 0, 0, 94, 96, 3, 16, 8, 3, 95, 92, 1, 0, 0, 0, 96,
-		99, 1, 0, 0, 0, 97, 95, 1, 0, 0, 0, 97, 98, 1, 0, 0, 0, 98, 17, 1, 0, 0,
-		0, 99, 97, 1, 0, 0, 0, 100, 102, 5, 39, 0, 0, 101, 100, 1, 0, 0, 0, 101,
-		102, 1, 0, 0, 0, 102, 103, 1, 0, 0, 0, 103, 104, 5, 44, 0, 0, 104, 105,
-		5, 54, 0, 0, 105, 106, 5, 28, 0, 0, 106, 107, 3, 16, 8, 0, 107, 108, 5,
-		43, 0, 0, 108, 131, 1, 0, 0, 0, 109, 110, 5, 54, 0, 0, 110, 111, 5, 28,
-		0, 0, 111, 112, 3, 16, 8, 0, 112, 113, 5, 43, 0, 0, 113, 131, 1, 0, 0,
-		0, 114, 115, 5, 35, 0, 0, 115, 116, 3, 16, 8, 0, 116, 117, 5, 43, 0, 0,
-		117, 131, 1, 0, 0, 0, 118, 120, 5, 37, 0, 0, 119, 118, 1, 0, 0, 0, 119,
-		120, 1, 0, 0, 0, 120, 121, 1, 0, 0, 0, 121, 122, 3, 10, 5, 0, 122, 123,
-		5, 43, 0, 0, 123, 131, 1, 0, 0, 0, 124, 125, 5, 34, 0, 0, 125, 131, 5,
-		43, 0, 0, 126, 127, 5, 33, 0, 0, 127, 131, 5, 43, 0, 0, 128, 131, 3, 22,
-		11, 0, 129, 131, 3, 24, 12, 0, 130, 101, 1, 0, 0, 0, 130, 109, 1, 0, 0,
-		0, 130, 114, 1, 0, 0, 0, 130, 119, 1, 0, 0, 0, 130, 124, 1, 0, 0, 0, 130,
-		126, 1, 0, 0, 0, 130, 128, 1, 0, 0, 0, 130, 129, 1, 0, 0, 0, 131, 19, 1,
-		0, 0, 0, 132, 133, 5, 38, 0, 0, 133, 137, 5, 24, 0, 0, 134, 136, 3, 18,
-		9, 0, 135, 134, 1, 0, 0, 0, 136, 139, 1, 0, 0, 0, 137, 135, 1, 0, 0, 0,
-		137, 138, 1, 0, 0, 0, 138, 140, 1, 0, 0, 0, 139, 137, 1, 0, 0, 0, 140,
-		141, 5, 23, 0, 0, 141, 21, 1, 0, 0, 0, 142, 143, 5, 30, 0, 0, 143, 144,
-		5, 25, 0, 0, 144, 145, 3, 16, 8, 0, 145, 146, 5, 26, 0, 0, 146, 155, 3,
-		12, 6, 0, 147, 148, 5, 29, 0, 0, 148, 149, 5, 25, 0, 0, 149, 150, 3, 16,
-		8, 0, 150, 151, 5, 26, 0, 0, 151, 152, 3, 12, 6, 0, 152, 154, 1, 0, 0,
-		0, 153, 147, 1, 0, 0, 0, 154, 157, 1, 0, 0, 0, 155, 153, 1, 0, 0, 0, 155,
-		156, 1, 0, 0, 0, 156, 160, 1, 0, 0, 0, 157, 155, 1, 0, 0, 0, 158, 159,
-		5, 31, 0, 0, 159, 161, 3, 12, 6, 0, 160, 158, 1, 0, 0, 0, 160, 161, 1,
-		0, 0, 0, 161, 23, 1, 0, 0, 0, 162, 163, 5, 32, 0, 0, 163, 168, 5, 25, 0,
-		0, 164, 165, 5, 44, 0, 0, 165, 166, 5, 54, 0, 0, 166, 167, 5, 28, 0, 0,
-		167, 169, 3, 16, 8, 0, 168, 164, 1, 0, 0, 0, 168, 169, 1, 0, 0, 0, 169,
-		170, 1, 0, 0, 0, 170, 172, 5, 43, 0, 0, 171, 173, 3, 16, 8, 0, 172, 171,
-		1, 0, 0, 0, 172, 173, 1, 0, 0, 0, 173, 174, 1, 0, 0, 0, 174, 178, 5, 43,
-		0, 0, 175, 176, 5, 54, 0, 0, 176, 177, 5, 28, 0, 0, 177, 179, 3, 16, 8,
-		0, 178, 175, 1, 0, 0, 0, 178, 179, 1, 0, 0, 0, 179, 180, 1, 0, 0, 0, 180,
-		181, 5, 26, 0, 0, 181, 182, 3, 12, 6, 0, 182, 25, 1, 0, 0, 0, 19, 29, 32,
-		46, 49, 62, 65, 78, 80, 90, 97, 101, 119, 130, 137, 155, 160, 168, 172,
-		178,
+		10, 2, 11, 7, 11, 1, 0, 4, 0, 26, 8, 0, 11, 0, 12, 0, 27, 1, 1, 3, 1, 31,
+		8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 5, 2,
+		43, 8, 2, 10, 2, 12, 2, 46, 9, 2, 3, 2, 48, 8, 2, 1, 2, 1, 2, 1, 3, 1,
+		3, 1, 3, 1, 4, 1, 4, 1, 4, 1, 4, 5, 4, 59, 8, 4, 10, 4, 12, 4, 62, 9, 4,
+		3, 4, 64, 8, 4, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 6, 1, 6, 1, 6, 5, 6, 74,
+		8, 6, 10, 6, 12, 6, 77, 9, 6, 1, 6, 1, 6, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7,
+		1, 7, 1, 7, 3, 7, 88, 8, 7, 1, 7, 1, 7, 1, 7, 5, 7, 93, 8, 7, 10, 7, 12,
+		7, 96, 9, 7, 1, 8, 3, 8, 99, 8, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8,
+		1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8, 117,
+		8, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8, 128,
+		8, 8, 1, 9, 1, 9, 1, 9, 5, 9, 133, 8, 9, 10, 9, 12, 9, 136, 9, 9, 1, 9,
+		1, 9, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1,
+		10, 1, 10, 5, 10, 151, 8, 10, 10, 10, 12, 10, 154, 9, 10, 1, 10, 1, 10,
+		3, 10, 158, 8, 10, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 3, 11, 166,
+		8, 11, 1, 11, 1, 11, 3, 11, 170, 8, 11, 1, 11, 1, 11, 1, 11, 1, 11, 3,
+		11, 176, 8, 11, 1, 11, 1, 11, 1, 11, 1, 11, 0, 1, 14, 12, 0, 2, 4, 6, 8,
+		10, 12, 14, 16, 18, 20, 22, 0, 1, 2, 0, 36, 36, 39, 39, 196, 0, 25, 1,
+		0, 0, 0, 2, 30, 1, 0, 0, 0, 4, 38, 1, 0, 0, 0, 6, 51, 1, 0, 0, 0, 8, 54,
+		1, 0, 0, 0, 10, 67, 1, 0, 0, 0, 12, 70, 1, 0, 0, 0, 14, 87, 1, 0, 0, 0,
+		16, 127, 1, 0, 0, 0, 18, 129, 1, 0, 0, 0, 20, 139, 1, 0, 0, 0, 22, 159,
+		1, 0, 0, 0, 24, 26, 3, 2, 1, 0, 25, 24, 1, 0, 0, 0, 26, 27, 1, 0, 0, 0,
+		27, 25, 1, 0, 0, 0, 27, 28, 1, 0, 0, 0, 28, 1, 1, 0, 0, 0, 29, 31, 7, 0,
+		0, 0, 30, 29, 1, 0, 0, 0, 30, 31, 1, 0, 0, 0, 31, 32, 1, 0, 0, 0, 32, 33,
+		5, 40, 0, 0, 33, 34, 5, 54, 0, 0, 34, 35, 3, 4, 2, 0, 35, 36, 5, 44, 0,
+		0, 36, 37, 3, 12, 6, 0, 37, 3, 1, 0, 0, 0, 38, 47, 5, 25, 0, 0, 39, 44,
+		3, 6, 3, 0, 40, 41, 5, 27, 0, 0, 41, 43, 3, 6, 3, 0, 42, 40, 1, 0, 0, 0,
+		43, 46, 1, 0, 0, 0, 44, 42, 1, 0, 0, 0, 44, 45, 1, 0, 0, 0, 45, 48, 1,
+		0, 0, 0, 46, 44, 1, 0, 0, 0, 47, 39, 1, 0, 0, 0, 47, 48, 1, 0, 0, 0, 48,
+		49, 1, 0, 0, 0, 49, 50, 5, 26, 0, 0, 50, 5, 1, 0, 0, 0, 51, 52, 5, 44,
+		0, 0, 52, 53, 5, 54, 0, 0, 53, 7, 1, 0, 0, 0, 54, 63, 5, 25, 0, 0, 55,
+		60, 3, 14, 7, 0, 56, 57, 5, 27, 0, 0, 57, 59, 3, 14, 7, 0, 58, 56, 1, 0,
+		0, 0, 59, 62, 1, 0, 0, 0, 60, 58, 1, 0, 0, 0, 60, 61, 1, 0, 0, 0, 61, 64,
+		1, 0, 0, 0, 62, 60, 1, 0, 0, 0, 63, 55, 1, 0, 0, 0, 63, 64, 1, 0, 0, 0,
+		64, 65, 1, 0, 0, 0, 65, 66, 5, 26, 0, 0, 66, 9, 1, 0, 0, 0, 67, 68, 5,
+		54, 0, 0, 68, 69, 3, 8, 4, 0, 69, 11, 1, 0, 0, 0, 70, 75, 5, 24, 0, 0,
+		71, 74, 3, 18, 9, 0, 72, 74, 3, 16, 8, 0, 73, 71, 1, 0, 0, 0, 73, 72, 1,
+		0, 0, 0, 74, 77, 1, 0, 0, 0, 75, 73, 1, 0, 0, 0, 75, 76, 1, 0, 0, 0, 76,
+		78, 1, 0, 0, 0, 77, 75, 1, 0, 0, 0, 78, 79, 5, 23, 0, 0, 79, 13, 1, 0,
+		0, 0, 80, 81, 6, 7, -1, 0, 81, 88, 5, 22, 0, 0, 82, 88, 5, 3, 0, 0, 83,
+		88, 5, 54, 0, 0, 84, 88, 3, 10, 5, 0, 85, 86, 5, 1, 0, 0, 86, 88, 3, 14,
+		7, 1, 87, 80, 1, 0, 0, 0, 87, 82, 1, 0, 0, 0, 87, 83, 1, 0, 0, 0, 87, 84,
+		1, 0, 0, 0, 87, 85, 1, 0, 0, 0, 88, 94, 1, 0, 0, 0, 89, 90, 10, 2, 0, 0,
+		90, 91, 5, 2, 0, 0, 91, 93, 3, 14, 7, 3, 92, 89, 1, 0, 0, 0, 93, 96, 1,
+		0, 0, 0, 94, 92, 1, 0, 0, 0, 94, 95, 1, 0, 0, 0, 95, 15, 1, 0, 0, 0, 96,
+		94, 1, 0, 0, 0, 97, 99, 5, 39, 0, 0, 98, 97, 1, 0, 0, 0, 98, 99, 1, 0,
+		0, 0, 99, 100, 1, 0, 0, 0, 100, 101, 5, 44, 0, 0, 101, 102, 5, 54, 0, 0,
+		102, 103, 5, 28, 0, 0, 103, 104, 3, 14, 7, 0, 104, 105, 5, 43, 0, 0, 105,
+		128, 1, 0, 0, 0, 106, 107, 5, 54, 0, 0, 107, 108, 5, 28, 0, 0, 108, 109,
+		3, 14, 7, 0, 109, 110, 5, 43, 0, 0, 110, 128, 1, 0, 0, 0, 111, 112, 5,
+		35, 0, 0, 112, 113, 3, 14, 7, 0, 113, 114, 5, 43, 0, 0, 114, 128, 1, 0,
+		0, 0, 115, 117, 5, 37, 0, 0, 116, 115, 1, 0, 0, 0, 116, 117, 1, 0, 0, 0,
+		117, 118, 1, 0, 0, 0, 118, 119, 3, 10, 5, 0, 119, 120, 5, 43, 0, 0, 120,
+		128, 1, 0, 0, 0, 121, 122, 5, 34, 0, 0, 122, 128, 5, 43, 0, 0, 123, 124,
+		5, 33, 0, 0, 124, 128, 5, 43, 0, 0, 125, 128, 3, 20, 10, 0, 126, 128, 3,
+		22, 11, 0, 127, 98, 1, 0, 0, 0, 127, 106, 1, 0, 0, 0, 127, 111, 1, 0, 0,
+		0, 127, 116, 1, 0, 0, 0, 127, 121, 1, 0, 0, 0, 127, 123, 1, 0, 0, 0, 127,
+		125, 1, 0, 0, 0, 127, 126, 1, 0, 0, 0, 128, 17, 1, 0, 0, 0, 129, 130, 5,
+		38, 0, 0, 130, 134, 5, 24, 0, 0, 131, 133, 3, 16, 8, 0, 132, 131, 1, 0,
+		0, 0, 133, 136, 1, 0, 0, 0, 134, 132, 1, 0, 0, 0, 134, 135, 1, 0, 0, 0,
+		135, 137, 1, 0, 0, 0, 136, 134, 1, 0, 0, 0, 137, 138, 5, 23, 0, 0, 138,
+		19, 1, 0, 0, 0, 139, 140, 5, 30, 0, 0, 140, 141, 5, 25, 0, 0, 141, 142,
+		3, 14, 7, 0, 142, 143, 5, 26, 0, 0, 143, 152, 3, 12, 6, 0, 144, 145, 5,
+		29, 0, 0, 145, 146, 5, 25, 0, 0, 146, 147, 3, 14, 7, 0, 147, 148, 5, 26,
+		0, 0, 148, 149, 3, 12, 6, 0, 149, 151, 1, 0, 0, 0, 150, 144, 1, 0, 0, 0,
+		151, 154, 1, 0, 0, 0, 152, 150, 1, 0, 0, 0, 152, 153, 1, 0, 0, 0, 153,
+		157, 1, 0, 0, 0, 154, 152, 1, 0, 0, 0, 155, 156, 5, 31, 0, 0, 156, 158,
+		3, 12, 6, 0, 157, 155, 1, 0, 0, 0, 157, 158, 1, 0, 0, 0, 158, 21, 1, 0,
+		0, 0, 159, 160, 5, 32, 0, 0, 160, 165, 5, 25, 0, 0, 161, 162, 5, 44, 0,
+		0, 162, 163, 5, 54, 0, 0, 163, 164, 5, 28, 0, 0, 164, 166, 3, 14, 7, 0,
+		165, 161, 1, 0, 0, 0, 165, 166, 1, 0, 0, 0, 166, 167, 1, 0, 0, 0, 167,
+		169, 5, 43, 0, 0, 168, 170, 3, 14, 7, 0, 169, 168, 1, 0, 0, 0, 169, 170,
+		1, 0, 0, 0, 170, 171, 1, 0, 0, 0, 171, 175, 5, 43, 0, 0, 172, 173, 5, 54,
+		0, 0, 173, 174, 5, 28, 0, 0, 174, 176, 3, 14, 7, 0, 175, 172, 1, 0, 0,
+		0, 175, 176, 1, 0, 0, 0, 176, 177, 1, 0, 0, 0, 177, 178, 5, 26, 0, 0, 178,
+		179, 3, 12, 6, 0, 179, 23, 1, 0, 0, 0, 19, 27, 30, 44, 47, 60, 63, 73,
+		75, 87, 94, 98, 116, 127, 134, 152, 157, 165, 169, 175,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -237,12 +235,11 @@ const (
 	BlunderbussParserRULE_call_args    = 4
 	BlunderbussParserRULE_func_call    = 5
 	BlunderbussParserRULE_block        = 6
-	BlunderbussParserRULE_body         = 7
-	BlunderbussParserRULE_expr         = 8
-	BlunderbussParserRULE_stmt         = 9
-	BlunderbussParserRULE_effect_block = 10
-	BlunderbussParserRULE_if_stmt      = 11
-	BlunderbussParserRULE_for_stmt     = 12
+	BlunderbussParserRULE_expr         = 7
+	BlunderbussParserRULE_stmt         = 8
+	BlunderbussParserRULE_effect_block = 9
+	BlunderbussParserRULE_if_stmt      = 10
+	BlunderbussParserRULE_for_stmt     = 11
 )
 
 // IProgramContext is an interface to support dynamic dispatch.
@@ -353,13 +350,23 @@ func (s *ProgramContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *ProgramContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitProgram(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Program() (localctx IProgramContext) {
 	localctx = NewProgramContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 0, BlunderbussParserRULE_program)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(27)
+	p.SetState(25)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -368,11 +375,11 @@ func (p *BlunderbussParser) Program() (localctx IProgramContext) {
 
 	for ok := true; ok; ok = ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&1717986918400) != 0) {
 		{
-			p.SetState(26)
+			p.SetState(24)
 			p.Func_()
 		}
 
-		p.SetState(29)
+		p.SetState(27)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -517,13 +524,23 @@ func (s *FuncContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *FuncContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitFunc(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 	localctx = NewFuncContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, BlunderbussParserRULE_func)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(32)
+	p.SetState(30)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -532,7 +549,7 @@ func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 
 	if _la == BlunderbussParserCACHE || _la == BlunderbussParserLAZY {
 		{
-			p.SetState(31)
+			p.SetState(29)
 			_la = p.GetTokenStream().LA(1)
 
 			if !(_la == BlunderbussParserCACHE || _la == BlunderbussParserLAZY) {
@@ -545,7 +562,7 @@ func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 
 	}
 	{
-		p.SetState(34)
+		p.SetState(32)
 		p.Match(BlunderbussParserFUNC)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -553,7 +570,7 @@ func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 		}
 	}
 	{
-		p.SetState(35)
+		p.SetState(33)
 		p.Match(BlunderbussParserID)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -561,11 +578,11 @@ func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 		}
 	}
 	{
-		p.SetState(36)
+		p.SetState(34)
 		p.Args()
 	}
 	{
-		p.SetState(37)
+		p.SetState(35)
 		p.Match(BlunderbussParserTYPE)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -573,7 +590,7 @@ func (p *BlunderbussParser) Func_() (localctx IFuncContext) {
 		}
 	}
 	{
-		p.SetState(38)
+		p.SetState(36)
 		p.Block()
 	}
 
@@ -718,6 +735,16 @@ func (s *ArgsContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *ArgsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitArgs(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 	localctx = NewArgsContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 4, BlunderbussParserRULE_args)
@@ -725,14 +752,14 @@ func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(40)
+		p.SetState(38)
 		p.Match(BlunderbussParserLPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(49)
+	p.SetState(47)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -741,10 +768,10 @@ func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 
 	if _la == BlunderbussParserTYPE {
 		{
-			p.SetState(41)
+			p.SetState(39)
 			p.Param()
 		}
-		p.SetState(46)
+		p.SetState(44)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -753,7 +780,7 @@ func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 
 		for _la == BlunderbussParserCOMMA {
 			{
-				p.SetState(42)
+				p.SetState(40)
 				p.Match(BlunderbussParserCOMMA)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -761,11 +788,11 @@ func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 				}
 			}
 			{
-				p.SetState(43)
+				p.SetState(41)
 				p.Param()
 			}
 
-			p.SetState(48)
+			p.SetState(46)
 			p.GetErrorHandler().Sync(p)
 			if p.HasError() {
 				goto errorExit
@@ -775,7 +802,7 @@ func (p *BlunderbussParser) Args() (localctx IArgsContext) {
 
 	}
 	{
-		p.SetState(51)
+		p.SetState(49)
 		p.Match(BlunderbussParserRPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -871,12 +898,22 @@ func (s *ParamContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *ParamContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitParam(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Param() (localctx IParamContext) {
 	localctx = NewParamContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, BlunderbussParserRULE_param)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(53)
+		p.SetState(51)
 		p.Match(BlunderbussParserTYPE)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -884,7 +921,7 @@ func (p *BlunderbussParser) Param() (localctx IParamContext) {
 		}
 	}
 	{
-		p.SetState(54)
+		p.SetState(52)
 		p.Match(BlunderbussParserID)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1033,6 +1070,16 @@ func (s *Call_argsContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *Call_argsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitCall_args(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 	localctx = NewCall_argsContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 8, BlunderbussParserRULE_call_args)
@@ -1040,14 +1087,14 @@ func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(56)
+		p.SetState(54)
 		p.Match(BlunderbussParserLPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(65)
+	p.SetState(63)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1056,10 +1103,10 @@ func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 
 	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&18014398513676298) != 0 {
 		{
-			p.SetState(57)
+			p.SetState(55)
 			p.expr(0)
 		}
-		p.SetState(62)
+		p.SetState(60)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -1068,7 +1115,7 @@ func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 
 		for _la == BlunderbussParserCOMMA {
 			{
-				p.SetState(58)
+				p.SetState(56)
 				p.Match(BlunderbussParserCOMMA)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -1076,11 +1123,11 @@ func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 				}
 			}
 			{
-				p.SetState(59)
+				p.SetState(57)
 				p.expr(0)
 			}
 
-			p.SetState(64)
+			p.SetState(62)
 			p.GetErrorHandler().Sync(p)
 			if p.HasError() {
 				goto errorExit
@@ -1090,7 +1137,7 @@ func (p *BlunderbussParser) Call_args() (localctx ICall_argsContext) {
 
 	}
 	{
-		p.SetState(67)
+		p.SetState(65)
 		p.Match(BlunderbussParserRPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1198,12 +1245,22 @@ func (s *Func_callContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *Func_callContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitFunc_call(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Func_call() (localctx IFunc_callContext) {
 	localctx = NewFunc_callContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 10, BlunderbussParserRULE_func_call)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(69)
+		p.SetState(67)
 		p.Match(BlunderbussParserID)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -1211,7 +1268,7 @@ func (p *BlunderbussParser) Func_call() (localctx IFunc_callContext) {
 		}
 	}
 	{
-		p.SetState(70)
+		p.SetState(68)
 		p.Call_args()
 	}
 
@@ -1237,8 +1294,11 @@ type IBlockContext interface {
 
 	// Getter signatures
 	LBRACE() antlr.TerminalNode
-	Body() IBodyContext
 	RBRACE() antlr.TerminalNode
+	AllEffect_block() []IEffect_blockContext
+	Effect_block(i int) IEffect_blockContext
+	AllStmt() []IStmtContext
+	Stmt(i int) IStmtContext
 
 	// IsBlockContext differentiates from other interfaces.
 	IsBlockContext()
@@ -1280,12 +1340,41 @@ func (s *BlockContext) LBRACE() antlr.TerminalNode {
 	return s.GetToken(BlunderbussParserLBRACE, 0)
 }
 
-func (s *BlockContext) Body() IBodyContext {
+func (s *BlockContext) RBRACE() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserRBRACE, 0)
+}
+
+func (s *BlockContext) AllEffect_block() []IEffect_blockContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IEffect_blockContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IEffect_blockContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IEffect_blockContext); ok {
+			tst[i] = t.(IEffect_blockContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *BlockContext) Effect_block(i int) IEffect_blockContext {
 	var t antlr.RuleContext
+	j := 0
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IBodyContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
+		if _, ok := ctx.(IEffect_blockContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
 		}
 	}
 
@@ -1293,11 +1382,48 @@ func (s *BlockContext) Body() IBodyContext {
 		return nil
 	}
 
-	return t.(IBodyContext)
+	return t.(IEffect_blockContext)
 }
 
-func (s *BlockContext) RBRACE() antlr.TerminalNode {
-	return s.GetToken(BlunderbussParserRBRACE, 0)
+func (s *BlockContext) AllStmt() []IStmtContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IStmtContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IStmtContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IStmtContext); ok {
+			tst[i] = t.(IStmtContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *BlockContext) Stmt(i int) IStmtContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IStmtContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IStmtContext)
 }
 
 func (s *BlockContext) GetRuleContext() antlr.RuleContext {
@@ -1320,202 +1446,31 @@ func (s *BlockContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *BlockContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitBlock(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Block() (localctx IBlockContext) {
 	localctx = NewBlockContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, BlunderbussParserRULE_block)
+	var _la int
+
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(72)
+		p.SetState(70)
 		p.Match(BlunderbussParserLBRACE)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	{
-		p.SetState(73)
-		p.Body()
-	}
-	{
-		p.SetState(74)
-		p.Match(BlunderbussParserRBRACE)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// IBodyContext is an interface to support dynamic dispatch.
-type IBodyContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	AllEffect_block() []IEffect_blockContext
-	Effect_block(i int) IEffect_blockContext
-	AllStmt() []IStmtContext
-	Stmt(i int) IStmtContext
-
-	// IsBodyContext differentiates from other interfaces.
-	IsBodyContext()
-}
-
-type BodyContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptyBodyContext() *BodyContext {
-	var p = new(BodyContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = BlunderbussParserRULE_body
-	return p
-}
-
-func InitEmptyBodyContext(p *BodyContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = BlunderbussParserRULE_body
-}
-
-func (*BodyContext) IsBodyContext() {}
-
-func NewBodyContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *BodyContext {
-	var p = new(BodyContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = BlunderbussParserRULE_body
-
-	return p
-}
-
-func (s *BodyContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *BodyContext) AllEffect_block() []IEffect_blockContext {
-	children := s.GetChildren()
-	len := 0
-	for _, ctx := range children {
-		if _, ok := ctx.(IEffect_blockContext); ok {
-			len++
-		}
-	}
-
-	tst := make([]IEffect_blockContext, len)
-	i := 0
-	for _, ctx := range children {
-		if t, ok := ctx.(IEffect_blockContext); ok {
-			tst[i] = t.(IEffect_blockContext)
-			i++
-		}
-	}
-
-	return tst
-}
-
-func (s *BodyContext) Effect_block(i int) IEffect_blockContext {
-	var t antlr.RuleContext
-	j := 0
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IEffect_blockContext); ok {
-			if j == i {
-				t = ctx.(antlr.RuleContext)
-				break
-			}
-			j++
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IEffect_blockContext)
-}
-
-func (s *BodyContext) AllStmt() []IStmtContext {
-	children := s.GetChildren()
-	len := 0
-	for _, ctx := range children {
-		if _, ok := ctx.(IStmtContext); ok {
-			len++
-		}
-	}
-
-	tst := make([]IStmtContext, len)
-	i := 0
-	for _, ctx := range children {
-		if t, ok := ctx.(IStmtContext); ok {
-			tst[i] = t.(IStmtContext)
-			i++
-		}
-	}
-
-	return tst
-}
-
-func (s *BodyContext) Stmt(i int) IStmtContext {
-	var t antlr.RuleContext
-	j := 0
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IStmtContext); ok {
-			if j == i {
-				t = ctx.(antlr.RuleContext)
-				break
-			}
-			j++
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IStmtContext)
-}
-
-func (s *BodyContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *BodyContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *BodyContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(BlunderbussListener); ok {
-		listenerT.EnterBody(s)
-	}
-}
-
-func (s *BodyContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(BlunderbussListener); ok {
-		listenerT.ExitBody(s)
-	}
-}
-
-func (p *BlunderbussParser) Body() (localctx IBodyContext) {
-	localctx = NewBodyContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 14, BlunderbussParserRULE_body)
-	var _la int
-
-	p.EnterOuterAlt(localctx, 1)
-	p.SetState(80)
+	p.SetState(75)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1523,7 +1478,7 @@ func (p *BlunderbussParser) Body() (localctx IBodyContext) {
 	_la = p.GetTokenStream().LA(1)
 
 	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&18033018266451968) != 0 {
-		p.SetState(78)
+		p.SetState(73)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -1532,13 +1487,13 @@ func (p *BlunderbussParser) Body() (localctx IBodyContext) {
 		switch p.GetTokenStream().LA(1) {
 		case BlunderbussParserEFFECT:
 			{
-				p.SetState(76)
+				p.SetState(71)
 				p.Effect_block()
 			}
 
 		case BlunderbussParserIF, BlunderbussParserFOR, BlunderbussParserBREAK, BlunderbussParserNEXT, BlunderbussParserRETURN, BlunderbussParserSAFE, BlunderbussParserLAZY, BlunderbussParserTYPE, BlunderbussParserID:
 			{
-				p.SetState(77)
+				p.SetState(72)
 				p.Stmt()
 			}
 
@@ -1547,12 +1502,20 @@ func (p *BlunderbussParser) Body() (localctx IBodyContext) {
 			goto errorExit
 		}
 
-		p.SetState(82)
+		p.SetState(77)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
 		_la = p.GetTokenStream().LA(1)
+	}
+	{
+		p.SetState(78)
+		p.Match(BlunderbussParserRBRACE)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
 errorExit:
@@ -1718,6 +1681,16 @@ func (s *ExprContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *ExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitExpr(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Expr() (localctx IExprContext) {
 	return p.expr(0)
 }
@@ -1729,12 +1702,12 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 	localctx = NewExprContext(p, p.GetParserRuleContext(), _parentState)
 	var _prevctx IExprContext = localctx
 	var _ antlr.ParserRuleContext = _prevctx // TODO: To prevent unused variable warning.
-	_startState := 16
-	p.EnterRecursionRule(localctx, 16, BlunderbussParserRULE_expr, _p)
+	_startState := 14
+	p.EnterRecursionRule(localctx, 14, BlunderbussParserRULE_expr, _p)
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(90)
+	p.SetState(87)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1743,7 +1716,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 8, p.GetParserRuleContext()) {
 	case 1:
 		{
-			p.SetState(84)
+			p.SetState(81)
 			p.Match(BlunderbussParserNUM)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1753,7 +1726,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 	case 2:
 		{
-			p.SetState(85)
+			p.SetState(82)
 			p.Match(BlunderbussParserSTRING)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1763,7 +1736,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 	case 3:
 		{
-			p.SetState(86)
+			p.SetState(83)
 			p.Match(BlunderbussParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1773,13 +1746,13 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 	case 4:
 		{
-			p.SetState(87)
+			p.SetState(84)
 			p.Func_call()
 		}
 
 	case 5:
 		{
-			p.SetState(88)
+			p.SetState(85)
 			p.Match(BlunderbussParserSIN_OP)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -1787,7 +1760,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 			}
 		}
 		{
-			p.SetState(89)
+			p.SetState(86)
 			p.expr(1)
 		}
 
@@ -1795,7 +1768,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 		goto errorExit
 	}
 	p.GetParserRuleContext().SetStop(p.GetTokenStream().LT(-1))
-	p.SetState(97)
+	p.SetState(94)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -1812,14 +1785,14 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 			_prevctx = localctx
 			localctx = NewExprContext(p, _parentctx, _parentState)
 			p.PushNewRecursionContext(localctx, _startState, BlunderbussParserRULE_expr)
-			p.SetState(92)
+			p.SetState(89)
 
 			if !(p.Precpred(p.GetParserRuleContext(), 2)) {
 				p.SetError(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 2)", ""))
 				goto errorExit
 			}
 			{
-				p.SetState(93)
+				p.SetState(90)
 				p.Match(BlunderbussParserBIN_OP)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -1827,12 +1800,12 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 				}
 			}
 			{
-				p.SetState(94)
+				p.SetState(91)
 				p.expr(3)
 			}
 
 		}
-		p.SetState(99)
+		p.SetState(96)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -2034,12 +2007,22 @@ func (s *StmtContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *StmtContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitStmt(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	localctx = NewStmtContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 18, BlunderbussParserRULE_stmt)
+	p.EnterRule(localctx, 16, BlunderbussParserRULE_stmt)
 	var _la int
 
-	p.SetState(130)
+	p.SetState(127)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2048,7 +2031,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 12, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
-		p.SetState(101)
+		p.SetState(98)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -2057,7 +2040,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 
 		if _la == BlunderbussParserLAZY {
 			{
-				p.SetState(100)
+				p.SetState(97)
 				p.Match(BlunderbussParserLAZY)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -2067,7 +2050,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 
 		}
 		{
-			p.SetState(103)
+			p.SetState(100)
 			p.Match(BlunderbussParserTYPE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2075,7 +2058,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(104)
+			p.SetState(101)
 			p.Match(BlunderbussParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2083,7 +2066,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(105)
+			p.SetState(102)
 			p.Match(BlunderbussParserASSIGN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2091,11 +2074,11 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(106)
+			p.SetState(103)
 			p.expr(0)
 		}
 		{
-			p.SetState(107)
+			p.SetState(104)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2106,7 +2089,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(109)
+			p.SetState(106)
 			p.Match(BlunderbussParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2114,7 +2097,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(110)
+			p.SetState(107)
 			p.Match(BlunderbussParserASSIGN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2122,11 +2105,11 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(111)
+			p.SetState(108)
 			p.expr(0)
 		}
 		{
-			p.SetState(112)
+			p.SetState(109)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2137,7 +2120,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	case 3:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(114)
+			p.SetState(111)
 			p.Match(BlunderbussParserRETURN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2145,11 +2128,11 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(115)
+			p.SetState(112)
 			p.expr(0)
 		}
 		{
-			p.SetState(116)
+			p.SetState(113)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2159,7 +2142,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 
 	case 4:
 		p.EnterOuterAlt(localctx, 4)
-		p.SetState(119)
+		p.SetState(116)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -2168,7 +2151,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 
 		if _la == BlunderbussParserSAFE {
 			{
-				p.SetState(118)
+				p.SetState(115)
 				p.Match(BlunderbussParserSAFE)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -2178,11 +2161,11 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 
 		}
 		{
-			p.SetState(121)
+			p.SetState(118)
 			p.Func_call()
 		}
 		{
-			p.SetState(122)
+			p.SetState(119)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2193,7 +2176,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	case 5:
 		p.EnterOuterAlt(localctx, 5)
 		{
-			p.SetState(124)
+			p.SetState(121)
 			p.Match(BlunderbussParserNEXT)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2201,7 +2184,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(125)
+			p.SetState(122)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2212,7 +2195,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	case 6:
 		p.EnterOuterAlt(localctx, 6)
 		{
-			p.SetState(126)
+			p.SetState(123)
 			p.Match(BlunderbussParserBREAK)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2220,7 +2203,7 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 			}
 		}
 		{
-			p.SetState(127)
+			p.SetState(124)
 			p.Match(BlunderbussParserSEMI)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2231,14 +2214,14 @@ func (p *BlunderbussParser) Stmt() (localctx IStmtContext) {
 	case 7:
 		p.EnterOuterAlt(localctx, 7)
 		{
-			p.SetState(128)
+			p.SetState(125)
 			p.If_stmt()
 		}
 
 	case 8:
 		p.EnterOuterAlt(localctx, 8)
 		{
-			p.SetState(129)
+			p.SetState(126)
 			p.For_stmt()
 		}
 
@@ -2382,14 +2365,24 @@ func (s *Effect_blockContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *Effect_blockContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitEffect_block(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) Effect_block() (localctx IEffect_blockContext) {
 	localctx = NewEffect_blockContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 20, BlunderbussParserRULE_effect_block)
+	p.EnterRule(localctx, 18, BlunderbussParserRULE_effect_block)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(132)
+		p.SetState(129)
 		p.Match(BlunderbussParserEFFECT)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2397,14 +2390,14 @@ func (p *BlunderbussParser) Effect_block() (localctx IEffect_blockContext) {
 		}
 	}
 	{
-		p.SetState(133)
+		p.SetState(130)
 		p.Match(BlunderbussParserLBRACE)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(137)
+	p.SetState(134)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2413,11 +2406,11 @@ func (p *BlunderbussParser) Effect_block() (localctx IEffect_blockContext) {
 
 	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&18032743388545024) != 0 {
 		{
-			p.SetState(134)
+			p.SetState(131)
 			p.Stmt()
 		}
 
-		p.SetState(139)
+		p.SetState(136)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -2425,7 +2418,7 @@ func (p *BlunderbussParser) Effect_block() (localctx IEffect_blockContext) {
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(140)
+		p.SetState(137)
 		p.Match(BlunderbussParserRBRACE)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2637,14 +2630,24 @@ func (s *If_stmtContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *If_stmtContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitIf_stmt(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 	localctx = NewIf_stmtContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 22, BlunderbussParserRULE_if_stmt)
+	p.EnterRule(localctx, 20, BlunderbussParserRULE_if_stmt)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(142)
+		p.SetState(139)
 		p.Match(BlunderbussParserIF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2652,7 +2655,7 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 		}
 	}
 	{
-		p.SetState(143)
+		p.SetState(140)
 		p.Match(BlunderbussParserLPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2660,11 +2663,11 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 		}
 	}
 	{
-		p.SetState(144)
+		p.SetState(141)
 		p.expr(0)
 	}
 	{
-		p.SetState(145)
+		p.SetState(142)
 		p.Match(BlunderbussParserRPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2672,10 +2675,10 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 		}
 	}
 	{
-		p.SetState(146)
+		p.SetState(143)
 		p.Block()
 	}
-	p.SetState(155)
+	p.SetState(152)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2684,7 +2687,7 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 
 	for _la == BlunderbussParserELSEIF {
 		{
-			p.SetState(147)
+			p.SetState(144)
 			p.Match(BlunderbussParserELSEIF)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2692,7 +2695,7 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 			}
 		}
 		{
-			p.SetState(148)
+			p.SetState(145)
 			p.Match(BlunderbussParserLPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2700,11 +2703,11 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 			}
 		}
 		{
-			p.SetState(149)
+			p.SetState(146)
 			p.expr(0)
 		}
 		{
-			p.SetState(150)
+			p.SetState(147)
 			p.Match(BlunderbussParserRPAREN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2712,18 +2715,18 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 			}
 		}
 		{
-			p.SetState(151)
+			p.SetState(148)
 			p.Block()
 		}
 
-		p.SetState(157)
+		p.SetState(154)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
 		_la = p.GetTokenStream().LA(1)
 	}
-	p.SetState(160)
+	p.SetState(157)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2732,7 +2735,7 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 
 	if _la == BlunderbussParserELSE {
 		{
-			p.SetState(158)
+			p.SetState(155)
 			p.Match(BlunderbussParserELSE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2740,7 +2743,7 @@ func (p *BlunderbussParser) If_stmt() (localctx IIf_stmtContext) {
 			}
 		}
 		{
-			p.SetState(159)
+			p.SetState(156)
 			p.Block()
 		}
 
@@ -2934,14 +2937,24 @@ func (s *For_stmtContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+func (s *For_stmtContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case BlunderbussVisitor:
+		return t.VisitFor_stmt(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 	localctx = NewFor_stmtContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 24, BlunderbussParserRULE_for_stmt)
+	p.EnterRule(localctx, 22, BlunderbussParserRULE_for_stmt)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(162)
+		p.SetState(159)
 		p.Match(BlunderbussParserFOR)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2949,14 +2962,14 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 		}
 	}
 	{
-		p.SetState(163)
+		p.SetState(160)
 		p.Match(BlunderbussParserLPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(168)
+	p.SetState(165)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -2965,7 +2978,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 
 	if _la == BlunderbussParserTYPE {
 		{
-			p.SetState(164)
+			p.SetState(161)
 			p.Match(BlunderbussParserTYPE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2973,7 +2986,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 			}
 		}
 		{
-			p.SetState(165)
+			p.SetState(162)
 			p.Match(BlunderbussParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2981,7 +2994,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 			}
 		}
 		{
-			p.SetState(166)
+			p.SetState(163)
 			p.Match(BlunderbussParserASSIGN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -2989,20 +3002,20 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 			}
 		}
 		{
-			p.SetState(167)
+			p.SetState(164)
 			p.expr(0)
 		}
 
 	}
 	{
-		p.SetState(170)
+		p.SetState(167)
 		p.Match(BlunderbussParserSEMI)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(172)
+	p.SetState(169)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -3011,20 +3024,20 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 
 	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&18014398513676298) != 0 {
 		{
-			p.SetState(171)
+			p.SetState(168)
 			p.expr(0)
 		}
 
 	}
 	{
-		p.SetState(174)
+		p.SetState(171)
 		p.Match(BlunderbussParserSEMI)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(178)
+	p.SetState(175)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -3033,7 +3046,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 
 	if _la == BlunderbussParserID {
 		{
-			p.SetState(175)
+			p.SetState(172)
 			p.Match(BlunderbussParserID)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -3041,7 +3054,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 			}
 		}
 		{
-			p.SetState(176)
+			p.SetState(173)
 			p.Match(BlunderbussParserASSIGN)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -3049,13 +3062,13 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 			}
 		}
 		{
-			p.SetState(177)
+			p.SetState(174)
 			p.expr(0)
 		}
 
 	}
 	{
-		p.SetState(180)
+		p.SetState(177)
 		p.Match(BlunderbussParserRPAREN)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -3063,7 +3076,7 @@ func (p *BlunderbussParser) For_stmt() (localctx IFor_stmtContext) {
 		}
 	}
 	{
-		p.SetState(181)
+		p.SetState(178)
 		p.Block()
 	}
 
@@ -3082,7 +3095,7 @@ errorExit:
 
 func (p *BlunderbussParser) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex int) bool {
 	switch ruleIndex {
-	case 8:
+	case 7:
 		var t *ExprContext = nil
 		if localctx != nil {
 			t = localctx.(*ExprContext)

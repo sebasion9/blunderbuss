@@ -62,12 +62,6 @@ func (s *BaseBlunderbussListener) EnterBlock(ctx *BlockContext) {}
 // ExitBlock is called when production block is exited.
 func (s *BaseBlunderbussListener) ExitBlock(ctx *BlockContext) {}
 
-// EnterBody is called when production body is entered.
-func (s *BaseBlunderbussListener) EnterBody(ctx *BodyContext) {}
-
-// ExitBody is called when production body is exited.
-func (s *BaseBlunderbussListener) ExitBody(ctx *BodyContext) {}
-
 // EnterExpr is called when production expr is entered.
 func (s *BaseBlunderbussListener) EnterExpr(ctx *ExprContext) {}
 
