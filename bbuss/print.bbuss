@@ -1,0 +1,5 @@
+func main() int {
+    str test = "test string";
+    print(test);
+    return 1;
+}
