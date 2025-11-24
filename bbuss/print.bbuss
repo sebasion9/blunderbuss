@@ -1,5 +1,8 @@
 func main() int {
     str test = "test string";
+    int ben = 123;
+    str franzl = test;
     print(test);
-    return 1;
+    print(franzl);
+    return 0;
 }
