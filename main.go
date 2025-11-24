@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blunderbuss/codegen"
+	"blunderbuss/semantics"
 	"blunderbuss/parsing"
 	"fmt"
 	"os"
@@ -19,7 +19,7 @@ func main() {
 
 	fmt.Println(tree.ToStringTree([]string{}, parser))
 
-	visitor := codegen.NewBlunderbussVisitor()
+	visitor := semantics.NewBlunderbussVisitor()
 	asm := visitor.Visit(tree).(string)
 	fmt.Println(asm)
 
