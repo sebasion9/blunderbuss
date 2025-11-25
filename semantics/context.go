@@ -39,6 +39,7 @@ func (cc *CompilerContext) DereferId(ID string) any {
 
 type ScopeItf interface {
 	Raw() any
+	Type() Type_
 }
 
 type ScopeFunc struct {
@@ -54,6 +55,10 @@ func(sf *ScopeFunc) Raw() any {
 	return sf.id
 }
 
+func(sf *ScopeFunc) Type() Type_ {
+	return sf.type_
+}
+
 type ScopeVar struct {
 	expr any
 	type_ Type_
@@ -66,6 +71,29 @@ func NewScopeVar(expr any, type_ Type_) *ScopeVar {
 func(sf *ScopeVar) Raw() any {
 	return sf.expr
 }
+
+func(sf *ScopeVar) Type() Type_ {
+	return sf.type_
+}
+
+type ScopeFuncArg struct {
+	expr any
+	type_ Type_
+	idx int
+}
+
+func NewScopeFuncArg(expr any, type_ Type_, idx int) *ScopeFuncArg{
+	return &ScopeFuncArg{expr, type_, idx}
+}
+
+func(sf *ScopeFuncArg) Raw() any {
+	return sf.expr
+}
+
+func(sf *ScopeFuncArg) Type() Type_ {
+	return sf.type_
+}
+
 
 // enter block, create fresh scope
 // save variable here etc.
