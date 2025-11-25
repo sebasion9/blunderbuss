@@ -21,7 +21,6 @@ func (c *Codegen) GenFuncExit(code *[]string) {
 
 func (c *Codegen) GenMainInit(code *[]string) {
 	*code = append(*code, 
-		// "global _start",
 		"global main",
 		"extern puts",
 		"main:",
@@ -29,11 +28,6 @@ func (c *Codegen) GenMainInit(code *[]string) {
 }
 
 func (c *Codegen) GenMainExit(code *[]string, returnCode int) {
-	// *code = append(*code,
-	// 	"mov rax, 60; exit syscall",
-	// 	fmt.Sprintf("mov rdi, %d", returnCode),
-	// 	"syscall",
-	// )
 	*code = append(*code,
 		fmt.Sprintf("mov rax, %d", returnCode),
 		"ret",
@@ -51,5 +45,12 @@ func (c *Codegen) GenStrPrimitive(code *[]string, name string, val string) {
 func (c *Codegen) GenIntPrimitive(code *[]string, name string, val int) {
 	*code = append(*code,
 		fmt.Sprintf("%s: dd %d", name, val),
+	)
+}
+
+func (c *Codegen) GenPrint(code *[]string, val string) {
+	*code = append(*code,
+		fmt.Sprintf("mov rdi, %s", val),
+		"call puts",
 	)
 }

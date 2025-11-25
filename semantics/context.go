@@ -2,33 +2,32 @@ package semantics
 
 
 type CompilerContext struct {
-	// scope
-	// variables
-	// deref ID's
-	//   curentScope ID EXPR
-	scopes []map[string]ScopeItf
-	currentScopeIdx int
+	scopes map[string]map[string]ScopeItf
+	currentScopeIdx string
 }
 
 func NewCompilerContext() CompilerContext {
-	scopes := []map[string]ScopeItf{}
-	scopes = append(scopes, make(map[string]ScopeItf))
+	scopes := map[string]map[string]ScopeItf{}
+	scopes["program"] = make(map[string]ScopeItf)
 	return CompilerContext{
 		scopes: scopes,
-		currentScopeIdx: 0,
+		currentScopeIdx: "program",
 	}
 }
 
 
-func (cc *CompilerContext) GetCurrScope() *map[string]ScopeItf{
-	return &cc.scopes[cc.currentScopeIdx]
+func (cc *CompilerContext) GetCurrScope() map[string]ScopeItf{
+	return cc.scopes[cc.currentScopeIdx]
 }
 
+func (cc *CompilerContext) GetScopeByName(name string) map[string]ScopeItf {
+	return cc.scopes[name]
+}
 
-func (cc *CompilerContext) NewScope() *map[string]ScopeItf{
-	cc.currentScopeIdx++
-	cc.scopes = append(cc.scopes, make(map[string]ScopeItf))
-	return cc.GetCurrScope()
+func (cc *CompilerContext) NewScope(scopeName string) map[string]ScopeItf {
+	cc.scopes[scopeName] = make(map[string]ScopeItf)
+	cc.currentScopeIdx = scopeName
+	return cc.scopes[scopeName]
 }
 
 // if nil, then bad
@@ -44,10 +43,11 @@ type ScopeItf interface {
 
 type ScopeFunc struct {
 	id string
+	type_ Type_
 }
 
-func NewScopeFunc(id string) *ScopeFunc{
-	return &ScopeFunc{id}
+func NewScopeFunc(id string, type_ Type_) *ScopeFunc{
+	return &ScopeFunc{id, type_}
 }
 
 func(sf *ScopeFunc) Raw() any {
@@ -56,15 +56,15 @@ func(sf *ScopeFunc) Raw() any {
 
 type ScopeVar struct {
 	expr any
+	type_ Type_
 }
 
-func NewScopeVar(expr any) *ScopeVar {
-	return &ScopeVar{expr}
+func NewScopeVar(expr any, type_ Type_) *ScopeVar {
+	return &ScopeVar{expr, type_}
 }
 
 func(sf *ScopeVar) Raw() any {
 	return sf.expr
-
 }
 
 // enter block, create fresh scope

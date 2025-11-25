@@ -16,15 +16,11 @@ import (
 // 3. Manage stack
 // 4. Replace "ifs" with "switch case"
 // 5. A wrapper for appending text to sections, mov(), add() etc.
-// 6. Create struct for handling certain features
 // 7. Operator precedence
 // 8. lookup wiki
 // 9. Semantic errors for compilers
-// 10. Go all through visits, check missing parts
-// 11. GetParent
+// 10. Go all through visits, check missing parts of grammar
 // 12. Clean up todos/comments
-// 13. func calls are complicated (identificators vs expressions), (varName vs "133")
-// 14. func calls arguments, are assigning internally: func a(b, c)			a("123", varname) -> a = "123", b = varname -> primitive
 
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
@@ -79,14 +75,16 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 	v.text = append(v.text, "section .text")
 	v.data = append(v.data, "section .data")
 
+	scope := v.cctx.GetScopeByName("program")
 	for _, f := range ctx.AllFunc_() {
-		v.Visit(f)
+		fnName := v.Visit(f).(*ScopeFunc)
+		scope[fnName.id] = fnName
 	}
 
 	asm := append(v.data, v.text...)
 	fmt.Printf("scope len %d\n", len(v.cctx.scopes))
-	for i := 0; i < len(v.cctx.scopes); i++{
-		fmt.Printf("%v\n", v.cctx.scopes[i])
+	for k, v := range v.cctx.scopes {
+		fmt.Printf("%s:%v\n",k, v)
 	}
 
 	return strings.Join(asm, "\n")
@@ -94,17 +92,17 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 
 func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	funcName := ctx.ID().GetText() 
-	parentScope := *v.cctx.GetCurrScope()
-	parentScope[funcName] = NewScopeFunc(funcName)
+	funcType := ctx.TYPE().GetText()
+	type_ := TypeEnumFromStr(funcType)
 	switch funcName {
 		case "main":
-			funcType := ctx.TYPE().GetText()
+			//TODO: handle errors
 			if funcType != INT {
 				return nil
 			}
 			v.Codegen.GenMainInit(&v.text)
-			scope := *v.cctx.NewScope()
 
+			scope := v.cctx.NewScope(funcName)
 			v.Visit(ctx.Args())
 			v.Visit(ctx.Block())
 
@@ -114,22 +112,38 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 			v.Codegen.GenFuncInit(&v.text, funcName)
 
 			// cache/type, this only supports "void"
-			_ = *v.cctx.NewScope()
+			v.cctx.NewScope(funcName)
 			v.Visit(ctx.Args())
 			v.Visit(ctx.Block())
 			v.Codegen.GenFuncExit(&v.text)
 	}
 
-
-	return nil
+	return NewScopeFunc(funcName, type_)
 }
 
 //TODO:
 func (v *Visitor) VisitArgs(ctx *parsing.ArgsContext) any {
+	parent := ctx.GetParent().(*parsing.FuncContext).ID().GetText()
+	scope := v.cctx.GetScopeByName(parent)
+	for _, p := range ctx.AllParam() {
+		name := p.ID().GetText()
+		typeText := p.TYPE().GetText()
+		type_ := VOID_
+		switch typeText {
+		case "int":
+			type_ = INT_
+		case "str":
+			type_ = STR_
+		default:
+			type_ = VOID_
+		}
+		scope[name] = NewScopeVar(name, type_)
+	}
 	return nil
 }
 
 func (v *Visitor) VisitBlock(ctx *parsing.BlockContext) any {
+	//TODO: consider adding scope on block level
 	for _, s := range ctx.AllStmt() {
 		v.Visit(s)
 	}
@@ -137,7 +151,12 @@ func (v *Visitor) VisitBlock(ctx *parsing.BlockContext) any {
 }
 
 func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
-	scope := *v.cctx.GetCurrScope()
+	parent, ok := ctx.GetParent().GetParent().(*parsing.FuncContext)
+	//TODO:
+	if !ok {
+		return nil
+	}
+	scope := v.cctx.GetScopeByName(parent.ID().GetText())
 	if ctx.RETURN() != nil {
 		rcStr := v.Visit(ctx.Expr()).(string)
 		rc, err := strconv.Atoi(rcStr)
@@ -145,20 +164,17 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		if err != nil {
 			return nil
 		}
-		scope["return"] = NewScopeVar(rc)
+		scope["return"] = NewScopeVar(rc, INT_)
 	}
 	//TODO: change this all, add rest of assignment parsing
 	//TODO: also handle errors for types != primitives
 	if ctx.ASSIGN() != nil && ctx.TYPE() != nil {
 		if ctx.TYPE().GetText() == STR {
 			//TODO: handle if variable exists in scope
-			expr := v.Visit(ctx.Expr()).(string)
-			//TODO: handle consts primitive scope (uniqueness)
-			scope[ctx.ID().GetText()] = NewScopeVar(expr)
+			expr, _ := v.Visit(ctx.Expr()).(string)
+			//TODO: handle consts primitive scope (uniqueness), stack
+			scope[ctx.ID().GetText()] = NewScopeVar(expr, STR_)
 
-			// v.data = append(v.data,
-			// 	fmt.Sprintf("%s: db %s, 0",ctx.ID().GetText(), expr),
-			// )
 			v.GenStrPrimitive(&v.data, ctx.ID().GetText(), expr)
 		}
 		if ctx.TYPE().GetText() == INT {
@@ -168,7 +184,7 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			if err != nil {
 				return nil
 			}
-			scope[ctx.ID().GetText()] = NewScopeVar(expr)
+			scope[ctx.ID().GetText()] = NewScopeVar(expr, INT_)
 			v.GenIntPrimitive(&v.data, ctx.ID().GetText(), num)
 		}
 	}
@@ -181,7 +197,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 }
 
 func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
-	scope := *v.cctx.GetCurrScope()
 	if ctx.NUM() != nil {
 		return ctx.NUM().GetText()
 	}
@@ -195,33 +210,34 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		parent := ctx.GetParent()
 		_, ok := parent.(*parsing.Call_argsContext)
 		if !ok {
+			scope := v.cctx.GetCurrScope()
 			return scope[ctx.ID().GetText()].Raw()
 		}
 		return ctx.ID().GetText()
 	}
-	return "0"
+	//TODO: handle OP precedence
+	if ctx.Expr(0) != nil && ctx.Expr(1) != nil && ctx.BIN_OP() != nil {
+		return nil
+	}
+	if ctx.SIN_OP() != nil && ctx.Expr(0) != nil {
+		return nil
+	}
+	return nil
 }
 
 func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
-	// scope := *v.cctx.GetCurrScope()
+	// func call should ask SCOPE for declared func with same name, and grab its declared arguments
 	// this is libbbuss part, but stays here for now
 	// handle nums and other
 	if ctx.ID().GetText() == PRINT {
 		arg := v.Visit(ctx.Call_args()).(string)
-		v.text = append(v.text, 
-			fmt.Sprintf("mov rdi, %s", arg),
-			"call puts",
-		)
-
+		v.Codegen.GenPrint(&v.text, arg)
 	}
 	return nil
 }
 func (v *Visitor) VisitCall_args(ctx *parsing.Call_argsContext) any {
-	// scope := *v.cctx.GetCurrScope()
 	expr := v.Visit(ctx.Expr(0))
 	return expr
-	
-	// return nil
 }
 
 

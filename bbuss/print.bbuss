@@ -1,3 +1,11 @@
+func jodler(str arg1) int {
+    int num = 2;
+    return 1;
+}
+func jodler2(str arg2) str {
+    return "1";
+}
+
 func main() int {
     str test = "test string";
     int ben = 123;
