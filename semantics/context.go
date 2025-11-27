@@ -1,5 +1,7 @@
 package semantics
 
+import "fmt"
+
 
 type CompilerContext struct {
 	scopes map[string]map[string]ScopeItf
@@ -124,6 +126,14 @@ func(r *Register) Raw() any {
 
 func(r *Register) Type() Type_ {
 	return r.type_
+}
+
+func PrefixScope(scope *map[string]ScopeItf, fnName string) {
+	for k, v := range *scope {
+		newKey := fmt.Sprintf("%s__%s", fnName, k)
+		delete(*scope, k)
+		(*scope)[newKey] = v
+	}
 }
 
 // enter block, create fresh scope

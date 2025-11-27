@@ -6,7 +6,6 @@ import (
 	"blunderbuss/parsing"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -23,6 +22,7 @@ import (
 // 12. Clean up todos/comments
 // 14. structure with registers, new scope struct register
 // 15. check if used variables are in scope...
+// 16. same names across scopes is baaad
 
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
@@ -72,6 +72,7 @@ func NewBlunderbussVisitor() *Visitor {
 
 func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 	v.Codegen.GenInit()
+	v.Codegen.CurrScope = &v.cctx.currentScopeIdx
 
 	scope := v.cctx.NewScope("program_registers")
 	InitRegisters(&scope)
@@ -113,8 +114,9 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 		fmt.Printf("%s:%v\n",k, v)
 	}
 
-	asm := v.Codegen.ConcatAsm()
-	return strings.Join(asm, "\n")
+	asm := v.Codegen.StreamAsm()
+	return asm
+	// return strings.Join(asm, "\n")
 }
 
 func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
@@ -131,26 +133,24 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 			// v.Codegen.GenMainInit(&v.text)
 			v.Codegen.GenFuncInit(funcName)
 
-			_ = v.cctx.NewScope(funcName)
+			v.cctx.NewScope(funcName)
 			v.Visit(ctx.Args())
 			v.Visit(ctx.Block())
+
 
 			// v.Codegen.GenFuncExit(scope["return"].Raw().(int))
 			v.Codegen.GenFuncExit(0)
 
 		default:
-			//TODO: declare as global in .text
-			//TODO: modify to generate function at top? another array
-			//TODO: calling convention
-			//TODO: handle stack
 			v.Codegen.GenFuncInit(funcName)
 
 			// cache/type, this only supports "void"
 			v.cctx.NewScope(funcName)
 			args = v.Visit(ctx.Args()).([]ScopeFuncArg)
 			v.Visit(ctx.Block())
+
 			//TODO: remove that
-			v.Codegen.TestArgs()
+			// v.Codegen.TestArgs()
 			//TODO: return in rax
 			v.Codegen.GenFuncExit(nil)
 	}
@@ -160,8 +160,6 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 //TODO:
 func (v *Visitor) VisitArgs(ctx *parsing.ArgsContext) any {
-	// parent := ctx.GetParent().(*parsing.FuncContext).ID().GetText()
-	// scope := v.cctx.GetScopeByName(parent)
 	var args []ScopeFuncArg
 	for i, p := range ctx.AllParam() {
 		name := p.ID().GetText()
@@ -176,7 +174,6 @@ func (v *Visitor) VisitArgs(ctx *parsing.ArgsContext) any {
 			type_ = VOID_
 		}
 		args = append(args, *NewScopeFuncArg(name, type_, i))
-		// scope[name] = NewScopeFuncArg(name, type_, i)
 	}
 	return args
 }
@@ -190,9 +187,9 @@ func (v *Visitor) VisitBlock(ctx *parsing.BlockContext) any {
 }
 
 func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
-	parent, ok := ctx.GetParent().GetParent().(*parsing.FuncContext)
+	parent := GetParentFunc(ctx)
 	//TODO:
-	if !ok {
+	if parent == nil {
 		return nil
 	}
 	scope := v.cctx.GetScopeByName(parent.ID().GetText())
@@ -413,11 +410,23 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 
 	return nil
 }
-func (v *Visitor) VisitCall_args(ctx *parsing.Call_argsContext) any {
-	expr := v.Visit(ctx.Expr(0))
-	return expr
+
+func (v *Visitor) VisitIf_stmt(ctx *parsing.If_stmtContext) any {
+	return nil
 }
 
+
+
+func GetParentFunc(t antlr.Tree) *parsing.FuncContext {
+	parent := t.GetParent()
+	for parent != nil {
+		if ctx, ok := parent.(*parsing.FuncContext); ok {
+			return ctx
+		}
+		parent = parent.GetParent()
+	}
+	return nil 
+}
 
 
 

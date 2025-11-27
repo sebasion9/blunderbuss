@@ -1,5 +1,7 @@
 func jodler(str arg1) int {
-    //int num = 2;
+    int num = 2;
+    int num2;
+    num2 = num;
     return 1;
 }
 func jodler2(int a1, int a2, int a3, int a4, int a5, int a6, int a7) int {
@@ -14,10 +16,10 @@ func main() int {
     str name = "ben";
     int num = 123;
     printf("hello %s", name);
-    printf("number %d", num);
+    //printf("number %d", num);
     //print(test);
     //print("123");
-    int result = jodler2(1,2,3,4,5,6,7);
+    int result = jodler2(num,2,3,4,5,6,7);
     ben = result;
     return 0;
 }
