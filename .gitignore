@@ -1,6 +1,10 @@
 ref
 target
 TODO.md
+blunderbuss
+
+parser/Blunderbuss.*
+!parser/*.g4
 
 docs/*
 !docs/*.tex

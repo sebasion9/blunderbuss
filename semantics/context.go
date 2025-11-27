@@ -44,11 +44,12 @@ type ScopeItf interface {
 
 type ScopeFunc struct {
 	id string
+	args []ScopeFuncArg
 	type_ Type_
 }
 
-func NewScopeFunc(id string, type_ Type_) *ScopeFunc{
-	return &ScopeFunc{id, type_}
+func NewScopeFunc(id string, args []ScopeFuncArg, type_ Type_) *ScopeFunc{
+	return &ScopeFunc{id, args, type_}
 }
 
 func(sf *ScopeFunc) Raw() any {
@@ -94,6 +95,36 @@ func(sf *ScopeFuncArg) Type() Type_ {
 	return sf.type_
 }
 
+type Register struct {
+	name string
+	type_ Type_
+}
+
+func (r *Register) Write(type_ Type_) {
+	r.type_ = type_
+
+}
+
+func InitRegisters(scope *map[string]ScopeItf) {
+	(*scope)["rax"] = &Register{"rax", VOID_}
+	(*scope)["rbx"] = &Register{"rbx", VOID_}
+	(*scope)["rcx"] = &Register{"rcx", VOID_}
+	(*scope)["rdx"] = &Register{"rdx", VOID_}
+	(*scope)["rsi"] = &Register{"rsi", VOID_}
+	(*scope)["rdi"] = &Register{"rdi", VOID_}
+	(*scope)["rsp"] = &Register{"rsp", VOID_}
+	(*scope)["rbp"] = &Register{"rbp", VOID_}
+	(*scope)["r8"] = &Register{"r8", VOID_}
+	(*scope)["r9"] = &Register{"r9", VOID_}
+}
+
+func(r *Register) Raw() any {
+	return r.type_
+}
+
+func(r *Register) Type() Type_ {
+	return r.type_
+}
 
 // enter block, create fresh scope
 // save variable here etc.

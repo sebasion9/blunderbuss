@@ -3,6 +3,7 @@ package semantics;
 const (
 	INT = "int"
 	STR = "str"
+	VOID = "void"
 	// DOUBLE = "double"
 	// BOOL = "bool"
 )
@@ -21,4 +22,14 @@ func TypeEnumFromStr(type_ string) Type_ {
 		return STR_
 	}
 	return VOID_
+}
+func StrFromTypeEnum(type_  Type_) string {
+	if type_ == INT_ {
+		return INT
+	}
+
+	if type_ == STR_ {
+		return STR
+	}
+	return VOID
 }

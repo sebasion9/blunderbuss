@@ -27,6 +27,7 @@ expr
 // stmts
 stmt
     : LAZY? TYPE ID ASSIGN expr SEMI
+    | TYPE ID SEMI
     | ID ASSIGN expr SEMI
     | RETURN expr SEMI
     | SAFE? func_call SEMI
