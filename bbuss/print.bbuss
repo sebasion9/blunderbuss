@@ -4,22 +4,23 @@ func jodler(str arg1) int {
     num2 = num;
     return 1;
 }
-func jodler2(int a1, int a2, int a3, int a4, int a5, int a6, int a7) int {
-    return "1";
+func jodler2(int a1, int a2, int a3, int a4, int a5, int a6, int a7) str {
+    //return a1 + a2 + a3 + a4 + a5 + a6 + a7;
+    return "hello";
 }
 
 func main() int {
     str test = "test string";
     int franzl;
+    str ben;
 
 
     str name = "ben";
     int num = 123;
     printf("hello %s", name);
-    //printf("number %d", num);
-    //print(test);
-    //print("123");
-    int result = jodler2(num,2,3,4,5,6,7);
+    str result = jodler2(num,2,3,4,5,6,7);
+    printf("result %s", result);
     ben = result;
+
     return 0;
 }

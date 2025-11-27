@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	input, _ := antlr.NewFileStream("bbuss/for_if.bbuss")
+	input, _ := antlr.NewFileStream("bbuss/print.bbuss")
 	lexer := parsing.NewBlunderbussLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := parsing.NewBlunderbussParser(tokens)
@@ -24,7 +24,7 @@ func main() {
 	fmt.Println(asm)
 
 
-	os.WriteFile("target/for_if.asm", []byte(asm), 0644)
+	os.WriteFile("target/out.asm", []byte(asm), 0644)
 	
 }
 

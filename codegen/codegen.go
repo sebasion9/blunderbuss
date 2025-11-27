@@ -41,7 +41,6 @@ type Codegen struct {
 	global []Instruction
 	text []Instruction
 	data []Instruction
-	CurrScope *string
 };
 
 func (c *Codegen) GetGlobal() []Instruction {
@@ -75,7 +74,6 @@ func (c *Codegen) StreamAsm() string{
 func (c *Codegen) GenFuncInit(funcName string) {
 	rbp := "rbp"
 	rsp := "rsp"
-	*c.CurrScope = funcName
 
 	c.global = append(c.global, NewInstr("global", &funcName ,nil))
 	c.text = append(c.text,
@@ -94,7 +92,7 @@ func (c *Codegen) GenFuncExit(retVal any) {
 }
 
 func (c *Codegen) GenStrPrimitive(name string, val string) {
-	name = fmt.Sprintf("%s__%s", *c.CurrScope, name)
+	name = fmt.Sprintf("%s", name)
 	c.data = append(c.data,
 		NewInstr(fmt.Sprintf("%s: db %s, 0", name, val), nil, nil),
 	)
@@ -102,43 +100,34 @@ func (c *Codegen) GenStrPrimitive(name string, val string) {
 }
 
 func (c *Codegen) GenIntPrimitive(name string, val int) {
-	name = fmt.Sprintf("%s__%s", *c.CurrScope, name)
+	name = fmt.Sprintf("%s", name)
 	c.data = append(c.data,
 		NewInstr(fmt.Sprintf("%s: dq %d", name, val), nil, nil),
 	)
 }
+func (c *Codegen) GenPush(val any) {
+	switch v := val.(type) {
+	case string:
+		c.text = append(c.text, NewInstr("push", &v, nil))
+	case int:
+		asStr := strconv.Itoa(v)
+		c.text = append(c.text, NewInstr("push", &asStr, nil))
+	}
+}
 
-// func (c *Codegen) GenPrint() {
-// 	//c.GenFuncInit("print")
-// 	rdi := "rdi"
-// 	puts := "puts"
-// 	c.text = append(c.text,
-// 		NewInstr("mov", &rdi, &rdi),
-// 		NewInstr("call", &puts, nil),
-// 	)
-// 	//c.GenFuncExit(nil)
-// }
+func (c *Codegen) GenAlignStack(dds int) {
+	rsp := "rsp"
+	offset := fmt.Sprintf("%d", dds * 8)
+	c.text = append(c.text, NewInstr("add", &rsp, &offset))
+}
 
-//TODO: remove
-// func (c *Codegen) TestArgs() {
-// 	c.text = append(c.text, 
-// 		"mov rax, 0",
-// 		"add rax, [rdi]",
-// 		"add rax, [rsi]",
-// 		"add rax, [rdx]",
-// 		"add rax, [rcx]",
-// 		"add rax, [r8]",
-// 		"add rax, [r9]",
-// 		"add rax, [rbp + 16]",
-// 	)
-//
-// }
 
-func (c *Codegen) GenPushArg(id string, idx int) {
-	id = fmt.Sprintf("%s__%s", *c.CurrScope, id)
+
+func (c *Codegen) GenPushArg(offset int, idx int) {
+
+	rel := fmt.Sprintf("[rbp - %d]", offset)
 	if idx > 5 {
 		rax := "rax"
-		rel := fmt.Sprintf("[rel %s]", id)
 		c.text = append(c.text, 
 			NewInstr("mov", &rax, &rel),
 			NewInstr("push", &rax, nil),
@@ -147,7 +136,7 @@ func (c *Codegen) GenPushArg(id string, idx int) {
 	}
 	arg := c.getArg(idx)
 	c.text = append(c.text, 
-		NewInstr("mov", &arg, &id),
+		NewInstr("mov", &arg, &rel),
 	)
 }
 
@@ -156,11 +145,6 @@ func (c *Codegen) GenCallFunc(fnName string) {
 }
 
 
-func (c *Codegen) GenExpandStackFrame(dds int) {
-	// if dds > 0 {
-	// 	c.text = append(c.text, fmt.Sprintf("sub rsp, %d", dds * 8))
-	// }
-}
 
 func (c *Codegen) GenShrinkStackFrame(dds int) {
 	if dds > 0 {
@@ -172,45 +156,38 @@ func (c *Codegen) GenShrinkStackFrame(dds int) {
 
 
 
-//TODO: smarter mov
-// func (c *Codegen) GenMov(dst string, src string) {
-// 	c.text = append(c.text, fmt.Sprintf("mov %s, %s", dst, src))
-// }
-
-
-// those 2 can be merged into one
-// mov rax, rsi
-// mov rax, addr
-
-// mov rax, [rsi]
-// mov [rel label], rax
 
 func (c *Codegen) GenMovMemory(dst string, src string) {
 	c.text = append(c.text, NewInstr("mov", &dst, &src))
 }
 
 func (c *Codegen) GenMovIndirect(dst string, src string) {
-	src = fmt.Sprintf("[%s__%s]", *c.CurrScope, src)
+	src = fmt.Sprintf("[%s]", src)
 	c.text = append(c.text, NewInstr("mov", &dst, &src))
 }
 
 
-func (c *Codegen) GenMovRegRelative(dst string, src string) {
-	src = fmt.Sprintf("[rel %s__%s]", *c.CurrScope, src)
+func (c *Codegen) GenMovRegRelative(dst string, off int) {
+	src := fmt.Sprintf("[rbp - %d]", off)
 	c.text = append(c.text, NewInstr("mov", &dst, &src))
 }
 
-func (c *Codegen) GenMovAddrRelative(dst string, src string) {
-	dst = fmt.Sprintf("[rel %s__%s]", *c.CurrScope, dst)
-	c.text = append(c.text, NewInstr("mov", &dst, &src))
+func (c *Codegen) GenMovAddrRelative(off int, src any) {
+	dst := fmt.Sprintf("[rbp - %d]", off)
+	s, ok := src.(string)
+	if ok {
+		c.text = append(c.text, NewInstr("mov", &dst, &s))
+	}
+	i, ok := src.(int)
+	if ok {
+		s = strconv.Itoa(i)
+		c.text = append(c.text, NewInstr("mov", &dst, &s))
+	}
 }
 
 var registers = []string{"rdi","rsi","rdx","rcx","r8","r9"}
 func (c *Codegen) getArg(idx int) string {
-	// if idx < 6 {
-		return registers[idx]
-	// }
-	// return fmt.Sprintf("[rbp + %d]", 16 + (idx - 6) * 8)
+	return registers[idx]
 }
 
 

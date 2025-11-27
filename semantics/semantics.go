@@ -15,14 +15,15 @@ import (
 // ~2. Variables per function scope/per block scope~
 // ~3. Manage stack and func calling conventions!~
 // 4. Replace "ifs" with "switch case"
-// 7. Operator precedence
-// 8. lookup wiki
 // 9. Semantic errors for compilers
 // 10. Go all through visits, check missing parts of grammar
 // 12. Clean up todos/comments
-// 14. structure with registers, new scope struct register
+// 14. ~structure with registers, new scope struct register~
 // 15. check if used variables are in scope...
-// 16. same names across scopes is baaad
+// 16. ~global -> stack~
+// 17. ~return stmt~
+// 18. for, if
+// 7. Operator precedence
 
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
@@ -72,7 +73,6 @@ func NewBlunderbussVisitor() *Visitor {
 
 func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 	v.Codegen.GenInit()
-	v.Codegen.CurrScope = &v.cctx.currentScopeIdx
 
 	scope := v.cctx.NewScope("program_registers")
 	InitRegisters(&scope)
@@ -95,12 +95,6 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 	}
 
 
-	//TODO: should be in lib
-
-	// v.Codegen.GenFuncInit("print")
-	// v.Codegen.GenPrint()
-	// v.Codegen.GenFuncExit(nil)
-
 	scope = v.cctx.GetScopeByName("program")
 
 	for _, f := range ctx.AllFunc_() {
@@ -116,7 +110,6 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 
 	asm := v.Codegen.StreamAsm()
 	return asm
-	// return strings.Join(asm, "\n")
 }
 
 func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
@@ -130,28 +123,29 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 			if funcType != INT {
 				return nil
 			}
-			// v.Codegen.GenMainInit(&v.text)
 			v.Codegen.GenFuncInit(funcName)
 
-			v.cctx.NewScope(funcName)
+			scope := v.cctx.NewScope(funcName)
 			v.Visit(ctx.Args())
 			v.Visit(ctx.Block())
 
+			v.GenAlignStack((len(scope)))
 
-			// v.Codegen.GenFuncExit(scope["return"].Raw().(int))
+
+			//TODO: 
 			v.Codegen.GenFuncExit(0)
 
 		default:
 			v.Codegen.GenFuncInit(funcName)
 
 			// cache/type, this only supports "void"
-			v.cctx.NewScope(funcName)
+			scope := v.cctx.NewScope(funcName)
 			args = v.Visit(ctx.Args()).([]ScopeFuncArg)
 			v.Visit(ctx.Block())
 
-			//TODO: remove that
-			// v.Codegen.TestArgs()
-			//TODO: return in rax
+
+			v.GenAlignStack(len(scope))
+			//TODO: 
 			v.Codegen.GenFuncExit(nil)
 	}
 
@@ -193,49 +187,54 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		return nil
 	}
 	scope := v.cctx.GetScopeByName(parent.ID().GetText())
+	registers := v.cctx.GetScopeByName("program_registers")
 	if ctx.RETURN() != nil {
-		rcStr := v.Visit(ctx.Expr()).(string)
-		rc, err := strconv.Atoi(rcStr)
+		expr := v.Visit(ctx.Expr()).(*ScopeVar)
+		registers["rax"].(*Register).Write(expr.Type())
 		//TODO: error
-		if err != nil {
-			return nil
+		if parent.TYPE().GetText() != StrFromTypeEnum(expr.Type()) {
+			fmt.Println("[ERR] return type mismatch")
 		}
-		scope["return"] = NewScopeVar(rc, INT_)
+
+		v.GenMovRegRelative("rax", expr.Offset())
+		return nil
 	}
 	//TODO: change this all, add rest of assignment parsing
 	//TODO: also handle errors for types != primitives
 	if ctx.ASSIGN() != nil {
-		// NIL DEREF HERE
 		if (ctx.TYPE() != nil && ctx.TYPE().GetText() == STR) ||
 		(ctx.ID() != nil &&
 		scope[ctx.ID().GetText()] != nil &&
 		scope[ctx.ID().GetText()].Type() == STR_) {
 
 			//TODO: handle if variable exists in scope
-			expr := v.Visit(ctx.Expr()).(string)
-			lhs := ctx.ID().GetText()
+			rhs := *v.Visit(ctx.Expr()).(*ScopeVar)
+			lhs := scope[ctx.ID().GetText()]
 
-			rhs := scope[expr]
 			// TODO: handle
 			if rhs.Type() != STR_ {
 				fmt.Println("[ERR] not a string")
 				return nil
 			}
-			
-			switch r := rhs.(type) {
-			case *Register:
-				v.Codegen.GenMovAddrRelative(lhs, r.name)
-			case *ScopeVar:
-				v.Codegen.GenMovRegRelative("rax", expr)
-				v.Codegen.GenMovAddrRelative(lhs, "rax")
+
+			if lhs == nil {
+				offset := len(scope)*8+8
+				lhs = NewScopeVar(0, STR_, offset)
+				v.GenPush(0)
 			}
 
+			// func, so rax
+			if rhs.Raw() == nil {
+				v.Codegen.GenMovAddrRelative(lhs.Offset(), "rax")
+				rax, _ := registers["rax"].(*Register)
+				lhs.(*ScopeVar).expr = rax.Raw()
+				scope[ctx.ID().GetText()] = lhs
+			} else {
+				v.Codegen.GenMovRegRelative("rax", rhs.Offset())
+				v.Codegen.GenMovAddrRelative(lhs.Offset(), "rax")
+				lhs.(*ScopeVar).expr = rhs.expr
+				scope[ctx.ID().GetText()] = lhs
 
-			if ctx.TYPE() != nil {
-				val := rhs.Raw().(string)
-				//TODO: handle consts primitive scope (uniqueness), stack
-				scope[ctx.ID().GetText()] = NewScopeVar(val, STR_)
-				v.GenStrPrimitive(ctx.ID().GetText(), val)
 			}
 
 		}
@@ -243,30 +242,34 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		(ctx.ID() != nil &&
 		scope[ctx.ID().GetText()] != nil &&
 		scope[ctx.ID().GetText()].Type() == INT_) {
-			expr := v.Visit(ctx.Expr()).(string)
-			lhs := ctx.ID().GetText()
-			rhs := scope[expr]
+
+			rhs := *v.Visit(ctx.Expr()).(*ScopeVar)
+			lhs := scope[ctx.ID().GetText()]
 			//TODO: errors
 			if rhs.Type() != INT_ {
 				fmt.Println("[ERR] not a number")
 				return nil
 			}
 
-			switch r := rhs.(type) {
-			case *Register:
-				v.Codegen.GenMovAddrRelative(lhs, r.name)
-			case *ScopeVar:
-				v.Codegen.GenMovRegRelative("rax", expr)
-				v.Codegen.GenMovAddrRelative(lhs, "rax")
+			if lhs == nil {
+				offset := len(scope)*8+8
+				lhs = NewScopeVar(0, INT_, offset)
+				v.GenPush(0)
 			}
 
-			//TODO: also handle errors for types != primitives
-			if ctx.TYPE() != nil {
-				num, _ := rhs.Raw().(int)
-				scope[ctx.ID().GetText()] = NewScopeVar(expr, INT_)
-				v.GenIntPrimitive(ctx.ID().GetText(), num)
-
+			// func, so rax
+			if rhs.Raw() == nil {
+				v.Codegen.GenMovAddrRelative(lhs.Offset(), "rax")
+				rax, _ := registers["rax"].(*Register)
+				lhs.(*ScopeVar).expr = rax.Raw()
+				scope[ctx.ID().GetText()] = lhs
+			} else {
+				v.Codegen.GenMovRegRelative("rax", rhs.Offset())
+				v.Codegen.GenMovAddrRelative(lhs.Offset(), "rax")
+				lhs.(*ScopeVar).expr = rhs.expr
+				scope[ctx.ID().GetText()] = lhs
 			}
+
 		}
 		return nil
 	}
@@ -274,11 +277,13 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	if ctx.TYPE() != nil && ctx.ID() != nil {
 		switch ctx.TYPE().GetText() {
 		case INT:
-			v.GenIntPrimitive(ctx.ID().GetText(), 0)
-			scope[ctx.ID().GetText()] = NewScopeVar(0, INT_)
+			offset := len(scope)*8+8
+			scope[ctx.ID().GetText()] = NewScopeVar(0, INT_, offset)
+			v.GenPush(0)
 		case STR:
-			v.GenStrPrimitive(ctx.ID().GetText(), "0")
-			scope[ctx.ID().GetText()] = NewScopeVar("", STR_)
+			offset := len(scope)*8+8
+			scope[ctx.ID().GetText()] = NewScopeVar("", STR_, offset)
+			v.GenPush(0)
 		}
 
 	}
@@ -297,28 +302,32 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	// if returns nil -> then register
 	scope := v.cctx.GetCurrScope()
 	if ctx.NUM() != nil {
-		id := v.Codegen.CreateId()
-		//TODO: double
+		id := v.CreateId()
 		val, _ := strconv.Atoi(ctx.NUM().GetText())
-		scope[id] = NewScopeVar(val, INT_)
 		v.Codegen.GenIntPrimitive(id, val)
-		return id
+		v.GenPush(val)
+		offset := len(scope)*8+8
+		svar := NewScopeVar(val, INT_, offset)
+		scope[id] = svar
+ 
+		return svar
 	}
 	if ctx.STRING() != nil {
-		id := v.Codegen.CreateId()
-		//TODO: double
+		id := v.CreateId()
 		val := ctx.STRING().GetText()
-		scope[id] = NewScopeVar(val, STR_)
 		v.Codegen.GenStrPrimitive(id, val)
-		return id
+		v.GenPush(id)
+		offset := len(scope)*8+8
+		svar := NewScopeVar(id, STR_, offset)
+		scope[id] = svar
+
+		return svar
 	}
 	if ctx.Func_call() != nil {
-		//TODO: expr -> id
-		fnName := v.Visit(ctx.Func_call()).(string)
-		return fnName
+		return v.Visit(ctx.Func_call())
 	}
 	if ctx.ID() != nil {
-		return ctx.ID().GetText()
+		return scope[ctx.ID().GetText()]
 	}
 	//TODO: handle OP precedence
 	if ctx.Expr(0) != nil && ctx.Expr(1) != nil && ctx.BIN_OP() != nil {
@@ -331,13 +340,8 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 }
 
 func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
-	// func call should ask SCOPE for declared func with same name, and grab its declared arguments
 	// this is libbbuss part, but stays here for now
-	// handle nums and other
 	//TODO: libbuss should have predefined print and other standard functions in lib package
-	//TODO: calling convntion
-	//TODO: returning calling convention (rax)
-	parentScope := v.cctx.GetCurrScope()
 	registers := v.cctx.GetScopeByName("program_registers")
 
 	program := v.cctx.GetScopeByName("program")
@@ -351,15 +355,13 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			fmt.Printf("%s:%v:%d\n", a.expr.(string), StrFromTypeEnum(a.type_), a.idx)
 		}
 
-		// rewrite to scope called args
 		if len(ctx.Call_args().AllExpr()) != len(fn.args) {
 			fmt.Println("[ERR] mismatched args amount")
 			return nil
 		}
 
 		for i, arg := range ctx.Call_args().AllExpr() {
-			id := v.Visit(arg).(string)
-			expr := parentScope[id].(*ScopeVar)
+			expr := v.Visit(arg).(*ScopeVar)
 			//TODO: err invalid type and amount of args
 
 			if fn.args[i].type_ != expr.type_ {
@@ -367,15 +369,14 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 				return nil
 			}
 			scope[fn.args[i].expr.(string)] = expr
-			v.GenPushArg(id, i)
+			v.GenPushArg(expr.Offset(), i)
 		}
 		v.GenCallFunc(fnName)
 		v.GenShrinkStackFrame(len(fn.args) - 6)
 
 		rax := registers["rax"].(*Register)
 		rax.Write(fn.type_)
-		parentScope[fnName] = rax
-		return fnName
+		return NewScopeVar(nil, fn.Type(), 0)
 	}
 
 	fn, ok = lib[ctx.ID().GetText()].(*ScopeFunc)
@@ -386,11 +387,9 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			fmt.Printf("%s:%v:%d\n", a.expr.(string), StrFromTypeEnum(a.type_), a.idx)
 		}
 
-		// rewrite to scope called args
 		//TODO: err handling (what if doesnt exist etc)
 		for i, arg := range ctx.Call_args().AllExpr() {
-			id := v.Visit(arg).(string)
-			expr := parentScope[id].(*ScopeVar)
+			expr := v.Visit(arg).(*ScopeVar)
 			//TODO: err invalid type
 			if fn.args[i].type_ != expr.type_ {
 				fmt.Println("[ERR] wrong type")
@@ -398,14 +397,14 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			}
 
 			scope[fn.args[i].expr.(string)] = expr
-			v.GenPushArg(id, i)
+			v.GenPushArg(expr.Offset(), i)
 		}
+		v.GenMovMemory("rax", "0")
 		v.GenCallFunc(fnName)
+		v.GenShrinkStackFrame(len(fn.args) - 6)
 		rax := registers["rax"].(*Register)
 		rax.Write(fn.type_)
-		parentScope[fnName] = rax
-		return fnName
-
+		return NewScopeVar(nil, fn.Type(), 0)
 	}
 
 	return nil

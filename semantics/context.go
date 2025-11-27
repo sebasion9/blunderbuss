@@ -32,16 +32,11 @@ func (cc *CompilerContext) NewScope(scopeName string) map[string]ScopeItf {
 	return cc.scopes[scopeName]
 }
 
-// if nil, then bad
-// derefer until str, num or nil
-func (cc *CompilerContext) DereferId(ID string) any {
-
-	return ""
-}
 
 type ScopeItf interface {
 	Raw() any
 	Type() Type_
+	Offset() int
 }
 
 type ScopeFunc struct {
@@ -62,14 +57,20 @@ func(sf *ScopeFunc) Type() Type_ {
 	return sf.type_
 }
 
+func(sf *ScopeFunc) Offset() int {
+	return 0
+}
+
 type ScopeVar struct {
 	expr any
 	type_ Type_
+	offset int
 }
 
-func NewScopeVar(expr any, type_ Type_) *ScopeVar {
-	return &ScopeVar{expr, type_}
+func NewScopeVar(expr any, type_ Type_, offset int) *ScopeVar {
+	return &ScopeVar{expr, type_, offset}
 }
+
 
 func(sf *ScopeVar) Raw() any {
 	return sf.expr
@@ -77,6 +78,10 @@ func(sf *ScopeVar) Raw() any {
 
 func(sf *ScopeVar) Type() Type_ {
 	return sf.type_
+}
+
+func(sf *ScopeVar) Offset() int {
+	return sf.offset
 }
 
 type ScopeFuncArg struct {
@@ -96,6 +101,11 @@ func(sf *ScopeFuncArg) Raw() any {
 func(sf *ScopeFuncArg) Type() Type_ {
 	return sf.type_
 }
+
+func(sf *ScopeFuncArg) Offset() int {
+	return 0
+}
+
 
 type Register struct {
 	name string
@@ -128,6 +138,11 @@ func(r *Register) Type() Type_ {
 	return r.type_
 }
 
+func(r *Register) Offset() int {
+	return 0
+}
+
+
 func PrefixScope(scope *map[string]ScopeItf, fnName string) {
 	for k, v := range *scope {
 		newKey := fmt.Sprintf("%s__%s", fnName, k)
@@ -136,11 +151,3 @@ func PrefixScope(scope *map[string]ScopeItf, fnName string) {
 	}
 }
 
-// enter block, create fresh scope
-// save variable here etc.
-// look for variables in descending, so outer scopes
-// on exit clear the scope
-// scope should be smth like funcName+rand or idx (recursive fn calls)
-
-// could add here func stack frames also
-// separate struct for stack
