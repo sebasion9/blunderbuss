@@ -329,13 +329,58 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	if ctx.ID() != nil {
 		return scope[ctx.ID().GetText()]
 	}
-	//TODO: handle OP precedence
-	if ctx.Expr(0) != nil && ctx.Expr(1) != nil && ctx.BIN_OP() != nil {
-		return nil
+
+	if ctx.LPAREN() != nil && ctx.RPAREN() != nil {
+		return v.Visit(ctx.Expr(0))
 	}
-	if ctx.SIN_OP() != nil && ctx.Expr(0) != nil{
-		return nil
+
+	// operators
+	if ctx.PLUS() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		//TODO: err mismatched types
+		if lhs.Type() != rhs.Type() {
+			fmt.Println("[ERR] sum failed, mismatched types")
+			return nil
+		}
+		switch lhs.Type() {
+		case STR_:
+			//TODO: error
+			fmt.Println("[ERR] invalid operator for this type (+)")
+			return nil
+
+		case INT_:
+			lhs = NewScopeVar(lhs.expr.(int) + rhs.expr.(int), INT_, lhs.offset)
+			v.GenMovRegRelative("rax", rhs.offset)
+			v.GenAddAddrRelative(lhs.offset, "rax")
+			return lhs
+		}
 	}
+
+	if ctx.MULT() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		//TODO: err mismatched types
+		if lhs.Type() != rhs.Type() {
+			fmt.Println("[ERR] sum failed, mismatched types")
+			return nil
+		}
+		switch lhs.Type() {
+		case STR_:
+			//TODO: error
+			fmt.Println("[ERR] invalid operator for this type (*)")
+			return nil
+
+		case INT_:
+			lhs = NewScopeVar(lhs.expr.(int) * rhs.expr.(int), INT_, lhs.offset)
+			v.GenMovRegRelative("rax", lhs.offset)
+			v.GenImul(rhs.offset)
+			v.GenMovAddrRelative(lhs.offset, "rax")
+			return lhs
+		}
+	}
+
+
 	return nil
 }
 
@@ -364,7 +409,7 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			expr := v.Visit(arg).(*ScopeVar)
 			//TODO: err invalid type and amount of args
 
-			if fn.args[i].type_ != expr.type_ {
+			if fn.args[i].type_ != ANY_ && (fn.args[i].type_ != expr.type_) {
 				fmt.Println("[ERR] wrong type")
 				return nil
 			}
@@ -391,7 +436,8 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		for i, arg := range ctx.Call_args().AllExpr() {
 			expr := v.Visit(arg).(*ScopeVar)
 			//TODO: err invalid type
-			if fn.args[i].type_ != expr.type_ {
+
+			if fn.args[i].type_ != ANY_ && (fn.args[i].type_ != expr.type_) {
 				fmt.Println("[ERR] wrong type")
 				return nil
 			}

@@ -18,7 +18,7 @@ func GetDeclaredFuncs() []LibFuncDecl {
 			Type_: "void",
 			Args: []struct{Name string; Type_ string}{
 				{Name: "fmt", Type_: "str"},
-				{Name: "msg", Type_: "str"},
+				{Name: "msg", Type_: "any"},
 			},
 		},
 	}

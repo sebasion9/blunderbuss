@@ -1,7 +1,11 @@
 func main() int {
-    str a = "ben";
-    str b;
-    b = a;
-    printf("helloooo %s", b);
+    int a = 1 + 2;
+    int b = 1000;
+    int c = -11;
+
+    int f = (b + c) * a;
+
+    printf("result: %d", f);
+    printf("HAHAHAHHA");
     return 0;
 };

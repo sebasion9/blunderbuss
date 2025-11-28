@@ -185,6 +185,35 @@ func (c *Codegen) GenMovAddrRelative(off int, src any) {
 	}
 }
 
+
+func (c *Codegen) GenAddRegRelative(dst string, off int) {
+	src := fmt.Sprintf("[rbp - %d]", off)
+	c.text = append(c.text, NewInstr("add", &dst, &src))
+}
+
+
+func (c *Codegen) GenAddAddrRelative(off int, src any) {
+	dst := fmt.Sprintf("[rbp - %d]", off)
+	s, ok := src.(string)
+	if ok {
+		c.text = append(c.text, NewInstr("add", &dst, &s))
+	}
+	i, ok := src.(int)
+	if ok {
+		s = strconv.Itoa(i)
+		c.text = append(c.text, NewInstr("add", &dst, &s))
+	}
+}
+
+func (c *Codegen) GenImul(off int) {
+	dst := fmt.Sprintf("[rbp - %d]", off)
+	c.text = append(c.text, NewInstr("imul qword", &dst, nil))
+}
+
+
+
+
+
 var registers = []string{"rdi","rsi","rdx","rcx","r8","r9"}
 func (c *Codegen) getArg(idx int) string {
 	return registers[idx]

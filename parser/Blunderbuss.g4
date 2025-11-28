@@ -16,12 +16,15 @@ func_call: ID call_args ;
 block: LBRACE (effect_block|stmt)* RBRACE ;
 
 expr
-    : NUM
+    : EXCL expr
+    | expr op=(AND | OR | EQUAL | LE | GE | LT | GT) expr
+    | expr op=(MULT | DIV) expr
+    | expr op=(PLUS | MINUS | LSHIFT | RSHIFT) expr
+    | LPAREN expr RPAREN
+    | NUM
     | STRING
     | ID
     | func_call
-    | expr BIN_OP expr
-    | SIN_OP expr
     ;
 
 // stmts
@@ -55,29 +58,6 @@ for_stmt: FOR
     RPAREN block ;
 
 
-// operators
-SIN_OP: EXCL ;
-
-BIN_OP
-    : PLUS 
-    | MINUS
-    | PWR
-    | MULT
-    | DIV
-    | MOD
-    | EQUAL
-    | LE
-    | GE
-    | LT
-    | GT
-    | LSHIFT
-    | RSHIFT
-    | AND
-    | OR
-    | BIN_AND
-    | BIN_OR
-    ;
-
 
 // string
 fragment ESCAPE: '\\' [btnr"'\\] ;
@@ -89,14 +69,10 @@ STRING
 // expr tokens
 PLUS: '+' ;
 MINUS: '-' ;
-PWR: '**';
 MULT: '*' ;
 DIV: '/' ;
-MOD: '%';
 OR: '||' ;
 AND: '&&' ;
-BIN_OR: '|' ;
-BIN_AND: '&' ;
 LSHIFT: '<<';
 RSHIFT: '>>';
 EXCL: '!' ;
@@ -132,12 +108,9 @@ DQUOTE: '"' ;
 SEMI: ';' ;
 
 // types
-TYPE: INT | DOUBLE | STR | BOOL | BYTE | UINT ;
+TYPE: INT | STR | BYTE ;
 INT: 'int' ;
-UINT: 'uint' ;
-BOOL: 'bool' ;
 BYTE: 'byte' ;
-DOUBLE: 'double' ;
 STR: 'str' ;
 
 WS  : [ \t\n\r]+ -> skip ;
