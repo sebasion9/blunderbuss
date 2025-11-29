@@ -11,6 +11,10 @@ func (v *BaseBlunderbussVisitor) VisitProgram(ctx *ProgramContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseBlunderbussVisitor) VisitExtern(ctx *ExternContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseBlunderbussVisitor) VisitFunc(ctx *FuncContext) interface{} {
 	return v.VisitChildren(ctx)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	input, _ := antlr.NewFileStream("bbuss/for_if.bbuss")
+	input, _ := antlr.NewFileStream("bbuss/array.bbuss")
 	lexer := parsing.NewBlunderbussLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := parsing.NewBlunderbussParser(tokens)

@@ -10,6 +10,9 @@ type BlunderbussListener interface {
 	// EnterProgram is called when entering the program production.
 	EnterProgram(c *ProgramContext)
 
+	// EnterExtern is called when entering the extern production.
+	EnterExtern(c *ExternContext)
+
 	// EnterFunc is called when entering the func production.
 	EnterFunc(c *FuncContext)
 
@@ -45,6 +48,9 @@ type BlunderbussListener interface {
 
 	// ExitProgram is called when exiting the program production.
 	ExitProgram(c *ProgramContext)
+
+	// ExitExtern is called when exiting the extern production.
+	ExitExtern(c *ExternContext)
 
 	// ExitFunc is called when exiting the func production.
 	ExitFunc(c *FuncContext)

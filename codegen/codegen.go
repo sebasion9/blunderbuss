@@ -68,11 +68,12 @@ func (c *Codegen) GetData() *[]Instruction {
 func (c *Codegen) GenInit() {
 	dst1 := ".text"
 	c.global = append(c.global, NewInstr("section", &dst1, nil));
-	//TODO: extern
-	dst2 := "printf"
-	c.global = append(c.global, NewInstr("extern", &dst2, nil));
 	dst3 := ".data"
 	c.data = append(c.data, NewInstr("section", &dst3, nil));
+}
+
+func (c *Codegen) GenExtern(name string) {
+	c.global = append(c.global, NewInstr("extern", &name, nil));
 }
 
 func (c *Codegen) StreamAsm() string{
@@ -115,15 +116,6 @@ func (c *Codegen) GenIntPrimitive(name string, val int) {
 		NewInstr(fmt.Sprintf("%s: dq %d", name, val), nil, nil),
 	)
 }
-// func (c *Codegen) GenPush(val any) {
-// 	switch v := val.(type) {
-// 	case string:
-// 		c.text = append(c.text, NewInstr("push", &v, nil))
-// 	case int:
-// 		asStr := strconv.Itoa(v)
-// 		c.text = append(c.text, NewInstr("push", &asStr, nil))
-// 	}
-// }
 
 func (c *Codegen) GenAlignStack(dds int) {
 	rsp := "rsp"
@@ -145,7 +137,7 @@ func (c *Codegen) GenPushArg(offset int, idx int) {
 		)
 		return
 	}
-	arg := c.getArg(idx)
+	arg := c.GetCallArg(idx)
 	c.text = append(c.text, 
 		NewInstr("mov", &arg, &rel),
 	)
@@ -177,6 +169,11 @@ func (c *Codegen) GenMovIndirect(dst string, src string) {
 	c.text = append(c.text, NewInstr("mov", &dst, &src))
 }
 
+func (c *Codegen) GenMovOffset(dst string, src string, off int) {
+	src = fmt.Sprintf("[%s * %d]", src, off)
+	c.text = append(c.text, NewInstr("lea", &dst, &src))
+
+}
 
 func (c *Codegen) GenMovRegRelative(dst string, off int) {
 	src := fmt.Sprintf("[rbp - %d]", off)
@@ -312,7 +309,10 @@ func (c *Codegen) GenLabel(name string) {
 
 
 var registers = []string{"rdi","rsi","rdx","rcx","r8","r9"}
-func (c *Codegen) getArg(idx int) string {
+func (c *Codegen) GetCallArg(idx int) string {
+	if idx > 6 {
+		return fmt.Sprintf("[rbp + %d]", (idx - 6)*8+16)
+	}
 	return registers[idx]
 }
 

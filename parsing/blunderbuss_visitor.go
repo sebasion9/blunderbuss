@@ -10,6 +10,9 @@ type BlunderbussVisitor interface {
 	// Visit a parse tree produced by BlunderbussParser#program.
 	VisitProgram(ctx *ProgramContext) interface{}
 
+	// Visit a parse tree produced by BlunderbussParser#extern.
+	VisitExtern(ctx *ExternContext) interface{}
+
 	// Visit a parse tree produced by BlunderbussParser#func.
 	VisitFunc(ctx *FuncContext) interface{}
 

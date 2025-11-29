@@ -191,6 +191,8 @@ func(sf *ScopeFunc) Offset() int {
 	return 0
 }
 
+
+
 type ScopeVar struct {
 	expr any
 	type_ Type_
@@ -248,16 +250,16 @@ func (r *Register) Write(type_ Type_) {
 }
 
 func InitRegisters(scope *map[string]ScopeItf) {
-	(*scope)["rax"] = &Register{"rax", VOID_}
-	(*scope)["rbx"] = &Register{"rbx", VOID_}
-	(*scope)["rcx"] = &Register{"rcx", VOID_}
-	(*scope)["rdx"] = &Register{"rdx", VOID_}
-	(*scope)["rsi"] = &Register{"rsi", VOID_}
-	(*scope)["rdi"] = &Register{"rdi", VOID_}
-	(*scope)["rsp"] = &Register{"rsp", VOID_}
-	(*scope)["rbp"] = &Register{"rbp", VOID_}
-	(*scope)["r8"] = &Register{"r8", VOID_}
-	(*scope)["r9"] = &Register{"r9", VOID_}
+	(*scope)["rax"] = &Register{"rax", ANY_}
+	(*scope)["rbx"] = &Register{"rbx", ANY_}
+	(*scope)["rcx"] = &Register{"rcx", ANY_}
+	(*scope)["rdx"] = &Register{"rdx", ANY_}
+	(*scope)["rsi"] = &Register{"rsi", ANY_}
+	(*scope)["rdi"] = &Register{"rdi", ANY_}
+	(*scope)["rsp"] = &Register{"rsp", ANY_}
+	(*scope)["rbp"] = &Register{"rbp", ANY_}
+	(*scope)["r8"] = &Register{"r8", ANY_}
+	(*scope)["r9"] = &Register{"r9", ANY_}
 }
 
 func(r *Register) Raw() any {

@@ -26,6 +26,12 @@ func (s *BaseBlunderbussListener) EnterProgram(ctx *ProgramContext) {}
 // ExitProgram is called when production program is exited.
 func (s *BaseBlunderbussListener) ExitProgram(ctx *ProgramContext) {}
 
+// EnterExtern is called when production extern is entered.
+func (s *BaseBlunderbussListener) EnterExtern(ctx *ExternContext) {}
+
+// ExitExtern is called when production extern is exited.
+func (s *BaseBlunderbussListener) ExitExtern(ctx *ExternContext) {}
+
 // EnterFunc is called when production func is entered.
 func (s *BaseBlunderbussListener) EnterFunc(ctx *FuncContext) {}
 

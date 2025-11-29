@@ -20,9 +20,6 @@ func main() int {
         } else {
             printf("prod: %d   ", prod);
         }
-
-
-
     }
 
     return 0;
