@@ -1,36 +1,158 @@
 package semantics
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
+type ScopeTreeType int
+const (
+	FNCALL ScopeTreeType = iota
+	FUNC
+	BLOCK
+	OTHER
+)
 
-type CompilerContext struct {
-	scopes map[string]map[string]ScopeItf
-	currentScopeIdx string
+type ScopeTree struct {
+	name string
+	children []*ScopeTree
+	parent *ScopeTree
+	vars map[string]ScopeItf
+	scopeType ScopeTreeType
+	currOff int
 }
 
-func NewCompilerContext() CompilerContext {
-	scopes := map[string]map[string]ScopeItf{}
-	scopes["program"] = make(map[string]ScopeItf)
-	return CompilerContext{
-		scopes: scopes,
-		currentScopeIdx: "program",
+func (st *ScopeTree) IncrOff(incr int) {
+	st.currOff += incr
+}
+func (st *ScopeTree) GetOff() int {
+	return st.currOff
+}
+
+func (st *ScopeTree) GetChildren() []*ScopeTree {
+	return st.children
+}
+
+func (st *ScopeTree) GetName() string {
+	return st.name
+}
+
+func (st *ScopeTree) AddChildren(children *ScopeTree) {
+	if st.children == nil {
+		st.children = make([]*ScopeTree, 0)
+	}
+	st.children = append(st.children, children)
+}
+
+func (st *ScopeTree) GetParent() *ScopeTree {
+	return st.parent
+}
+
+func (st *ScopeTree) GetVars() *map[string]ScopeItf {
+	return &st.vars
+}
+
+func (st *ScopeTree) GetScopeByName(name string) *ScopeTree {
+	for _, c := range st.GetChildren() {
+		if c.name == name {
+			return c
+		}
+		foundScope := c.GetScopeByName(name)
+		if foundScope != nil {
+			return foundScope
+		}
+	}
+	return nil
+}
+
+func GetRootScope(scope *ScopeTree) *ScopeTree {
+	parent := scope.GetParent()
+	if parent == nil {
+		return scope
+	}
+	return GetRootScope(parent)
+}
+
+func GetAllVarsDownLen(scope *ScopeTree) int {
+	sum := 0
+	if scope.scopeType != FNCALL && scope.scopeType != OTHER {
+		sum = len(*scope.GetVars())
+	}
+	for _, c := range scope.GetChildren() {
+		sum += GetAllVarsDownLen(c)
+	}
+	return sum
+}
+
+
+
+func SearchIdUp(scope *ScopeTree, id string) *ScopeTree {
+	if scope == nil {
+		return nil
+	}
+	vars := *scope.GetVars()
+	if _, found := vars[id]; found {
+		return scope
+	}
+	return SearchIdUp(scope.GetParent(), id)
+}
+
+func GetWhatFunc(scope *ScopeTree) *ScopeTree {
+	if scope.scopeType == FUNC {
+		return scope
+	}
+	return GetWhatFunc(scope.GetParent())
+}
+
+
+func (st *ScopeTree) DebugPrint(ident int) {
+	i := strings.Repeat(" ", ident)
+	fmt.Printf("%sSCOPE: %s\n,", i, st.name)
+	fmt.Printf("%sVARS:", i)
+	for i, v := range st.vars {
+		fmt.Printf("%sNAME: %s", i, v.Raw())
+	}
+	for _, c := range st.GetChildren() {
+		c.DebugPrint(ident + 1)
 	}
 }
 
 
-func (cc *CompilerContext) GetCurrScope() map[string]ScopeItf{
-	return cc.scopes[cc.currentScopeIdx]
+func NewScopeTree(name string, parent *ScopeTree, scopeType ScopeTreeType) *ScopeTree {
+	scope :=  &ScopeTree{
+		name,
+		nil,
+		parent,
+		map[string]ScopeItf{},
+		scopeType,
+		8,
+	}
+	if parent != nil {
+		parent.AddChildren(scope)
+	}
+	return scope
 }
 
-func (cc *CompilerContext) GetScopeByName(name string) map[string]ScopeItf {
-	return cc.scopes[name]
+
+type CompilerContext struct {
+	scopes *ScopeTree
+	currentScope *ScopeTree
 }
 
-func (cc *CompilerContext) NewScope(scopeName string) map[string]ScopeItf {
-	cc.scopes[scopeName] = make(map[string]ScopeItf)
-	cc.currentScopeIdx = scopeName
-	return cc.scopes[scopeName]
+//TODO: remember to set current scope when creating new
+func NewCompilerContext() CompilerContext {
+	scopes := NewScopeTree("program", nil, OTHER)
+	return CompilerContext{
+		scopes: scopes,
+		currentScope: scopes,
+	}
 }
+
+
+func (cc *CompilerContext) GetCurrScope() *ScopeTree {//map[string]ScopeItf {
+	return cc.currentScope
+}
+
 
 
 type ScopeItf interface {

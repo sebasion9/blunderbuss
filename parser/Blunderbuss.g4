@@ -17,7 +17,7 @@ block: LBRACE (effect_block|stmt)* RBRACE ;
 
 expr
     : EXCL expr
-    | expr op=(AND | OR | EQUAL | LE | GE | LT | GT) expr
+    | expr op=(AND | OR | EQUAL | NOT_EQUAL | LE | GE | LT | GT) expr
     | expr op=(MULT | DIV) expr
     | expr op=(PLUS | MINUS ) expr
     | LPAREN expr RPAREN
@@ -52,10 +52,10 @@ for_stmt: FOR
     // LPAREN (TYPE ID ASSIGN expr)?
     LPAREN stmt
     // loop condition expression, expression can always be somehow evaluated to bool
-    SEMI expr
+    expr
     // end loop statement, 
     // SEMI (ID ASSIGN expr)?
-    SEMI stmt
+    stmt
 
     RPAREN block ;
 
@@ -77,7 +77,8 @@ OR: '||' ;
 AND: '&&' ;
 EXCL: '!' ;
 // comparison tokens
-EQUAL: '==' ;
+NOT_EQUAL: 'ne' ;
+EQUAL: 'eq' ;
 LE: 'le' ;
 GE: 'ge' ;
 LT: 'lt' ;

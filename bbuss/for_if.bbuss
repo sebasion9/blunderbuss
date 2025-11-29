@@ -1,16 +1,23 @@
-func num() int {
+func twenty() int {
     return 20;
 }
 
 func main() int {
-    int hun = 100;
-    for(int i = 1; i lt num(); i = i + 1) {
-        int prod = hun / i;
-        if(prod == 10) {
-            printf("10 = %d    ", prod);
-            return 0;
+    int hundred = 100;
+    for(int i = 1; i lt twenty(); i = i + 1) {
+        int p1;
+        int prod = hundred / i;
+        p1 = prod;
+
+        //printf("prod=%d  ", prod);
+        //printf("p1=%d  ", p1);
+        //printf("i=%d  ", i);
+        //printf("hundred=%d  ", hundred);
+
+        if(prod eq 10) {
+            printf("10 = %d    ", p1);
         } else {
-            printf("prod = %d    ", prod);
+            printf("prod = %d    ", p1);
         }
     }
 
