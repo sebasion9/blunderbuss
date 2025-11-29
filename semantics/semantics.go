@@ -297,15 +297,17 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	}
 
 	if ctx.BREAK() != nil {
-		name := currScope.name
+		forScope := GetWhatFor(currScope)
+		name := forScope.name
 		label := EndBlockLabel(name)
 		v.GenJmp(label)
 		return nil
 	}
 
 	if ctx.NEXT() != nil {
-		name := currScope.name
-		label := StartBlockLabel(name)
+		forScope := GetWhatFor(currScope)
+		name := forScope.name
+		label := EndStmtLabel(name)
 		v.GenJmp(label)
 		return nil
 	}
@@ -685,7 +687,7 @@ func (v *Visitor) VisitIf_stmt(ctx *parsing.If_stmtContext) any {
 	scopeName := BlockScopeName("if")
 
 	parent := v.cctx.GetCurrScope()
-	scope := NewScopeTree(scopeName, parent, BLOCK)
+	scope := NewScopeTree(scopeName, parent, IF)
 	v.cctx.currentScope = scope
 
 	ifLabel := fmt.Sprintf("IF__%s", scopeName)
@@ -740,9 +742,10 @@ func (v *Visitor) VisitFor_stmt(ctx *parsing.For_stmtContext) any {
 	scopeName := BlockScopeName("for")
 	startLabel := StartBlockLabel(scopeName)
 	endLabel := EndBlockLabel(scopeName)
+	stmtLabel := EndStmtLabel(scopeName)
 
 	parent := v.cctx.GetCurrScope()
-	scope := NewScopeTree(scopeName, parent, BLOCK)
+	scope := NewScopeTree(scopeName, parent, FOR)
 	v.cctx.currentScope = scope
 
 	v.Visit(ctx.Stmt(0))
@@ -758,6 +761,7 @@ func (v *Visitor) VisitFor_stmt(ctx *parsing.For_stmtContext) any {
 	v.Visit(ctx.Block())
 
 	// increment
+	v.GenLabel(stmtLabel)
 	v.Visit(ctx.Stmt(1))
 
 	// jump to start

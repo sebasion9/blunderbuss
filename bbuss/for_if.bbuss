@@ -11,13 +11,18 @@ func main() int {
         int prod = i;
         p1 = prod;
 
-        if(prod ne 10) {
-            printf("if:lt 10 = %d    ", p1);
-        } else if (prod lt 15) {
-            printf("if:lt 15 = %d    ", p1);
-        } else {
-            printf("if:prod = %d    ", p1);
+        if(prod lt 5) {
+            next;
         }
+
+        if(prod eq 11) {
+            break;
+        } else {
+            printf("prod: %d   ", prod);
+        }
+
+
+
     }
 
     return 0;

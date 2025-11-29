@@ -8,8 +8,9 @@ import (
 type ScopeTreeType int
 const (
 	FNCALL ScopeTreeType = iota
+	FOR
+	IF
 	FUNC
-	BLOCK
 	OTHER
 )
 
@@ -102,6 +103,13 @@ func GetWhatFunc(scope *ScopeTree) *ScopeTree {
 		return scope
 	}
 	return GetWhatFunc(scope.GetParent())
+}
+
+func GetWhatFor(scope *ScopeTree) *ScopeTree {
+	if scope.scopeType == FOR {
+		return scope
+	}
+	return GetWhatFor(scope.GetParent())
 }
 
 
@@ -278,6 +286,10 @@ func EndFnLabel(name string) string {
 
 func StartBlockLabel(name string) string {
 	return fmt.Sprintf("START__%s", name)
+}
+
+func EndStmtLabel(name string) string {
+	return fmt.Sprintf("STMT__%s", name)
 }
 
 func EndBlockLabel(name string) string {
