@@ -136,12 +136,8 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 	offset := scope.GetOff()
-	// varsLen := GetAllVarsDownLen(scope)
-	// v.GenAlignStack(varsLen)
 	v.GenAlignStack((offset - 8)/8)
-	// v.GenAlignStack((len(scope.vars)))
 
-	// (*text)[frameId].SetSrc(strconv.Itoa(varsLen*8))
 	(*text)[frameId].SetSrc(strconv.Itoa(offset - 8))
 
 	v.Codegen.GenFuncExit()
@@ -187,7 +183,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	}
 	currScope := v.cctx.GetCurrScope()
 	scopeTree := GetWhatFunc(currScope)
-	// scope := *scopeTree.GetVars()
 	root := GetRootScope(scopeTree)
 	registers := *root.GetScopeByName("program_registers").GetVars()
 
@@ -200,10 +195,10 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			fmt.Println("[ERR] return type mismatch")
 		}
 
-		endFn := EndFnLabel(parent.ID().GetText())
+		// endFn := EndFnLabel(parent.ID().GetText())
 
-		v.GenMovRegRelative("rax", expr.Offset())
-		v.GenJmp(endFn)
+		// v.GenMovRegRelative("rax", expr.Offset())
+		// v.GenJmp(endFn)
 		return nil
 	}
 	//TODO: change this all, add rest of assignment parsing
@@ -245,11 +240,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			}
 
 		}
-		// if varScope != nil && ctx.TYPE() == nil {
-		// } else if varScope != nil && ctx.TYPE() != nil {
-		// } else if varScope == nil && ctx.TYPE() == nil {
-		// } else {
-		// }
 
 		rhs := *v.Visit(ctx.Expr()).(*ScopeVar)
 
@@ -307,11 +297,17 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	}
 
 	if ctx.BREAK() != nil {
-		// get parent scope -> jmp end
+		name := currScope.name
+		label := EndBlockLabel(name)
+		v.GenJmp(label)
+		return nil
 	}
 
 	if ctx.NEXT() != nil {
-		// get parent scope -> jmp start
+		name := currScope.name
+		label := StartBlockLabel(name)
+		v.GenJmp(label)
+		return nil
 	}
 
 
@@ -364,7 +360,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		return svar
 	}
 	if ctx.ID() != nil {
-		// svar := (*SearchIdUp(scopeTree, ctx.ID().GetText()).GetVars())[ctx.ID().GetText()]
 		id := ctx.ID().GetText()
 
 		// look for var in scopes
@@ -473,11 +468,11 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(8)
-		// offset := len(scope)*8+8
 		prod := NewScopeVar(0, INT_, offset)
-		v.GenMovRegRelative("rax", lhs.offset)
-		v.GenMovRegRelative("rbx", rhs.offset)
-		v.GenCmp("rax", "rbx")
+		v.GenMovRegRelative("rbx", lhs.offset)
+		v.GenMovRegRelative("rcx", rhs.offset)
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
 		v.GenSete("al")
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = prod
@@ -485,7 +480,23 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	}
 
 	if ctx.NOT_EQUAL() != nil {
-		return nil
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := funcTree.GetOff()
+		funcTree.IncrOff(8)
+		prod := NewScopeVar(0, INT_, offset)
+		v.GenMovRegRelative("rbx", lhs.offset)
+		v.GenMovRegRelative("rcx", rhs.offset)
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
+		v.GenSetne("al")
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = prod
+		return prod
 	}
 
 	if ctx.LE() != nil {
@@ -497,11 +508,11 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(8)
-		// offset := len(scope)*8+8
 		prod := NewScopeVar(0, INT_, offset)
-		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rcx", lhs.offset)
 		v.GenMovRegRelative("rbx", rhs.offset)
-		v.GenCmp("rax", "rbx")
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
 		v.GenSetle("al")
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = prod
@@ -518,11 +529,11 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(8)
-		// offset := len(scope)*8+8
 		prod := NewScopeVar(0, INT_, offset)
-		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rcx", lhs.offset)
 		v.GenMovRegRelative("rbx", rhs.offset)
-		v.GenCmp("rbx", "rax")
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
 		v.GenSetl("al")
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = prod
@@ -539,11 +550,11 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(8)
-		// offset := len(scope)*8+8
 		prod := NewScopeVar(0, INT_, offset)
-		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rcx", lhs.offset)
 		v.GenMovRegRelative("rbx", rhs.offset)
-		v.GenCmp("rbx", "rax")
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
 		v.GenSetge("al")
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = prod
@@ -559,11 +570,11 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(8)
-		// offset := len(scope)*8+8
 		prod := NewScopeVar(0, INT_, offset)
-		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rcx", lhs.offset)
 		v.GenMovRegRelative("rbx", rhs.offset)
-		v.GenCmp("rbx", "rax")
+		v.GenXor("rax", "rax")
+		v.GenCmp("rbx", "rcx")
 		v.GenSetg("al")
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = prod
@@ -727,8 +738,9 @@ func (v *Visitor) VisitIf_stmt(ctx *parsing.If_stmtContext) any {
 
 func (v *Visitor) VisitFor_stmt(ctx *parsing.For_stmtContext) any {
 	scopeName := BlockScopeName("for")
-	startLabel := fmt.Sprintf("START__%s", scopeName)
-	endLabel := fmt.Sprintf("END__%s", scopeName)
+	startLabel := StartBlockLabel(scopeName)
+	endLabel := EndBlockLabel(scopeName)
+
 	parent := v.cctx.GetCurrScope()
 	scope := NewScopeTree(scopeName, parent, BLOCK)
 	v.cctx.currentScope = scope

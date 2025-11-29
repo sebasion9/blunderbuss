@@ -3,6 +3,7 @@ package codegen
 import (
 	"fmt"
 	"strconv"
+
 )
 
 type Instruction struct {
@@ -274,6 +275,10 @@ func (c *Codegen) GenCmpAddrReg(off int, src string) {
 
 func (c *Codegen) GenSete(dst string) {
 	c.text = append(c.text, NewInstr("sete", &dst, nil))
+}
+
+func (c *Codegen) GenSetne(dst string) {
+	c.text = append(c.text, NewInstr("setne", &dst, nil))
 }
 
 func (c *Codegen) GenSetl(dst string) {

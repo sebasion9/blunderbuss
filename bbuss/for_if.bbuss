@@ -3,21 +3,20 @@ func twenty() int {
 }
 
 func main() int {
+
     int hundred = 100;
-    for(int i = 1; i lt twenty(); i = i + 1) {
+    for(int i = 1; i le 20; i = i + 1) {
         int p1;
-        int prod = hundred / i;
+        //int prod = hundred / i;
+        int prod = i;
         p1 = prod;
 
-        //printf("prod=%d  ", prod);
-        //printf("p1=%d  ", p1);
-        //printf("i=%d  ", i);
-        //printf("hundred=%d  ", hundred);
-
-        if(prod eq 10) {
-            printf("10 = %d    ", p1);
+        if(prod ne 10) {
+            printf("if:lt 10 = %d    ", p1);
+        } else if (prod lt 15) {
+            printf("if:lt 15 = %d    ", p1);
         } else {
-            printf("prod = %d    ", p1);
+            printf("if:prod = %d    ", p1);
         }
     }
 

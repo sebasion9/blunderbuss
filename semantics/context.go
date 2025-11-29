@@ -275,3 +275,12 @@ func BlockScopeName(name string) string {
 func EndFnLabel(name string) string {
 	return fmt.Sprintf("END__%s", name)
 }
+
+func StartBlockLabel(name string) string {
+	return fmt.Sprintf("START__%s", name)
+}
+
+func EndBlockLabel(name string) string {
+	return fmt.Sprintf("END__%s", name)
+}
+
