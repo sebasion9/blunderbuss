@@ -150,3 +150,6 @@ func BlockScopeName(name string) string {
 	return scopeName
 }
 
+func EndFnLabel(name string) string {
+	return fmt.Sprintf("END__%s", name)
+}

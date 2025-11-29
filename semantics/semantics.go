@@ -121,43 +121,24 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	funcType := ctx.TYPE().GetText()
 	type_ := TypeEnumFromStr(funcType)
 	var args []ScopeFuncArg
-	switch funcName {
-		case "main":
-			//TODO: handle errors
-			if funcType != INT {
-				return nil
-			}
-			v.Codegen.GenFuncInit(funcName)
-			text := v.GetText()
-			frameId := len(*text) - 1
+	//TODO: handle errors
+	v.Codegen.GenFuncInit(funcName)
+	text := v.GetText()
+	frameId := len(*text) - 1
 
-			scope := v.cctx.NewScope(funcName)
-			v.Visit(ctx.Args())
-			v.Visit(ctx.Block())
+	scope := v.cctx.NewScope(funcName)
+	v.Visit(ctx.Args())
+	v.Visit(ctx.Block())
 
-			v.GenAlignStack((len(scope)))
+	endFn := EndFnLabel(funcName)
+	v.GenLabel(endFn)
 
-			(*text)[frameId].SetSrc(strconv.Itoa(len(scope)*8))
+	v.GenAlignStack((len(scope)))
 
-			//TODO: 
-			v.Codegen.GenFuncExit(0)
+	(*text)[frameId].SetSrc(strconv.Itoa(len(scope)*8))
 
-		default:
-			v.Codegen.GenFuncInit(funcName)
-			text := v.GetText()
-			frameId := len(*text) - 1
+	v.Codegen.GenFuncExit()
 
-			// cache/type, this only supports "void"
-			scope := v.cctx.NewScope(funcName)
-			args = v.Visit(ctx.Args()).([]ScopeFuncArg)
-			v.Visit(ctx.Block())
-
-
-			v.GenAlignStack(len(scope))
-			(*text)[frameId].SetSrc(strconv.Itoa(len(scope)*8))
-			//TODO: 
-			v.Codegen.GenFuncExit(nil)
-	}
 
 	return NewScopeFunc(funcName, args, type_)
 }
@@ -207,7 +188,10 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			fmt.Println("[ERR] return type mismatch")
 		}
 
+		endFn := EndFnLabel(parent.ID().GetText())
+
 		v.GenMovRegRelative("rax", expr.Offset())
+		v.GenJmp(endFn)
 		return nil
 	}
 	//TODO: change this all, add rest of assignment parsing

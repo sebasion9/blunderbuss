@@ -1,9 +1,14 @@
+func num() int {
+    return 20;
+}
+
 func main() int {
     int hun = 100;
-    for(int i = 1; i lt 20; i = i + 1) {
+    for(int i = 1; i lt num(); i = i + 1) {
         int prod = hun / i;
         if(prod == 10) {
             printf("10 = %d    ", prod);
+            return 0;
         } else {
             printf("prod = %d    ", prod);
         }

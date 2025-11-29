@@ -92,7 +92,7 @@ func (c *Codegen) GenFuncInit(funcName string) {
 	)
 }
 
-func (c *Codegen) GenFuncExit(retVal any) {
+func (c *Codegen) GenFuncExit() {
 	rbp := "rbp"
 	c.text = append(c.text,
 		NewInstr("pop", &rbp ,nil),
