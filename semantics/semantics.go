@@ -22,8 +22,12 @@ import (
 // 15. check if used variables are in scope...
 // 16. ~global -> stack~
 // 17. ~return stmt~
-// 18. for, if
-// 7. Operator precedence
+// ~18. for, if~
+// ~7. Operator precedence~
+// 19. array - heap
+// 20. scope tree, id lookup
+// 21. offset()
+// 22. force else if order..
 
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
@@ -124,6 +128,8 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 				return nil
 			}
 			v.Codegen.GenFuncInit(funcName)
+			text := v.GetText()
+			frameId := len(*text) - 1
 
 			scope := v.cctx.NewScope(funcName)
 			v.Visit(ctx.Args())
@@ -131,12 +137,15 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 			v.GenAlignStack((len(scope)))
 
+			(*text)[frameId].SetSrc(strconv.Itoa(len(scope)*8))
 
 			//TODO: 
 			v.Codegen.GenFuncExit(0)
 
 		default:
 			v.Codegen.GenFuncInit(funcName)
+			text := v.GetText()
+			frameId := len(*text) - 1
 
 			// cache/type, this only supports "void"
 			scope := v.cctx.NewScope(funcName)
@@ -145,6 +154,7 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 			v.GenAlignStack(len(scope))
+			(*text)[frameId].SetSrc(strconv.Itoa(len(scope)*8))
 			//TODO: 
 			v.Codegen.GenFuncExit(nil)
 	}
@@ -186,7 +196,8 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	if parent == nil {
 		return nil
 	}
-	scope := v.cctx.GetScopeByName(parent.ID().GetText())
+	// scope := v.cctx.GetScopeByName(parent.ID().GetText())
+	scope := v.cctx.GetCurrScope()
 	registers := v.cctx.GetScopeByName("program_registers")
 	if ctx.RETURN() != nil {
 		expr := v.Visit(ctx.Expr()).(*ScopeVar)
@@ -220,7 +231,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			if lhs == nil {
 				offset := len(scope)*8+8
 				lhs = NewScopeVar(0, STR_, offset)
-				v.GenPush(0)
 			}
 
 			// func, so rax
@@ -254,7 +264,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			if lhs == nil {
 				offset := len(scope)*8+8
 				lhs = NewScopeVar(0, INT_, offset)
-				v.GenPush(0)
 			}
 
 			// func, so rax
@@ -279,11 +288,9 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		case INT:
 			offset := len(scope)*8+8
 			scope[ctx.ID().GetText()] = NewScopeVar(0, INT_, offset)
-			v.GenPush(0)
 		case STR:
 			offset := len(scope)*8+8
 			scope[ctx.ID().GetText()] = NewScopeVar("", STR_, offset)
-			v.GenPush(0)
 		}
 
 	}
@@ -292,6 +299,26 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		v.Visit(ctx.Func_call())
 		return nil
 	}
+
+	if ctx.For_stmt() != nil {
+		v.Visit(ctx.For_stmt())
+		return nil
+
+	}
+
+	if ctx.If_stmt() != nil {
+		v.Visit(ctx.If_stmt())
+		return nil
+	}
+
+	if ctx.BREAK() != nil {
+		// get parent scope -> jmp end
+	}
+
+	if ctx.NEXT() != nil {
+		// get parent scope -> jmp start
+	}
+
 
 	return nil
 }
@@ -304,9 +331,10 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	if ctx.NUM() != nil {
 		id := v.CreateId()
 		val, _ := strconv.Atoi(ctx.NUM().GetText())
+		text := fmt.Sprintf("qword %d", val)
 		v.Codegen.GenIntPrimitive(id, val)
-		v.GenPush(val)
 		offset := len(scope)*8+8
+		v.GenMovAddrRelative(offset, text)
 		svar := NewScopeVar(val, INT_, offset)
 		scope[id] = svar
  
@@ -316,15 +344,21 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		id := v.CreateId()
 		val := ctx.STRING().GetText()
 		v.Codegen.GenStrPrimitive(id, val)
-		v.GenPush(id)
 		offset := len(scope)*8+8
+		v.GenMovMemory("rax", id)
+		v.GenMovAddrRelative(offset, "rax")
 		svar := NewScopeVar(id, STR_, offset)
 		scope[id] = svar
 
 		return svar
 	}
 	if ctx.Func_call() != nil {
-		return v.Visit(ctx.Func_call())
+		offset := len(scope)*8+8
+		svar := v.Visit(ctx.Func_call()).(*ScopeVar) 
+		svar.offset = offset
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = svar
+		return svar
 	}
 	if ctx.ID() != nil {
 		return scope[ctx.ID().GetText()]
@@ -339,48 +373,172 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
-		if lhs.Type() != rhs.Type() {
-			fmt.Println("[ERR] sum failed, mismatched types")
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
 			return nil
 		}
-		switch lhs.Type() {
-		case STR_:
-			//TODO: error
-			fmt.Println("[ERR] invalid operator for this type (+)")
-			return nil
-
-		case INT_:
-			lhs = NewScopeVar(lhs.expr.(int) + rhs.expr.(int), INT_, lhs.offset)
-			v.GenMovRegRelative("rax", rhs.offset)
-			v.GenAddAddrRelative(lhs.offset, "rax")
-			return lhs
-		}
+		// expr := lhs.expr.(int) + rhs.expr.(int)
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rsi", rhs.offset)
+		v.GenAddMemory("rax", "rsi")
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = prod
+		return prod
 	}
+
+	if ctx.MINUS() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		//TODO: err mismatched types
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		// expr := lhs.expr.(int) - rhs.expr.(int)
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rsi", rhs.offset)
+		v.GenSubMemory("rax", "rsi")
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
+	
 
 	if ctx.MULT() != nil {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
-		if lhs.Type() != rhs.Type() {
-			fmt.Println("[ERR] sum failed, mismatched types")
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
 			return nil
 		}
-		switch lhs.Type() {
-		case STR_:
-			//TODO: error
-			fmt.Println("[ERR] invalid operator for this type (*)")
-			return nil
-
-		case INT_:
-			lhs = NewScopeVar(lhs.expr.(int) * rhs.expr.(int), INT_, lhs.offset)
-			v.GenMovRegRelative("rax", lhs.offset)
-			v.GenImul(rhs.offset)
-			v.GenMovAddrRelative(lhs.offset, "rax")
-			return lhs
-		}
+		// expr := lhs.expr.(int) * rhs.expr.(int)
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenImul(rhs.offset)
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = prod
+		return prod
 	}
 
+	if ctx.DIV() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		// expr := lhs.expr.(int) / rhs.expr.(int)
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
 
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenXor("rdx", "rdx")
+		v.GenDiv()
+		v.GenMovAddrRelative(offset, "rax")
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
+	if ctx.EQUAL() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenCmp("rax", "rbx")
+		v.GenSete("al")
+		v.GenMovAddrRelative(offset, "al")
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
+	if ctx.LE() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenCmp("rax", "rbx")
+		v.GenSetle("al")
+		v.GenMovAddrRelative(offset, "al")
+		scope[v.CreateId()] = prod
+		return prod
+
+	}
+
+	if ctx.LT() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenCmp("rbx", "rax")
+		v.GenSetl("al")
+		v.GenMovAddrRelative(offset, "al")
+		scope[v.CreateId()] = prod
+		return prod
+
+	}
+
+	if ctx.GE() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenCmp("rbx", "rax")
+		v.GenSetge("al")
+		v.GenMovAddrRelative(offset, "al")
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
+	if ctx.GT() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := len(scope)*8+8
+		prod := NewScopeVar(nil, INT_, offset)
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenCmp("rbx", "rax")
+		v.GenSetg("al")
+		v.GenMovAddrRelative(offset, "al")
+		scope[v.CreateId()] = prod
+		return prod
+
+	}
 	return nil
 }
 
@@ -421,6 +579,7 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 
 		rax := registers["rax"].(*Register)
 		rax.Write(fn.type_)
+
 		return NewScopeVar(nil, fn.Type(), 0)
 	}
 
@@ -450,13 +609,84 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		v.GenShrinkStackFrame(len(fn.args) - 6)
 		rax := registers["rax"].(*Register)
 		rax.Write(fn.type_)
+
 		return NewScopeVar(nil, fn.Type(), 0)
+
 	}
 
 	return nil
 }
 
 func (v *Visitor) VisitIf_stmt(ctx *parsing.If_stmtContext) any {
+	scopeName := BlockScopeName("if")
+	ifLabel := fmt.Sprintf("IF__%s", scopeName)
+	elseIfLabel := fmt.Sprintf("ELSEIF__%s", scopeName)
+	elseLabel := fmt.Sprintf("ELSE__%s", scopeName)
+	endIf := fmt.Sprintf("END__%s", scopeName)
+	last := len(ctx.AllBlock()) - 1
+
+	ifCondition := v.Visit(ctx.Expr(0)).(*ScopeVar)
+	v.GenCmpAddrReg(ifCondition.offset, "0")
+	v.GenJz(elseIfLabel)
+	v.GenJmp(ifLabel)
+
+	elseIfLen := len(ctx.AllELSEIF())
+	v.GenLabel(elseIfLabel)
+	for i := range ctx.AllELSEIF() {
+		endElseIfLabel := fmt.Sprintf("END__%s__%d", elseIfLabel, i)
+		condition := v.Visit(ctx.Expr(i+1)).(*ScopeVar)
+
+
+		v.GenCmpAddrReg(condition.offset, "0")
+		if(i == elseIfLen - 1) {
+			v.GenJz(elseLabel)
+		} else {
+			v.GenJz(endElseIfLabel)
+		}
+
+		v.Visit(ctx.Block(i+1))
+		v.GenLabel(endElseIfLabel)
+	}
+
+
+
+
+	v.GenLabel(elseLabel)
+	if ctx.ELSE() != nil {
+		v.Visit(ctx.Block(last))
+	}
+	v.GenJmp(endIf)
+
+	v.GenLabel(ifLabel)
+	v.Visit(ctx.Block(0))
+	v.GenLabel(endIf)
+
+	return nil
+}
+
+func (v *Visitor) VisitFor_stmt(ctx *parsing.For_stmtContext) any {
+	scopeName := BlockScopeName("for")
+	startLabel := fmt.Sprintf("START__%s", scopeName)
+	endLabel := fmt.Sprintf("END__%s", scopeName)
+	// v.cctx.NewScope(scopeName)
+	v.Visit(ctx.Stmt(0))
+	v.GenLabel(startLabel)
+	// init variable
+	// eval expr
+	condition := v.Visit(ctx.Expr()).(*ScopeVar)
+	// check condition, break
+	v.GenCmpAddrReg(condition.offset, "0")
+	v.GenJz(endLabel)
+
+	// visit stmts
+	v.Visit(ctx.Block())
+
+	// increment
+	v.Visit(ctx.Stmt(1))
+
+	// jump to start
+	v.GenJmp(startLabel)
+	v.GenLabel(endLabel)
 	return nil
 }
 

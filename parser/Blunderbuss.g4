@@ -1,6 +1,6 @@
 grammar Blunderbuss;
 
-program: func+ ;
+program: func+ EOF;
 
 // todo: arrays and indexing arrays
 
@@ -19,7 +19,7 @@ expr
     : EXCL expr
     | expr op=(AND | OR | EQUAL | LE | GE | LT | GT) expr
     | expr op=(MULT | DIV) expr
-    | expr op=(PLUS | MINUS | LSHIFT | RSHIFT) expr
+    | expr op=(PLUS | MINUS ) expr
     | LPAREN expr RPAREN
     | NUM
     | STRING
@@ -49,11 +49,13 @@ if_stmt: IF LPAREN expr RPAREN block
 
 for_stmt: FOR
     // assign stmt
-    LPAREN (TYPE ID ASSIGN expr)?
+    // LPAREN (TYPE ID ASSIGN expr)?
+    LPAREN stmt
     // loop condition expression, expression can always be somehow evaluated to bool
-    SEMI expr?
+    SEMI expr
     // end loop statement, 
-    SEMI (ID ASSIGN expr)?
+    // SEMI (ID ASSIGN expr)?
+    SEMI stmt
 
     RPAREN block ;
 
@@ -73,15 +75,13 @@ MULT: '*' ;
 DIV: '/' ;
 OR: '||' ;
 AND: '&&' ;
-LSHIFT: '<<';
-RSHIFT: '>>';
 EXCL: '!' ;
 // comparison tokens
 EQUAL: '==' ;
-LE: '=<' ;
-GE: '=>' ;
-LT: '<' ;
-GT: '>' ;
+LE: 'le' ;
+GE: 'ge' ;
+LT: 'lt' ;
+GT: 'gt' ;
 // tokens
 NUM: '-'? [0-9]+ ('.' [0-9]*)? ;
 RBRACE: '}' ;

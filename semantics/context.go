@@ -143,11 +143,10 @@ func(r *Register) Offset() int {
 }
 
 
-func PrefixScope(scope *map[string]ScopeItf, fnName string) {
-	for k, v := range *scope {
-		newKey := fmt.Sprintf("%s__%s", fnName, k)
-		delete(*scope, k)
-		(*scope)[newKey] = v
-	}
+var scopeId = 0
+func BlockScopeName(name string) string {
+	scopeName := fmt.Sprintf("BLOCK__SCOPE__%s__%d", name, scopeId)
+	scopeId++
+	return scopeName
 }
 

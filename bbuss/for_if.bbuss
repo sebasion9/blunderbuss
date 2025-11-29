@@ -1,11 +1,13 @@
 func main() int {
-    int a = 1 + 2;
-    int b = 1000;
-    int c = -11;
+    int hun = 100;
+    for(int i = 1; i lt 20; i = i + 1) {
+        int prod = hun / i;
+        if(prod == 10) {
+            printf("10 = %d    ", prod);
+        } else {
+            printf("prod = %d    ", prod);
+        }
+    }
 
-    int f = (b + c) * a;
-
-    printf("result: %d", f);
-    printf("HAHAHAHHA");
     return 0;
-};
+}

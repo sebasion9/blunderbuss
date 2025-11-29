@@ -11,6 +11,14 @@ type Instruction struct {
 	src *string
 }
 
+func (i *Instruction) SetDst(dst string) {
+	i.dst = &dst
+}
+
+func (i *Instruction) SetSrc(src string) {
+	i.src = &src
+}
+
 func (i *Instruction) toString() string {
 	instr := i.op
 	if i.dst != nil {
@@ -43,16 +51,16 @@ type Codegen struct {
 	data []Instruction
 };
 
-func (c *Codegen) GetGlobal() []Instruction {
-	return c.global
+func (c *Codegen) GetGlobal() *[]Instruction {
+	return &c.global
 }
 
-func (c *Codegen) GetText() [] Instruction {
-	return c.text
+func (c *Codegen) GetText() *[]Instruction {
+	return &c.text
 }
 
-func (c *Codegen) GetData() []Instruction {
-	return c.data
+func (c *Codegen) GetData() *[]Instruction {
+	return &c.data
 }
 
 
@@ -80,6 +88,7 @@ func (c *Codegen) GenFuncInit(funcName string) {
 		NewInstr(fmt.Sprintf("%s:", funcName), nil, nil),
 		NewInstr("push", &rbp, nil),
 		NewInstr("mov", &rbp, &rsp),
+		NewInstr("sub", &rsp, nil),
 	)
 }
 
@@ -105,21 +114,22 @@ func (c *Codegen) GenIntPrimitive(name string, val int) {
 		NewInstr(fmt.Sprintf("%s: dq %d", name, val), nil, nil),
 	)
 }
-func (c *Codegen) GenPush(val any) {
-	switch v := val.(type) {
-	case string:
-		c.text = append(c.text, NewInstr("push", &v, nil))
-	case int:
-		asStr := strconv.Itoa(v)
-		c.text = append(c.text, NewInstr("push", &asStr, nil))
-	}
-}
+// func (c *Codegen) GenPush(val any) {
+// 	switch v := val.(type) {
+// 	case string:
+// 		c.text = append(c.text, NewInstr("push", &v, nil))
+// 	case int:
+// 		asStr := strconv.Itoa(v)
+// 		c.text = append(c.text, NewInstr("push", &asStr, nil))
+// 	}
+// }
 
 func (c *Codegen) GenAlignStack(dds int) {
 	rsp := "rsp"
 	offset := fmt.Sprintf("%d", dds * 8)
 	c.text = append(c.text, NewInstr("add", &rsp, &offset))
 }
+
 
 
 
@@ -185,6 +195,9 @@ func (c *Codegen) GenMovAddrRelative(off int, src any) {
 	}
 }
 
+func (c *Codegen) GenAddMemory(dst string, src string) {
+	c.text = append(c.text, NewInstr("add", &dst, &src))
+}
 
 func (c *Codegen) GenAddRegRelative(dst string, off int) {
 	src := fmt.Sprintf("[rbp - %d]", off)
@@ -205,13 +218,92 @@ func (c *Codegen) GenAddAddrRelative(off int, src any) {
 	}
 }
 
+func (c *Codegen) GenSubMemory(dst string, src string) {
+	c.text = append(c.text, NewInstr("sub", &dst, &src))
+}
+
+func (c *Codegen) GenSubRegRelative(dst string, off int) {
+	src := fmt.Sprintf("[rbp - %d]", off)
+	c.text = append(c.text, NewInstr("sub", &dst, &src))
+}
+
+
+func (c *Codegen) GenSubAddrRelative(off int, src any) {
+	dst := fmt.Sprintf("[rbp - %d]", off)
+	s, ok := src.(string)
+	if ok {
+		c.text = append(c.text, NewInstr("sub", &dst, &s))
+	}
+	i, ok := src.(int)
+	if ok {
+		s = strconv.Itoa(i)
+		c.text = append(c.text, NewInstr("sub", &dst, &s))
+	}
+}
+
 func (c *Codegen) GenImul(off int) {
 	dst := fmt.Sprintf("[rbp - %d]", off)
 	c.text = append(c.text, NewInstr("imul qword", &dst, nil))
 }
 
+func (c *Codegen) GenXor(dst string, src string) {
+	c.text = append(c.text, NewInstr("xor", &dst, &src))
+}
 
+func (c *Codegen) GenDiv() {
+	rbx := "rbx"
+	c.text = append(c.text, 
+		NewInstr("cqo", nil, nil),
+		NewInstr("idiv", &rbx, nil),
+	)
+}
 
+func (c *Codegen) GenCmp(src string, dst string) {
+	c.text = append(c.text, NewInstr("cmp", &dst, &src))
+}
+
+func (c *Codegen) GenCmpRegAddr(dst string, off int) {
+	src := fmt.Sprintf("[rbp - %d]", off)
+	c.text = append(c.text, NewInstr("cmp", &dst, &src))
+}
+
+func (c *Codegen) GenCmpAddrReg(off int, src string) {
+	dst := fmt.Sprintf("[rbp - %d]", off)
+	c.text = append(c.text, NewInstr("cmp", &dst, &src))
+}
+
+func (c *Codegen) GenSete(dst string) {
+	c.text = append(c.text, NewInstr("sete", &dst, nil))
+}
+
+func (c *Codegen) GenSetl(dst string) {
+	c.text = append(c.text, NewInstr("setl", &dst, nil))
+}
+
+func (c *Codegen) GenSetle(dst string) {
+	c.text = append(c.text, NewInstr("setle", &dst, nil))
+}
+
+func (c *Codegen) GenSetg(dst string) {
+	c.text = append(c.text, NewInstr("setg", &dst, nil))
+}
+
+func (c *Codegen) GenSetge(dst string) {
+	c.text = append(c.text, NewInstr("setge", &dst, nil))
+}
+
+func (c *Codegen) GenJz(dst string) {
+	c.text = append(c.text, NewInstr("jz", &dst, nil))
+}
+
+func (c *Codegen) GenJmp(dst string) {
+	c.text = append(c.text, NewInstr("jmp", &dst, nil))
+}
+
+func (c *Codegen) GenLabel(name string) {
+	label := fmt.Sprintf("%s:", name)
+	c.text = append(c.text, NewInstr(label, nil, nil))
+}
 
 
 var registers = []string{"rdi","rsi","rdx","rcx","r8","r9"}
@@ -225,5 +317,6 @@ func (c *Codegen) CreateId() string {
 	generatedIdCount++
 	return fmt.Sprintf("__VAR__%d", generatedIdCount)
 }
+
 
 
