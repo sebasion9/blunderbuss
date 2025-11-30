@@ -5,12 +5,15 @@ import (
 	"blunderbuss/parsing"
 	"fmt"
 	"os"
+	"io"
 
 	"github.com/antlr4-go/antlr/v4"
 )
 
 func main() {
-	input, _ := antlr.NewFileStream("bbuss/array.bbuss")
+
+	stdin, _ := io.ReadAll(os.Stdin)
+	input := antlr.NewInputStream(string(stdin))
 	lexer := parsing.NewBlunderbussLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := parsing.NewBlunderbussParser(tokens)

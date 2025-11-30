@@ -1,9 +1,5 @@
-//#include "libc.bbuss"
+#include "lib/libc.bbuss"
 
-extern func printf(str fmt, any msg) any {}
-extern func rand() int {}
-extern func malloc(int size) ptr {}
-extern func realloc(ptr p, int size) ptr {}
 
 func fill(int size) int {
     ptr arr = malloc(size*8);
@@ -22,6 +18,8 @@ func main() int {
     for(int i = 0; i lt size; i = i + 1;) {
         printf("%d  ", arr[i]);
     }
+
+    free(arr);
 
     return 0;
 }

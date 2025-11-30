@@ -19,16 +19,10 @@ var QWORD = 8
 // 9. Semantic errors for compilers
 // 10. Go all through visits, check missing parts of grammar
 // 12. Clean up todos/comments
-// 14. ~structure with registers, new scope struct register~
-// 15. check if used variables are in scope...
-// 16. ~global -> stack~
-// 17. ~return stmt~
-// ~18. for, if~
-// ~7. Operator precedence~
-// 19. array - heap
-// 20. scope tree, id lookup
-// 21. offset()
-// 22. force else if order..
+// 20. multiple returns
+// 21. structs?
+// 22. extern symbols
+// 23. extern structs?
 
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor

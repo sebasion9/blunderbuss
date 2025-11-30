@@ -1,0 +1,5 @@
+extern func initscr() ptr {}
+extern func endwin() ptr {}
+extern func getch() ptr {}
+extern func refresh() ptr {}
+extern func mvprintw(int y, int x, str fmt, str msg) ptr {}

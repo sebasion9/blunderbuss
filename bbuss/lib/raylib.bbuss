@@ -1,0 +1,19 @@
+extern func InitWindow(int width, int height, str title) any {}
+extern func WindowShouldClose() int {}
+extern func CloseWindow() any {}
+extern func SetTargetFPS(int fps) any {}
+
+extern func BeginDrawing() any {}
+extern func EndDrawing() any {}
+extern func ClearBackground(any color) any {}
+extern func DrawText(str text, int posX, int posY, int fontSize, any color) any {}
+extern func DrawPixel(int posX, int posY, any color) any {}
+extern func DrawRectangle(int posX, int posY, int w, int h, any color) any {}
+
+extern func InitAudioDevice() any {}
+extern func LoadSound(str filename) ptr {}
+extern func PlaySound(ptr sound) any {}
+extern func UnloadSound(ptr sound) any {}
+extern func CloseAudioDevice() any {}
+
+extern func ColorFromInt(int r, int g, int b) ptr {}

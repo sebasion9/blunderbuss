@@ -2,3 +2,5 @@ extern func printf(str fmt, any msg) any {}
 extern func rand() int {}
 extern func malloc(int size) ptr {}
 extern func realloc(ptr p, int size) ptr {}
+extern func free(ptr p) ptr {}
+

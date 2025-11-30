@@ -1,0 +1,27 @@
+#include "../lib/raylib.bbuss"
+#include "../lib/libc.bbuss"
+
+#define WHITE 16777215
+#define BLACK 0
+#define FPS 60
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+
+
+func main() int {
+    ptr BLUE = ColorFromInt(0, 0, 255); 
+    ptr RED = ColorFromInt(255, 0, 0);
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "hello");
+    SetTargetFPS(FPS);
+    for(int i = WindowShouldClose(); i eq 0; i = WindowShouldClose();) {
+        BeginDrawing();
+        ClearBackground(RED);
+        DrawText("Congrats! You created your first window!", 190, 200, 20, BLUE);
+        EndDrawing();
+    }
+
+    CloseWindow();
+
+    return 0;
+}
+

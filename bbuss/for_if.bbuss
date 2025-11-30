@@ -1,3 +1,4 @@
+#include "lib/libc.bbuss"
 func twenty() int {
     return 20;
 }
@@ -5,9 +6,8 @@ func twenty() int {
 func main() int {
 
     int hundred = 100;
-    for(int i = 1; i le 20; i = i + 1) {
+    for(int i = 1; i le 20; i = i + 1;) {
         int p1;
-        //int prod = hundred / i;
         int prod = i;
         p1 = prod;
 
