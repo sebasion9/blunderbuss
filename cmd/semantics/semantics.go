@@ -91,7 +91,7 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 				sfa := *NewScopeFuncArg(arg.expr.(string), arg.type_, i)
 				mappedArgs = append(mappedArgs, sfa)
 			}
-			(*scope.GetVars())[name] = NewScopeFunc(name, mappedArgs, TypeEnumFromStr(type_))
+			(*scope.GetVars())[name] = NewScopeFunc(name, mappedArgs, TypeEnumFromStr(type_), false)
 			v.GenExtern(name)
 		}
 	}
@@ -100,7 +100,8 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 
 	for _, f := range ctx.AllFunc_() {
 		fn := v.Visit(f).(*ScopeFunc)
-		(*parent.GetVars())[fn.id] = fn
+		fmt.Println(fn)
+		//(*parent.GetVars())[fn.id] = fn
 	}
 
 
@@ -112,6 +113,7 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	funcName := ctx.ID().GetText() 
 	funcType := ctx.TYPE().GetText()
 	type_ := TypeEnumFromStr(funcType)
+	isCache := ctx.CACHE() != nil
 	var args []ScopeFuncArg
 	//TODO: handle errors
 	v.Codegen.GenFuncInit(funcName)
@@ -130,6 +132,8 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 		v.GenMovAddrRelative(off, v.GetCallArg(i))
 	}
 
+	fn := NewScopeFunc(funcName, args, type_, isCache)
+	(*parent.GetVars())[funcName] = fn
 
 	v.Visit(ctx.Block())
 
@@ -151,7 +155,9 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 	v.cctx.currentScope = parent
-	return NewScopeFunc(funcName, args, type_)
+
+	(*parent.GetVars())[funcName] = fn
+	return fn
 }
 
 //TODO:
@@ -354,6 +360,8 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 
 		endFn := EndFnLabel(parent.ID().GetText())
 
+		program := GetRootScope(scopeTree)
+		fmt.Println(program)
 		v.GenMovRegRelative("rax", expr.Offset())
 		v.GenJmp(endFn)
 		return nil
@@ -676,7 +684,6 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 	registers := *root.GetScopeByName("program_registers").GetVars()
 
 	program := *root.GetVars()
-	// lib := *root.GetScopeByName("libbbuss").GetVars()
 	fnName := ctx.ID().GetText()
 	fn, ok := program[fnName].(*ScopeFunc)
 	if ok {
@@ -692,6 +699,10 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		if len(ctx.Call_args().AllExpr()) != len(fn.args) {
 			fmt.Println("[ERR] mismatched args amount")
 			return nil
+		}
+
+		if fn.isCache && ctx.SAFE() != nil {
+
 		}
 
 		pushOff := []int{}

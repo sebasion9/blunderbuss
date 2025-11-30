@@ -1,9 +1,19 @@
 #include "../lib/std.bbuss"
 #include "../lib/libc.bbuss"
 
+func fib(int n) int {
+    if(n le 1) {
+        return n;
+    }
+
+    int result = (fib(n - 1) + fib(n - 2));
+    return result;
+}
+
 
 func main() int {
 
+    /*
     for(int i = 0; i lt 50; i = i + 1;) {
         str key := Itoa(i);
 
@@ -17,6 +27,10 @@ func main() int {
         int val := GetM(key);
         printf("value: %d", val);
     }
+    */
+    int result = fib(45);
+    printf("result = %s", Itoa(result));
+
 
     return 0;
 }

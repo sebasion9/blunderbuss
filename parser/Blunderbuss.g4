@@ -16,7 +16,7 @@ param: TYPE ID ;
 
 // func call
 call_args: LPAREN (expr (COMMA expr)*)? RPAREN ;
-func_call: ID call_args ;
+func_call: SAFE? ID call_args ;
 
 block: LBRACE (effect_block|stmt)* RBRACE ;
 
@@ -41,7 +41,7 @@ stmt
     | ID ASSIGN expr SEMI
     | ID LBRACKET expr RBRACKET ASSIGN expr SEMI
     | RETURN expr SEMI
-    | SAFE? func_call SEMI
+    | func_call SEMI
     | NEXT SEMI
     | BREAK SEMI
     | if_stmt

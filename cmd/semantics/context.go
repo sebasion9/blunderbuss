@@ -173,10 +173,11 @@ type ScopeFunc struct {
 	id string
 	args []ScopeFuncArg
 	type_ Type_
+	isCache bool
 }
 
-func NewScopeFunc(id string, args []ScopeFuncArg, type_ Type_) *ScopeFunc{
-	return &ScopeFunc{id, args, type_}
+func NewScopeFunc(id string, args []ScopeFuncArg, type_ Type_, isCache bool) *ScopeFunc{
+	return &ScopeFunc{id, args, type_, isCache}
 }
 
 func(sf *ScopeFunc) Raw() any {
