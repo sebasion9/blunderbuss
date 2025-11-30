@@ -1,8 +1,8 @@
 package main
 
 import (
-	"blunderbuss/semantics"
-	"blunderbuss/parsing"
+	"blunderbuss/cmd/semantics"
+	"blunderbuss/cmd/parsing"
 	"fmt"
 	"os"
 	"io"
@@ -27,7 +27,10 @@ func main() {
 	fmt.Println(asm)
 
 
-	os.WriteFile("target/out.asm", []byte(asm), 0644)
+	err := os.WriteFile("target/out.asm", []byte(asm), 0644)
+	if err != nil {
+		fmt.Println("[ERR] failed to write asm to disk", err)
+	}
 	
 }
 

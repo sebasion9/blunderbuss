@@ -3,8 +3,8 @@ target
 TODO.md
 blunderbuss
 
-parser/Blunderbuss.*
-!parser/*.g4
+parser/*
+!parser/Blunderbuss.g4
 
 docs/*
 !docs/*.tex

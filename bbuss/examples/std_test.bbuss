@@ -1,0 +1,22 @@
+#include "../lib/std.bbuss"
+#include "../lib/libc.bbuss"
+
+
+func main() int {
+
+    for(int i = 0; i lt 50; i = i + 1;) {
+        str key := Itoa(i);
+
+        SetM(key, i*3);
+    }
+
+
+    for(int i = 0; i lt 50; i = i + 1;) {
+        str key := Itoa(i);
+
+        int val := GetM(key);
+        printf("value: %d", val);
+    }
+
+    return 0;
+}

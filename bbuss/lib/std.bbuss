@@ -1,0 +1,4 @@
+extern func Test() str {}
+extern func GetM(str key) int {}
+extern func SetM(str key, int val) any {}
+extern func Itoa(int num) str {}

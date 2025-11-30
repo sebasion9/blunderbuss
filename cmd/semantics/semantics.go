@@ -1,8 +1,8 @@
 package semantics
 
 import (
-	"blunderbuss/codegen"
-	"blunderbuss/parsing"
+	"blunderbuss/cmd/codegen"
+	"blunderbuss/cmd/parsing"
 	"fmt"
 	"strconv"
 
@@ -137,10 +137,15 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	v.GenLabel(endFn)
 
 
+	// align stack to 16 bytes
 	offset := scope.GetOff()
-	v.GenAlignStack((offset - QWORD)/QWORD)
+	scaled := (offset - QWORD)
+	diff := scaled % (2*QWORD)
+	align := scaled + diff
 
-	(*text)[frameId].SetSrc(strconv.Itoa(offset - QWORD))
+	v.GenAlignStack((align))
+
+	(*text)[frameId].SetSrc(strconv.Itoa(align))
 
 	v.Codegen.GenFuncExit()
 

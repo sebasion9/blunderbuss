@@ -119,7 +119,7 @@ func (c *Codegen) GenIntPrimitive(name string, val int) {
 
 func (c *Codegen) GenAlignStack(dds int) {
 	rsp := "rsp"
-	offset := fmt.Sprintf("%d", dds * 8)
+	offset := fmt.Sprintf("%d", dds)
 	c.text = append(c.text, NewInstr("add", &rsp, &offset))
 }
 
