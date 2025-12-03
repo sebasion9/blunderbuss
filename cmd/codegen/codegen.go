@@ -64,6 +64,28 @@ func (c *Codegen) GetData() *[]Instruction {
 	return &c.data
 }
 
+func (c *Codegen) AddGlobal(instr Instruction) {
+	c.global = append(c.global, instr)
+}
+
+func (c *Codegen) AddText(instr Instruction) {
+	c.text = append(c.text, instr)
+}
+
+func (c *Codegen) AddData(instr Instruction) {
+	c.data = append(c.data, instr)
+}
+
+func (c *Codegen) WrapEff(a any) string {
+	switch a.(type) {
+	case int:
+		return fmt.Sprintf("[%d]", a)
+	case string:
+		return fmt.Sprintf("[%s]", a)
+	}
+	return fmt.Sprintf("[%v]", a)
+}
+
 
 func (c *Codegen) GenInit() {
 	dst1 := ".text"
@@ -96,8 +118,11 @@ func (c *Codegen) GenFuncInit(funcName string) {
 
 func (c *Codegen) GenFuncExit() {
 	rbp := "rbp"
+	r12 := "r12"
+	rax := "rax"
 	c.text = append(c.text,
-		NewInstr("pop", &rbp ,nil),
+		NewInstr("mov", &rax , &r12),
+		NewInstr("pop", &rbp , nil),
 		NewInstr("ret", nil, nil),
 	)
 }
@@ -129,7 +154,7 @@ func (c *Codegen) GenAlignStack(dds int) {
 func (c *Codegen) GenPushArg(offset int, idx int) {
 
 	rel := fmt.Sprintf("[rbp - %d]", offset)
-	if idx > 5 {
+	if idx > 6 {
 		rax := "rax"
 		c.text = append(c.text, 
 			NewInstr("mov", &rax, &rel),
@@ -172,8 +197,16 @@ func (c *Codegen) GenMovIndirect(dst string, src string) {
 func (c *Codegen) GenMovOffset(dst string, src string, off int) {
 	src = fmt.Sprintf("[%s * %d]", src, off)
 	c.text = append(c.text, NewInstr("lea", &dst, &src))
-
 }
+
+func (c *Codegen) GenLeaRegs(dst string, lsrc string, rsrc string) {
+	src := fmt.Sprintf("[%s + %s]", lsrc, rsrc)
+	c.text = append(c.text, NewInstr("lea", &dst, &src))
+}
+func (c *Codegen) GenLea(dst string, src string) {
+	c.text = append(c.text, NewInstr("lea", &dst, &src))
+}
+
 
 func (c *Codegen) GenMovRegRelative(dst string, off int) {
 	src := fmt.Sprintf("[rbp - %d]", off)
@@ -309,6 +342,16 @@ func (c *Codegen) GenLabel(name string) {
 
 
 var registers = []string{"rdi","rsi","rdx","rcx","r8","r9"}
+
+
+func (c *Codegen) GetCallArgCalle(idx int) string {
+	if idx > 6 {
+		return fmt.Sprintf("[rbp - %d]", (idx - 6)*8)
+	}
+	return registers[idx]
+}
+
+
 func (c *Codegen) GetCallArg(idx int) string {
 	if idx > 6 {
 		return fmt.Sprintf("[rbp + %d]", (idx - 6)*8+16)

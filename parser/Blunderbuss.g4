@@ -23,6 +23,7 @@ block: LBRACE (effect_block|stmt)* RBRACE ;
 
 expr
     : EXCL expr
+    | AMPS expr
     | expr op=(AND | OR | EQUAL | NOT_EQUAL | LE | GE | LT | GT) expr
     | expr op=(MULT | DIV) expr
     | expr op=(PLUS | MINUS ) expr
@@ -81,6 +82,8 @@ STRING
 PLUS: '+' ;
 MINUS: '-' ;
 MULT: '*' ;
+AMPS: '&' ;
+MOD: '%' ;
 DIV: '/' ;
 OR: '||' ;
 AND: '&&' ;
@@ -119,7 +122,7 @@ SQUOTE: '\'' ;
 DQUOTE: '"' ;
 SEMI: ';' ;
 
-// types
+// TYPEs
 TYPE: PTR | INT | STR | BYTE | ANY ;
 ANY:  'any' ;
 PTR: 'ptr' ;

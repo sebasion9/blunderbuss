@@ -1,0 +1,32 @@
+extern func printf(str fmt, any msg) any {}
+extern func rand() int {}
+extern func malloc(int size) ptr {}
+extern func realloc(ptr p, int size) ptr {}
+extern func free(ptr p) ptr {}
+extern func Test() str {}
+extern func GetM(str key) int {}
+extern func SetM(ptr values, ptr types, int size) any {}
+extern func Itoa(int num) str {}
+func fill(int size) ptr {
+    ptr arr = malloc(size*8);
+    for(int i = 0; i lt size; i = i + 1;) {
+        arr[i] = i * 2;
+    }
+    arr[0] = "abc";
+    return arr;
+}
+func main() int {
+    int size = 3;
+    ^any values = malloc(3*8);
+    ^int types = malloc(3*8);
+    ^any test = malloc(8);
+    ^any arr = &fill;
+    values[0] = 1;
+    values[1] = "test";
+    values[2] = test;
+    types[0] = 1;
+    types[1] = 2;
+    types[2] = 3;
+    SetM(values, types, size);
+    return 0;
+}

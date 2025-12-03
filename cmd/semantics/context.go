@@ -88,6 +88,11 @@ func GetAllVarsDownLen(scope *ScopeTree) int {
 
 
 func SearchIdUp(scope *ScopeTree, id string) *ScopeTree {
+	if id == "fill" {
+		fmt.Println(id)
+		fmt.Println(scope)
+	}
+
 	if scope == nil {
 		return nil
 	}

@@ -2,4 +2,4 @@
 source ~/.zshrc
 antlr4 Blunderbuss.g4
 javac Blunderbuss*.java
-grun Blunderbuss program -gui ../bbuss/array.bbuss
+grun Blunderbuss program -gui ../bbuss/array_ext.bbuss

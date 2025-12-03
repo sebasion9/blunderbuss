@@ -1,25 +1,44 @@
 #include "lib/libc.bbuss"
+#include "lib/std.bbuss"
 
 
-func fill(int size) int {
+cache func fill(int size) ptr {
     ptr arr = malloc(size*8);
+    /*
     for(int i = 0; i lt size; i = i + 1;) {
         arr[i] = i * 2;
     }
+    arr[0] = "abc";
+    */
     return arr;
+}
+
+cache func ben(str franzl, int lang, int aa, str la) int {
+    printf("welcome from func call!      ", "");
+    return 12;
+}
+
+cache func fib(int n) int {
+    if(n lt 2) {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2);
 }
 
 func main() int {
 
-    int size = 100;
-    ptr arr = fill(size);
+    /*
+    int n1 = ben("franzl", 1, 2, "lang");
+    int n2 = ben("franzl", 1, 2, "lang");
+    int n3 = ben("franzl", 1, 2, "lang");
 
+    printf("n1: %d    ", n1);
+    printf("n2: %d    ", n2);
+    printf("n3: %d    ", n3);
+    */
 
-    for(int i = 0; i lt size; i = i + 1;) {
-        printf("%d  ", arr[i]);
-    }
-
-    free(arr);
+    int res = fib(100);
+    printf("result = %d", res);
 
     return 0;
 }

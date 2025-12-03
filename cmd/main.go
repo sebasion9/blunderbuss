@@ -14,6 +14,10 @@ func main() {
 
 	stdin, _ := io.ReadAll(os.Stdin)
 	input := antlr.NewInputStream(string(stdin))
+	// input, e  := antlr.NewFileStream("../bbuss/array_ext.bbuss")
+	// if e != nil {
+	// 	fmt.Println(e)
+	// }
 
 	lexer := parsing.NewBlunderbussLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)

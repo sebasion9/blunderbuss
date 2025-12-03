@@ -12,18 +12,20 @@ import (
 var QWORD = 8
 
 // TODO:
-// ~1. Export consts to other package/file~
-// ~2. Variables per function scope/per block scope~
-// ~3. Manage stack and func calling conventions!~
-// 4. Replace "ifs" with "switch case"
 // 9. Semantic errors for compilers
 // 10. Go all through visits, check missing parts of grammar
 // 12. Clean up todos/comments
-// 20. multiple returns
 // 21. structs?
 // 22. extern symbols
 // 23. extern structs?
-
+// 24. fix codegen
+// 25. ~address and dereference grammar~
+// 26. modulo
+// 27. ~pass arguments through arrays~
+// 28. pass result to SetM
+// 29. maybe rename SetM and GetM
+// 28. GENERIC INSTRUCTION GEN
+// 29. safe, effect keyword
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
 	codegen.Codegen
@@ -99,9 +101,7 @@ func (v *Visitor) VisitProgram(ctx *parsing.ProgramContext) any {
 
 
 	for _, f := range ctx.AllFunc_() {
-		fn := v.Visit(f).(*ScopeFunc)
-		fmt.Println(fn)
-		//(*parent.GetVars())[fn.id] = fn
+		v.Visit(f)
 	}
 
 
@@ -114,6 +114,12 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	funcType := ctx.TYPE().GetText()
 	type_ := TypeEnumFromStr(funcType)
 	isCache := ctx.CACHE() != nil
+	endFn := EndFnLabel(funcName)
+	endFnCached := EndFnLabel(fmt.Sprintf("%s__CACHED", funcName))
+	startFn := fmt.Sprintf("START__FN__%s", funcName)
+
+
+
 	var args []ScopeFuncArg
 	//TODO: handle errors
 	v.Codegen.GenFuncInit(funcName)
@@ -124,21 +130,39 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	scope := NewScopeTree(funcName, parent, FUNC)
 	v.cctx.currentScope = scope
 
+
+
 	args = v.Visit(ctx.Args()).([]ScopeFuncArg)
+	var stackArgs []ScopeVar
 	for i, a := range args {
 		off := scope.GetOff()
 		scope.IncrOff(QWORD)
-		(*scope.GetVars())[a.expr.(string)] = NewScopeVar(a.expr.(string), a.type_, off)
+		sv := NewScopeVar(a.expr.(string), a.type_, off)
+		(*scope.GetVars())[a.expr.(string)] = sv
+		stackArgs = append(stackArgs, *sv)
 		v.GenMovAddrRelative(off, v.GetCallArg(i))
+	}
+
+
+	if isCache && funcName != "main" {
+		PrepKey(funcName, stackArgs, &v.Codegen, scope)
+		CallGetm(&v.Codegen, endFnCached, startFn)
 	}
 
 	fn := NewScopeFunc(funcName, args, type_, isCache)
 	(*parent.GetVars())[funcName] = fn
 
-	v.Visit(ctx.Block())
+	v.GenLabel(startFn)
 
-	endFn := EndFnLabel(funcName)
+	v.Visit(ctx.Block())
 	v.GenLabel(endFn)
+
+	if isCache && funcName != "main" {
+		PrepKey(funcName, stackArgs, &v.Codegen, scope)
+		CallSetm(&v.Codegen)
+	}
+
+	v.GenLabel(endFnCached)
 
 
 	// align stack to 16 bytes
@@ -313,6 +337,10 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			offset := scopeTree.GetOff()
 			scopeTree.IncrOff(QWORD)
 			(*currScope.GetVars())[ctx.ID().GetText()] = NewScopeVar(0, PTR_, offset)
+			// mov [rbp - offset], 0
+			off := v.WrapEff(fmt.Sprintf("rbp - %d", offset))
+			zero := "0"
+			v.AddText(codegen.NewInstr("mov", &off, &zero))
 		}
 		return nil
 
@@ -360,9 +388,7 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 
 		endFn := EndFnLabel(parent.ID().GetText())
 
-		program := GetRootScope(scopeTree)
-		fmt.Println(program)
-		v.GenMovRegRelative("rax", expr.Offset())
+		v.GenMovRegRelative("r12", expr.Offset())
 		v.GenJmp(endFn)
 		return nil
 	}
@@ -490,7 +516,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		}
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(QWORD)
-		// offset := len(scope)*QWORD+QWORD
 		prod := NewScopeVar(0, INT_, offset)
 		v.GenMovRegRelative("rax", lhs.offset)
 		v.GenMovRegRelative("rsi", rhs.offset)
@@ -502,7 +527,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 
 	
 
-	if ctx.MULT() != nil {
+	if ctx.MULT() != nil && len(ctx.AllExpr()) == 2 {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
@@ -663,6 +688,60 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 
 	}
 
+	// reference
+	if ctx.AMPS() != nil {
+		if ctx.Expr(0).ID() != nil {
+			fnName := ctx.Expr(0).ID().GetText()
+			foundScope := SearchIdUp(scopeTree, fnName)
+			if fn, ok := (*foundScope.GetVars())[fnName].(*ScopeFunc); ok {
+				offset := funcTree.GetOff()
+				funcTree.IncrOff(QWORD)
+				prod := NewScopeVar(0, PTR_, offset)
+				rax := "rax"
+				exprOff := fn.Raw().(string)
+				newOff := v.WrapEff(fmt.Sprintf("rbp - %d", offset))
+				v.AddText(codegen.NewInstr("lea", &rax, &exprOff))
+				v.AddText(codegen.NewInstr("mov", &newOff, &rax))
+				scope[v.CreateId()] = prod
+				return prod
+			}
+		}
+
+		sv := v.Visit(ctx.Expr(0)).(*ScopeVar)
+
+		offset := funcTree.GetOff()
+		funcTree.IncrOff(QWORD)
+		prod := NewScopeVar(0, PTR_, offset)
+
+		rax := "rax"
+		exprOff := v.WrapEff(sv.offset)
+		newOff := v.WrapEff(offset)
+		v.AddText(codegen.NewInstr("lea", &rax, &exprOff))
+		v.AddText(codegen.NewInstr("mov", &newOff, &rax))
+
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
+	// if ctx.MULT() != nil && len(ctx.AllExpr()) == 1 {
+	// 	// expr must be a ptr
+	// 	expr := v.Visit(ctx.Expr(0)).(*ScopeVar)
+	// 	if expr.type_ != PTR_ {
+	// 		fmt.Println("[ERR] cannot dereference non PTR type")
+	// 		return nil
+	// 	}
+	// 	offset := funcTree.GetOff()
+	// 	funcTree.IncrOff(QWORD)
+	// 	rax := "rax"
+	// 	off := expr.offset
+	//
+	// 	prod := NewScopeVar(0, ANY_, offset)
+	//
+	// 	// mov rax, [offset]
+	// 	// mov rax, [rax]
+	//
+	// }
+
 	if ctx.AND() != nil {
 		return nil
 
@@ -701,9 +780,6 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			return nil
 		}
 
-		if fn.isCache && ctx.SAFE() != nil {
-
-		}
 
 		pushOff := []int{}
 		pushIdx := []int{}
@@ -721,7 +797,14 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		}
 		for i := range pushOff {
 			v.GenPushArg(pushOff[i], pushIdx[i])
+
+			if fn.isCache && ctx.SAFE() != nil {
+
+			}
 		}
+
+
+
 		v.GenXor("rax", "rax")
 		v.GenCallFunc(fnName)
 		v.GenShrinkStackFrame(len(fn.args) - 6)

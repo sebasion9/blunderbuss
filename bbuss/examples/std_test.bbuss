@@ -1,7 +1,7 @@
 #include "../lib/std.bbuss"
 #include "../lib/libc.bbuss"
 
-func fib(int n) int {
+cache func fib(int n) int {
     if(n le 1) {
         return n;
     }
@@ -28,7 +28,7 @@ func main() int {
         printf("value: %d", val);
     }
     */
-    int result = fib(45);
+    int result = safe fib(3);
     printf("result = %s", Itoa(result));
 
 

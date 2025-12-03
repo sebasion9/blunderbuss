@@ -41,3 +41,18 @@ func StrFromTypeEnum(type_  Type_) string {
 
 	return ANY
 }
+
+func IntFromTypeEnum(type_ Type_) int {
+	if type_ == INT_ {
+		return 1
+	}
+
+	if type_ == STR_ {
+		return 2
+	}
+
+	if type_ == PTR_ {
+		return 3
+	}
+	return -1
+}
