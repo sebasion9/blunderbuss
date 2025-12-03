@@ -1,13 +1,20 @@
+//go:build cgo
 // +build cgo
+
 package main
 
+/*
+#include <stdint.h>
+*/
 
 import "C"
-import "sync"
-import "strconv"
-import "unsafe"
+import (
+	"strconv"
+	"sync"
+	"unsafe"
+)
 
-var m = map[uint64]unsafe.Pointer{}
+var m = make(map[uint64]unsafe.Pointer)
 var mu sync.Mutex
 
 //export Itoa
@@ -48,20 +55,31 @@ func Hash(fn unsafe.Pointer, args ...any) uint64 {
 	return h
 }
 
+type box struct {
+	v any
+}
+
 //export SetM
 func SetM(values *C.long, types *C.long, length C.long) {
 	var goArgs []any
 	var i int64
+	cptr := C.malloc(8)
 	for i = 0; i < int64(length); i ++ {
 		val := *(*C.long)(unsafe.Pointer(uintptr(unsafe.Pointer(values)) + uintptr(i)*unsafe.Sizeof(*values)))
 		t := *(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(types)) + uintptr(i)*unsafe.Sizeof(*types)))
 
 		switch t {
 		case 1:
+			if i == int64(length) - 1 {
+				*(*int64)(cptr) = int64(val)
+			}
 			goArgs = append(goArgs, int64(val))
 		case 2:
 			str := C.GoString((*C.char)(unsafe.Pointer(uintptr(val))))
 			goArgs = append(goArgs, str)
+			if i == int64(length) - 1 {
+				*(*string)(cptr) = str
+			}
 		case 3:
 			ptr := unsafe.Pointer(uintptr(val))
 			goArgs = append(goArgs, ptr)
@@ -73,10 +91,9 @@ func SetM(values *C.long, types *C.long, length C.long) {
 	}
 	key := Hash(goArgs[0].(unsafe.Pointer), goArgs)
 
-	num := new(int)
-	*num = 101
+
 	mu.Lock()
-	m[key] = unsafe.Pointer(num)
+	m[key] = cptr
 	mu.Unlock()
 }
 
@@ -105,15 +122,14 @@ func GetM(values *C.long, types *C.long, length C.long) unsafe.Pointer {
 	}
 
 	key := Hash(goArgs[0].(unsafe.Pointer), goArgs)
+
 	mu.Lock()
 	defer mu.Unlock()
-
 	if val, ok := m[key]; ok {
-		cptr := C.malloc(C.size_t(8))
-		*(*unsafe.Pointer)(cptr) = val
-		return cptr
+		return val
 	}
 	return nil
+
 }
 
 func main() {}

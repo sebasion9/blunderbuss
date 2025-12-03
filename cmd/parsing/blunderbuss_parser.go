@@ -74,8 +74,8 @@ func blunderbussParserInit() {
 		11, 1, 11, 1, 11, 1, 11, 5, 11, 187, 8, 11, 10, 11, 12, 11, 190, 9, 11,
 		1, 11, 1, 11, 3, 11, 194, 8, 11, 1, 12, 1, 12, 1, 12, 1, 12, 1, 12, 1,
 		12, 1, 12, 1, 12, 1, 12, 1, 12, 0, 1, 16, 13, 0, 2, 4, 6, 8, 10, 12, 14,
-		16, 18, 20, 22, 24, 0, 3, 2, 0, 8, 9, 11, 16, 2, 0, 4, 4, 7, 7, 1, 0, 2,
-		3, 224, 0, 28, 1, 0, 0, 0, 2, 38, 1, 0, 0, 0, 4, 41, 1, 0, 0, 0, 6, 49,
+		16, 18, 20, 22, 24, 0, 3, 2, 0, 4, 4, 6, 7, 1, 0, 2, 3, 2, 0, 8, 9, 11,
+		16, 224, 0, 28, 1, 0, 0, 0, 2, 38, 1, 0, 0, 0, 4, 41, 1, 0, 0, 0, 6, 49,
 		1, 0, 0, 0, 8, 62, 1, 0, 0, 0, 10, 65, 1, 0, 0, 0, 12, 79, 1, 0, 0, 0,
 		14, 84, 1, 0, 0, 0, 16, 107, 1, 0, 0, 0, 18, 163, 1, 0, 0, 0, 20, 165,
 		1, 0, 0, 0, 22, 175, 1, 0, 0, 0, 24, 195, 1, 0, 0, 0, 26, 29, 3, 4, 2,
@@ -1820,6 +1820,11 @@ type IExprContext interface {
 	STRING() antlr.TerminalNode
 	ID() antlr.TerminalNode
 	Func_call() IFunc_callContext
+	MULT() antlr.TerminalNode
+	DIV() antlr.TerminalNode
+	MOD() antlr.TerminalNode
+	PLUS() antlr.TerminalNode
+	MINUS() antlr.TerminalNode
 	AND() antlr.TerminalNode
 	OR() antlr.TerminalNode
 	EQUAL() antlr.TerminalNode
@@ -1828,10 +1833,6 @@ type IExprContext interface {
 	GE() antlr.TerminalNode
 	LT() antlr.TerminalNode
 	GT() antlr.TerminalNode
-	MULT() antlr.TerminalNode
-	DIV() antlr.TerminalNode
-	PLUS() antlr.TerminalNode
-	MINUS() antlr.TerminalNode
 	LBRACKET() antlr.TerminalNode
 	RBRACKET() antlr.TerminalNode
 
@@ -1961,6 +1962,26 @@ func (s *ExprContext) Func_call() IFunc_callContext {
 	return t.(IFunc_callContext)
 }
 
+func (s *ExprContext) MULT() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserMULT, 0)
+}
+
+func (s *ExprContext) DIV() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserDIV, 0)
+}
+
+func (s *ExprContext) MOD() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserMOD, 0)
+}
+
+func (s *ExprContext) PLUS() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserPLUS, 0)
+}
+
+func (s *ExprContext) MINUS() antlr.TerminalNode {
+	return s.GetToken(BlunderbussParserMINUS, 0)
+}
+
 func (s *ExprContext) AND() antlr.TerminalNode {
 	return s.GetToken(BlunderbussParserAND, 0)
 }
@@ -1991,22 +2012,6 @@ func (s *ExprContext) LT() antlr.TerminalNode {
 
 func (s *ExprContext) GT() antlr.TerminalNode {
 	return s.GetToken(BlunderbussParserGT, 0)
-}
-
-func (s *ExprContext) MULT() antlr.TerminalNode {
-	return s.GetToken(BlunderbussParserMULT, 0)
-}
-
-func (s *ExprContext) DIV() antlr.TerminalNode {
-	return s.GetToken(BlunderbussParserDIV, 0)
-}
-
-func (s *ExprContext) PLUS() antlr.TerminalNode {
-	return s.GetToken(BlunderbussParserPLUS, 0)
-}
-
-func (s *ExprContext) MINUS() antlr.TerminalNode {
-	return s.GetToken(BlunderbussParserMINUS, 0)
 }
 
 func (s *ExprContext) LBRACKET() antlr.TerminalNode {
@@ -2202,7 +2207,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 					_la = p.GetTokenStream().LA(1)
 
-					if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&129792) != 0) {
+					if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&208) != 0) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
 						localctx.(*ExprContext).op = _ri
@@ -2234,7 +2239,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 					_la = p.GetTokenStream().LA(1)
 
-					if !(_la == BlunderbussParserMULT || _la == BlunderbussParserDIV) {
+					if !(_la == BlunderbussParserPLUS || _la == BlunderbussParserMINUS) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
 						localctx.(*ExprContext).op = _ri
@@ -2266,7 +2271,7 @@ func (p *BlunderbussParser) expr(_p int) (localctx IExprContext) {
 
 					_la = p.GetTokenStream().LA(1)
 
-					if !(_la == BlunderbussParserPLUS || _la == BlunderbussParserMINUS) {
+					if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&129792) != 0) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
 						localctx.(*ExprContext).op = _ri

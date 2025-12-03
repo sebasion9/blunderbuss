@@ -68,7 +68,6 @@ func NewBlunderbussVisitor() *Visitor {
 		BaseBlunderbussVisitor: &parsing.BaseBlunderbussVisitor{},
 		Codegen: codegen.Codegen{},
 		cctx: NewCompilerContext(),
-		
 	}
 }
 
@@ -145,7 +144,7 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 	if isCache && funcName != "main" {
-		PrepKey(funcName, stackArgs, &v.Codegen, scope)
+		PrepKey(funcName, type_,stackArgs, &v.Codegen, scope)
 		CallGetm(&v.Codegen, endFnCached, startFn)
 	}
 
@@ -158,7 +157,7 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	v.GenLabel(endFn)
 
 	if isCache && funcName != "main" {
-		PrepKey(funcName, stackArgs, &v.Codegen, scope)
+		PrepKey(funcName, type_, stackArgs, &v.Codegen, scope)
 		CallSetm(&v.Codegen)
 	}
 
@@ -565,6 +564,26 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		return prod
 	}
 
+	if ctx.MOD() != nil {
+		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
+		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
+		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
+			fmt.Println("[ERR] mismatched types")
+			return nil
+		}
+		offset := funcTree.GetOff()
+		funcTree.IncrOff(QWORD)
+		prod := NewScopeVar(0, INT_, offset)
+
+		v.GenMovRegRelative("rax", lhs.offset)
+		v.GenMovRegRelative("rbx", rhs.offset)
+		v.GenXor("rdx", "rdx")
+		v.GenDiv()
+		v.GenMovAddrRelative(offset, "rdx")
+		scope[v.CreateId()] = prod
+		return prod
+	}
+
 	if ctx.EQUAL() != nil {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
@@ -688,6 +707,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 
 	}
 
+
 	// reference
 	if ctx.AMPS() != nil {
 		if ctx.Expr(0).ID() != nil {
@@ -722,25 +742,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		scope[v.CreateId()] = prod
 		return prod
 	}
-
-	// if ctx.MULT() != nil && len(ctx.AllExpr()) == 1 {
-	// 	// expr must be a ptr
-	// 	expr := v.Visit(ctx.Expr(0)).(*ScopeVar)
-	// 	if expr.type_ != PTR_ {
-	// 		fmt.Println("[ERR] cannot dereference non PTR type")
-	// 		return nil
-	// 	}
-	// 	offset := funcTree.GetOff()
-	// 	funcTree.IncrOff(QWORD)
-	// 	rax := "rax"
-	// 	off := expr.offset
-	//
-	// 	prod := NewScopeVar(0, ANY_, offset)
-	//
-	// 	// mov rax, [offset]
-	// 	// mov rax, [rax]
-	//
-	// }
 
 	if ctx.AND() != nil {
 		return nil
@@ -797,10 +798,6 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		}
 		for i := range pushOff {
 			v.GenPushArg(pushOff[i], pushIdx[i])
-
-			if fn.isCache && ctx.SAFE() != nil {
-
-			}
 		}
 
 

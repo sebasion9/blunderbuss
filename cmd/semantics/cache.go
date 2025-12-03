@@ -6,20 +6,26 @@ import (
 	"fmt"
 )
 
-func PrepKey(funcName string, args []ScopeVar, cg *codegen.Codegen, scope *ScopeTree) {
-	// args + fn addr
-	keyPartsLen := strconv.Itoa((len(args) + 1))
+func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codegen, scope *ScopeTree) {
+	// args + fn addr + ret val
+	keyPartsLen := strconv.Itoa((len(args) + 2))
 	rax := "rax"
 	rbx := "rbx"
 	rdx := "rdx"
-	// rcx := "rcx"
 	rdi := "rdi"
 	rsi := "rsi"
 	zero := "qword 0"
+	r12 := "r12"
+	r13 := "r13"
 	raxWrapped := cg.WrapEff("rax")
 	rdxScaled := cg.WrapEff("rdx*8")
 	malloc := "malloc"
-	// setm := "SetM"
+
+
+	// mov r13, type
+	intType := strconv.Itoa(IntFromTypeEnum(retType))
+
+	cg.AddText(codegen.NewInstr("mov", &r13, &intType))
 
 	// mov rdx, len
 	cg.AddText(codegen.NewInstr("mov", &rdx, &keyPartsLen))
@@ -40,6 +46,7 @@ func PrepKey(funcName string, args []ScopeVar, cg *codegen.Codegen, scope *Scope
 	// mov [rax], rbx
 	cg.AddText(codegen.NewInstr("mov", &raxWrapped, &rbx))
 
+
 	// values[i+1] = args[i].offset
 	// for each args in scope, generate movs
 	for i, arg := range args {
@@ -47,14 +54,15 @@ func PrepKey(funcName string, args []ScopeVar, cg *codegen.Codegen, scope *Scope
 		offEff := cg.WrapEff(fmt.Sprintf("rbp - %d", off))
 		// mov rbx, [args[i].off]
 		cg.AddText(codegen.NewInstr("mov", &rbx, &offEff))
-		// mov [rax + (i+1)*8], rbx
+		// mov [rax + (i+2)*8], rbx
 		raxOff := cg.WrapEff(fmt.Sprintf("rax + %d * 8", i+1))
 		cg.AddText(codegen.NewInstr("mov", &raxOff, &rbx))
 	}
 
-	// save values address to rcx
-	// mov rcx, rax
-	// cg.AddText(codegen.NewInstr("mov", &rcx, &rax))
+
+	// mov ret val and ret type
+	raxOff := cg.WrapEff(fmt.Sprintf("rax + %d * 8", len(args) + 1))
+	cg.AddText(codegen.NewInstr("mov", &raxOff, &r12))
 
 
 	// mov rdx, len
@@ -70,6 +78,7 @@ func PrepKey(funcName string, args []ScopeVar, cg *codegen.Codegen, scope *Scope
 	// mov [rax], 0
 	cg.AddText(codegen.NewInstr("mov", &raxWrapped, &zero))
 
+
 	// types[i+1] = args[i].type
 	// for each args in scope, generate movs
 
@@ -77,10 +86,15 @@ func PrepKey(funcName string, args []ScopeVar, cg *codegen.Codegen, scope *Scope
 		type_ := strconv.Itoa(IntFromTypeEnum(arg.type_))
 		// mov rbx, [args[i].type (1, 2, 3)]
 		cg.AddText(codegen.NewInstr("mov", &rbx, &type_))
-		// mov [rax + (i+1)*8], rbx
+		// mov [rax + (i+2)*8], rbx
 		raxOff := cg.WrapEff(fmt.Sprintf("rax + %d * 8", i+1))
 		cg.AddText(codegen.NewInstr("mov", &raxOff, &rbx))
 	}
+
+
+	// mov ret val and ret type
+	raxOff = cg.WrapEff(fmt.Sprintf("rax + %d * 8", len(args) + 1))
+	cg.AddText(codegen.NewInstr("mov", &raxOff, &r13))
 
 	// prep for SetM
 	// rdi = values, rsi = types, rdx = size
@@ -111,8 +125,9 @@ func CallGetm(cg *codegen.Codegen, endLabel string, startLabel string) {
 	// jz rip + 16
 	cg.AddText(codegen.NewInstr("jz", &startLabel, nil))
 	// mov rax, [rax]
-	cg.AddText(codegen.NewInstr("mov", &rax, &raxAddr))
+	// cg.AddText(codegen.NewInstr("mov", &rax, &raxAddr))
 	cg.AddText(codegen.NewInstr("mov", &r12, &raxAddr))
+	// cg.AddText(codegen.NewInstr("mov", &r12, &rax))
 	// jmp endLabel
 	cg.AddText(codegen.NewInstr("jne", &endLabel, nil))
 }

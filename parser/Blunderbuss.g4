@@ -24,9 +24,9 @@ block: LBRACE (effect_block|stmt)* RBRACE ;
 expr
     : EXCL expr
     | AMPS expr
-    | expr op=(AND | OR | EQUAL | NOT_EQUAL | LE | GE | LT | GT) expr
-    | expr op=(MULT | DIV) expr
+    | expr op=(MULT | DIV | MOD) expr
     | expr op=(PLUS | MINUS ) expr
+    | expr op=(AND | OR | EQUAL | NOT_EQUAL | LE | GE | LT | GT) expr
     | expr LBRACKET expr RBRACKET
     | LPAREN expr RPAREN
     | NUM
