@@ -15,14 +15,6 @@ var QWORD = 8
 // 9. Semantic errors for compilers
 // 10. Go all through visits, check missing parts of grammar
 // 12. Clean up todos/comments
-// 21. structs?
-// 22. extern symbols
-// 23. extern structs?
-// 24. fix codegen
-// 25. ~address and dereference grammar~
-// 26. modulo
-// 27. ~pass arguments through arrays~
-// 28. pass result to SetM
 // 29. maybe rename SetM and GetM
 // 28. GENERIC INSTRUCTION GEN
 // 29. safe, effect keyword

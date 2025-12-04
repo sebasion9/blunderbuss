@@ -37,12 +37,9 @@ const (
 
 func Hash(fn unsafe.Pointer, args ...any) uint64 {
 	h := uint64(uintptr(fn))
-	for i, _ := range args {
-		if i == 0 {
-			continue
-		}
+	for i := range args {
 		switch v := args[i].(type) {
-		case int:
+		case int64:
 			h = h*31 + uint64(v)
 		case string:
 			for i := 0; i < len(v); i++ {
@@ -55,9 +52,6 @@ func Hash(fn unsafe.Pointer, args ...any) uint64 {
 	return h
 }
 
-type box struct {
-	v any
-}
 
 //export SetM
 func SetM(values *C.long, types *C.long, length C.long) {
@@ -78,7 +72,8 @@ func SetM(values *C.long, types *C.long, length C.long) {
 			str := C.GoString((*C.char)(unsafe.Pointer(uintptr(val))))
 			goArgs = append(goArgs, str)
 			if i == int64(length) - 1 {
-				*(*string)(cptr) = str
+				cstr := C.CString(str)
+				*(*uintptr)(cptr) = uintptr(unsafe.Pointer(cstr))
 			}
 		case 3:
 			ptr := unsafe.Pointer(uintptr(val))
@@ -89,12 +84,10 @@ func SetM(values *C.long, types *C.long, length C.long) {
 		default:
 		}
 	}
-	key := Hash(goArgs[0].(unsafe.Pointer), goArgs)
+	key := Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
 
 
-	mu.Lock()
 	m[key] = cptr
-	mu.Unlock()
 }
 
 //export GetM
@@ -121,10 +114,8 @@ func GetM(values *C.long, types *C.long, length C.long) unsafe.Pointer {
 		}
 	}
 
-	key := Hash(goArgs[0].(unsafe.Pointer), goArgs)
+	key := Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
 
-	mu.Lock()
-	defer mu.Unlock()
 	if val, ok := m[key]; ok {
 		return val
 	}
