@@ -16,7 +16,7 @@ func main() int {
     for(int i = WindowShouldClose(); i eq 0; i = WindowShouldClose();) {
         BeginDrawing();
         ClearBackground(RED);
-        DrawText("Welcome to your first window!!", 190, 200, 20, BLUE);
+        DrawText("Welcome to your first window!!", 200, 200, 20, BLUE);
         EndDrawing();
     }
 
@@ -24,4 +24,9 @@ func main() int {
 
     return 0;
 }
+
+
+
+
+
 

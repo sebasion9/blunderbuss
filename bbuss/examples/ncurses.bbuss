@@ -1,0 +1,48 @@
+#include "../lib/ncurses.bbuss"
+#include "../lib/libc.bbuss"
+#define TRUE 1
+#define ASCII_q 113
+#define ERR -1
+#define MAX_TXT 16
+
+func main() int {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(0, TRUE);
+    nodelay(0, TRUE);
+    curs_set(0);
+
+    int ch;
+
+    str txt = "hello";
+
+    int y = 0;
+    int x = 0;
+
+    for(int i = 0; i ne 1; i = 0;) {
+        clear();
+
+        mvprintw(y, x, "%s", txt);
+
+        refresh();
+
+        ch = getch();
+
+        if(ch eq ASCII_q) {
+            break;
+        }
+
+        if(ch ne ERR) {
+            txt[1] = ch;
+        }
+
+
+        usleep(16000);
+    }
+
+    endwin();
+
+    return 0;
+}
+

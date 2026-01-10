@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 
 if [ "$#" -ne 1 ]; then
     echo "usage: $0 <file.bbuss>"
@@ -24,7 +24,8 @@ nasm -f elf64 target/out.asm -o target/out.o
 echo "[BBUSS] linker step..."
 # gcc -no-pie target/out.o -lncurses -o target/out
 # gcc -no-pie target/out.o -lraylib -o target/out
-gcc -no-pie target/out.o bbuss/lib/raylib.o target/std.a  -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o target/out
+# gcc -no-pie target/out.o bbuss/lib/raylib.o target/std.a  -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o target/out
+gcc -no-pie target/out.o target/std.a -lncurses -o target/out
 
 #gcc -no-pie target/out.o target/std.a -o target/out -lpthread -lm -ldl
 
