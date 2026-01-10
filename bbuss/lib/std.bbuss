@@ -1,4 +1,4 @@
 extern func Test() str {}
-extern func GetM(str key) int {}
-extern func SetM(ptr values, ptr types, int size) any {}
+extern func ____GetM(str key) int {}
+extern func ____SetM(ptr values, ptr types, int size) any {}
 extern func Itoa(int num) str {}

@@ -113,7 +113,6 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 	var args []ScopeFuncArg
-	//TODO: handle errors
 	v.Codegen.GenFuncInit(funcName)
 	text := v.GetText()
 	frameId := len(*text) - 1
@@ -267,7 +266,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			// assign existing variable
 			existingVar := (*varScope.GetVars())[lhsName]
 			if existingVar != nil && ctx.TYPE() == nil {
-				//(*varScope.GetVars())[lhsName].(*ScopeVar)
 				lhs = existingVar.(*ScopeVar)
 			// variable reinitialization
 			} else if existingVar != nil && ctx.TYPE() != nil {
@@ -749,8 +747,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 }
 
 func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
-	// this is libbbuss part, but stays here for now
-	//TODO: libbuss should have predefined print and other standard functions in lib package
 	scope := v.cctx.GetCurrScope()
 	root := GetRootScope(scope)
 	registers := *root.GetScopeByName("program_registers").GetVars()

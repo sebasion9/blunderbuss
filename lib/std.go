@@ -53,8 +53,8 @@ func Hash(fn unsafe.Pointer, args ...any) uint64 {
 }
 
 
-//export SetM
-func SetM(values *C.long, types *C.long, length C.long) {
+//export ____SetM
+func ____SetM(values *C.long, types *C.long, length C.long) {
 	var goArgs []any
 	var i int64
 	cptr := C.malloc(8)
@@ -90,8 +90,8 @@ func SetM(values *C.long, types *C.long, length C.long) {
 	m[key] = cptr
 }
 
-//export GetM
-func GetM(values *C.long, types *C.long, length C.long) unsafe.Pointer {
+//export ____GetM
+func ____GetM(values *C.long, types *C.long, length C.long) unsafe.Pointer {
 	var goArgs []any
 	var i int64
 	for i = 0; i < int64(length); i ++ {

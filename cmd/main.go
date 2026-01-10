@@ -1,18 +1,33 @@
 package main
 
 import (
-	"blunderbuss/cmd/semantics"
+	"blunderbuss/cli"
 	"blunderbuss/cmd/parsing"
+	"blunderbuss/cmd/semantics"
 	"fmt"
 	"os"
-	"io"
 
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/spf13/cobra"
 )
 
 func main() {
 
-	stdin, _ := io.ReadAll(os.Stdin)
+	cmd, opts := cli.NewRootCmd()
+	cmd.Run = func(cmd *cobra.Command, args []string) {
+		run(opts)
+	}
+
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func run(opts *cli.Options) {
+	// stdin, _ := io.ReadAll(os.Stdin)
+	stdin := cli.Preprocess(opts.Input)
+
 	input := antlr.NewInputStream(string(stdin))
 
 	lexer := parsing.NewBlunderbussLexer(input)
@@ -35,7 +50,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	//fmt.Println(tree.ToStringTree([]string{}, parser))
 
 	visitor := semantics.NewBlunderbussVisitor()
@@ -51,7 +65,7 @@ func main() {
 	fmt.Println(asm)
 
 
-	err := os.WriteFile("target/out.asm", []byte(asm), 0644)
+	err := os.WriteFile(opts.Output, []byte(asm), 0644)
 	if err != nil {
 		fmt.Println("[ERR] failed to write asm to disk", err)
 		os.Exit(1)

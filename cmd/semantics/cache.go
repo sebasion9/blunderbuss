@@ -110,12 +110,12 @@ func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codege
 }
 
 func CallSetm(cg *codegen.Codegen) {
-	setm := "SetM"
+	setm := "____SetM"
 	cg.AddText(codegen.NewInstr("call", &setm, nil))
 }
 
 func CallGetm(cg *codegen.Codegen, endLabel string, startLabel string) {
-	getm := "GetM"
+	getm := "____GetM"
 	rax := "rax"
 	r12 := "r12"
 	zero := "0"
