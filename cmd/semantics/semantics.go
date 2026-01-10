@@ -224,7 +224,7 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 			scope := SearchIdUp(currScope, lhsName)
 			lhs := (*scope.GetVars())[lhsName].(*ScopeVar)
 			if lhs.Type() != PTR_ {
-				v.AddError(fmt.Sprintf("can't index that, this is not a pointer \"%s %s\"",StrFromTypeEnum(lhs.Type()), lhsName), ctx)
+				v.AddError(NewIndexError(StrFromTypeEnum(lhs.Type()), lhsName, ctx))
 				return nil
 			}
 
@@ -271,13 +271,13 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 				lhs = existingVar.(*ScopeVar)
 			// variable reinitialization
 			} else if existingVar != nil && ctx.TYPE() != nil {
-				v.AddError(fmt.Sprintf("variable \"%s %s\" already initialized", ctx.TYPE().GetText(), lhsName), ctx)
+				v.AddError(NewInitializedVariableError(ctx.TYPE().GetText(), lhsName, ctx))
 				return nil
 			}
 		} else {
 			// undefined variable
 			if ctx.TYPE() == nil {
-				v.AddError(fmt.Sprintf("variable \"%s\" is undefined", lhsName) ,ctx)
+				v.AddError(NewUndefinedVariableError(lhsName, ctx))
 				return nil
 			// initialize new variable
 			} else {
@@ -292,7 +292,7 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		rhs := *v.Visit(ctx.Expr(0)).(*ScopeVar)
 
 		if lhs.Type() != rhs.Type() {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 
@@ -373,7 +373,7 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 		expr := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		registers["rax"].(*Register).Write(expr.Type())
 		if parent.TYPE().GetText() != StrFromTypeEnum(expr.Type()) {
-			v.AddError(fmt.Sprintf("return type mismatch for function: \"%s\" want: \"%s\" got: \"%s\"", parent.ID().GetText(), parent.TYPE().GetText(), StrFromTypeEnum(expr.Type())),ctx)
+			v.AddError(NewTypeMismatchError(parent.TYPE().GetText(), StrFromTypeEnum(expr.Type()),ctx))
 			return nil
 		}
 
@@ -437,7 +437,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		varScope := SearchIdUp(scopeTree, id)
 		// couldnt find scope with that lhs name
 		if varScope == nil {
-			v.AddError(fmt.Sprintf("variable \"%s\" is undefined", id) ,ctx)
+			v.AddError(NewUndefinedVariableError(id, ctx))
 			return NewScopeVar(nil, ANY_, 0)
 		}
 		expr := (*varScope.GetVars())[id]
@@ -482,7 +482,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -502,7 +502,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -523,7 +523,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -540,7 +540,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -560,7 +560,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -580,7 +580,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -600,7 +600,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -620,7 +620,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -641,7 +641,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -662,7 +662,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -682,7 +682,7 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
-			v.AddError(fmt.Sprintf("type mismatch: \"%s\" vs \"%s\"", StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type())),ctx)
+			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
 		}
 		offset := funcTree.GetOff()
@@ -764,10 +764,12 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		v.cctx.currentScope = fnScopeTree
 		
 		if len(ctx.Call_args().AllExpr()) != len(fn.args) {
-			v.AddError(fmt.Sprintf("mismatched function call argument count for function: \"%s\" want: \"%d\" got: \"%d\"",
+			v.AddError(NewFnMismatchError(
 				fnName,
-				len(ctx.Call_args().AllExpr()),
-				len(fn.args)), ctx)
+				strconv.Itoa(len(ctx.Call_args().AllExpr())),
+				strconv.Itoa(len(fn.args)),
+				"count",
+				ctx))
 			return nil
 		}
 
@@ -777,10 +779,12 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		for i, arg := range ctx.Call_args().AllExpr() {
 			expr := v.Visit(arg).(*ScopeVar)
 			if fn.args[i].type_ != ANY_ && (fn.args[i].type_ != expr.type_) {
-				v.AddError(fmt.Sprintf("invalid argument type for function: \"%s\" want: \"%s\" got: \"%s\"", 
+				v.AddError(NewFnMismatchError(
 				fnName,
 				StrFromTypeEnum(fn.args[i].type_),
-				StrFromTypeEnum(expr.type_)), ctx)
+				StrFromTypeEnum(expr.type_),
+				"type",
+				ctx))
 				return nil
 			}
 			fnScope[fn.args[i].expr.(string)] = expr
@@ -910,8 +914,7 @@ func GetParentFunc(t antlr.Tree) *parsing.FuncContext {
 }
 
 
-func (v *Visitor) AddError(msg string, ctx antlr.ParserRuleContext) {
-	err := NewSemanticError(msg, ctx)
+func (v *Visitor) AddError(err error) {
 	v.Errors = append(v.Errors, err)
 }
 

@@ -1,11 +1,8 @@
 #include "../lib/libc.bbuss"
 #include "../lib/std.bbuss"
 
-fn test0() str {
-    return "";
-}
 
-func test() str {
+func test(int a, int b) str {
     return 1;
 }
 
@@ -19,7 +16,7 @@ func main() int {
     b[1] = 2;
     b = c;
     b = a;
-    test(1);
+    test("a", 1);
     int b = 123;
 
     return 0;
