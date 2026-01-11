@@ -26,7 +26,7 @@ func main() {
 
 func run(opts *cli.Options) {
 	// stdin, _ := io.ReadAll(os.Stdin)
-	stdin := cli.Preprocess(opts.Input)
+	stdin := cli.Preprocess(opts.Input, opts.IncludeDir)
 
 	input := antlr.NewInputStream(string(stdin))
 

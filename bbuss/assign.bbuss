@@ -1,3 +1,5 @@
+#include <bbuss/libc.bbuss>
+
 func main() int {
     str test = "test string";
     return 1;

@@ -9,6 +9,7 @@ import (
 type Options struct {
 	Input string
 	Output string
+	IncludeDir string
 }
 
 func NewRootCmd() (*cobra.Command, *Options) {
@@ -20,8 +21,10 @@ func NewRootCmd() (*cobra.Command, *Options) {
 
 	cmd.Flags().StringVar(&opts.Input, "input", "", "source file")
 	cmd.Flags().StringVar(&opts.Output, "output", "a.asm", "output file")
+	cmd.Flags().StringVar(&opts.IncludeDir, "include", "", "include directory")
 
 	cmd.MarkFlagRequired("input")
+	cmd.MarkFlagRequired("include")
 
 	return cmd, opts
 }
