@@ -7,7 +7,6 @@ extern
     : EXTERN func
     | EXTERN SYM;
 
-// todo: arrays and indexing arrays
 
 // func
 func: CACHE? FUNC ID args TYPE block ;

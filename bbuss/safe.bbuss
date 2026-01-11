@@ -1,0 +1,17 @@
+//#include <bbuss/libc.bbuss>
+#include <libc.bbuss>
+#include <std.bbuss>
+
+cache func test(int a) int {
+    printf("this should be twice     ", "");
+    return 1;
+}
+
+func main() int {
+    int t1 = test(1);
+    int t2 = test(1);
+    printf("test1: %d      ", t1);
+    printf("test2: %d      ", t2);
+
+    return 1;
+}

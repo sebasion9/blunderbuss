@@ -1,29 +1,30 @@
-#include "lib/libc.bbuss"
-#include "lib/std.bbuss"
+//#include "lib/libc.bbuss"
+//#include "lib/std.bbuss"
+#include <bbuss/std.bbuss>
+#include <bbuss/libc.bbuss>
 
-cache func ben(str franzl, int lang, int aa, str la) str {
+cache func ben(str franzl, int lang, int aa, str la) int {
     printf("welcome from func call!      ", "");
-    return franzl;
+    return lang;
 }
 
 func main() int {
 
-    str n1 = ben("franzl", 10, 2, "lang");
-    str n2 = ben("franzl", 10, 2, "lang");
-    str n3 = ben("franzl", 10, 2, "lang");
+    int n1 = ben("franzl", 10, 2, "lang");
+    int n2 = ben("franzl", 10, 2, "lang");
+    int n3 = ben("franzl", 10, 2, "lang");
 
-    printf("n1: %s    ", n1);
-    printf("n2: %s    ", n2);
-    printf("n3: %s    ", n3);
+    printf("n1: %d    ", n1);
+    printf("n2: %d    ", n2);
+    printf("n3: %d    ", n3);
 
-    str n4 = ben("lang", 11, 2, "lang");
-    printf("n4: %s    ", n4);
+    int n4 = ben("lang", 11, 2, "lang");
+    int n5 = ben("franzl", 11, 2, "lang");
+    int n6 = safe ben("franzl", 11, 2, "lang");
 
-    str n5 = ben("franzl", 11, 2, "lang");
-    str n6 = ben("franzl", 11, 2, "lang");
-
-    printf("n5: %s    ", n5);
-    printf("n6: %s    ", n6);
+    printf("n4: %d    ", n4);
+    printf("n5: %d    ", n5);
+    printf("n6: %d    ", n6);
 
     return 0;
 }

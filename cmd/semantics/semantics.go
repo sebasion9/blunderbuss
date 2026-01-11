@@ -136,6 +136,7 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 
 
 	if isCache && funcName != "main" {
+		CheckSafe(funcName,&v.Codegen)
 		PrepKey(funcName, type_,stackArgs, &v.Codegen, scope)
 		CallGetm(&v.Codegen, endFnCached, startFn)
 	}
@@ -418,10 +419,17 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 
 		return svar
 	}
+
 	if ctx.Func_call() != nil {
 		offset := funcTree.GetOff()
 		funcTree.IncrOff(QWORD)
-		svar := v.Visit(ctx.Func_call()).(*ScopeVar) 
+		svarfc := v.Visit(ctx.Func_call())
+		if svarfc == nil {
+			v.AddError(NewUndefinedVariableError(ctx.Func_call().GetText(), ctx))
+			return NewScopeVar(nil, ANY_, 0)
+		}
+		svar := svarfc.(*ScopeVar)
+
 		svar.offset = offset
 		v.GenMovAddrRelative(offset, "rax")
 		scope[v.CreateId()] = svar
@@ -791,7 +799,12 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 			v.GenPushArg(pushOff[i], pushIdx[i])
 		}
 
-
+		arg := "0"
+		if ctx.SAFE() != nil {
+			arg = "1"
+		}
+		r12 := "r12"
+		v.AddText(codegen.NewInstr("mov", &r12, &arg))
 
 		v.GenXor("rax", "rax")
 		v.GenCallFunc(fnName)

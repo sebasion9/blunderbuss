@@ -6,6 +6,18 @@ import (
 	"fmt"
 )
 
+func CheckSafe(funcName string, cg *codegen.Codegen) {
+	//r12
+	// if r12 == 1
+	// jmp 	(EndFnLabel(fmt.Sprintf("%s__CACHED", funcName)))
+
+	r12 := "r12"
+	one := "1"
+	label := fmt.Sprintf("START__FN__%s", funcName)
+	cg.AddText(codegen.NewInstr("cmp", &r12, &one))
+	cg.AddText(codegen.NewInstr("je", &label, nil))
+}
+
 func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codegen, scope *ScopeTree) {
 	// args + fn addr + ret val
 	keyPartsLen := strconv.Itoa((len(args) + 2))
@@ -15,17 +27,17 @@ func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codege
 	rdi := "rdi"
 	rsi := "rsi"
 	zero := "qword 0"
-	r12 := "r12"
-	r13 := "r13"
+	r10 := "r10"
+	r11 := "r11"
 	raxWrapped := cg.WrapEff("rax")
 	rdxScaled := cg.WrapEff("rdx*8")
 	malloc := "malloc"
 
 
-	// mov r13, type
+	// mov r11, type
 	intType := strconv.Itoa(IntFromTypeEnum(retType))
 
-	cg.AddText(codegen.NewInstr("mov", &r13, &intType))
+	cg.AddText(codegen.NewInstr("mov", &r11, &intType))
 
 	// mov rdx, len
 	cg.AddText(codegen.NewInstr("mov", &rdx, &keyPartsLen))
@@ -62,7 +74,7 @@ func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codege
 
 	// mov ret val and ret type
 	raxOff := cg.WrapEff(fmt.Sprintf("rax + %d * 8", len(args) + 1))
-	cg.AddText(codegen.NewInstr("mov", &raxOff, &r12))
+	cg.AddText(codegen.NewInstr("mov", &raxOff, &r10))
 
 
 	// mov rdx, len
@@ -94,7 +106,7 @@ func PrepKey(funcName string, retType Type_, args []ScopeVar, cg *codegen.Codege
 
 	// mov ret val and ret type
 	raxOff = cg.WrapEff(fmt.Sprintf("rax + %d * 8", len(args) + 1))
-	cg.AddText(codegen.NewInstr("mov", &raxOff, &r13))
+	cg.AddText(codegen.NewInstr("mov", &raxOff, &r11))
 
 	// prep for SetM
 	// rdi = values, rsi = types, rdx = size
@@ -117,7 +129,7 @@ func CallSetm(cg *codegen.Codegen) {
 func CallGetm(cg *codegen.Codegen, endLabel string, startLabel string) {
 	getm := "____GetM"
 	rax := "rax"
-	r12 := "r12"
+	r10 := "r10"
 	zero := "0"
 	raxAddr := "[rax]"
 	cg.AddText(codegen.NewInstr("call", &getm, nil))
@@ -126,8 +138,8 @@ func CallGetm(cg *codegen.Codegen, endLabel string, startLabel string) {
 	cg.AddText(codegen.NewInstr("jz", &startLabel, nil))
 	// mov rax, [rax]
 	// cg.AddText(codegen.NewInstr("mov", &rax, &raxAddr))
-	cg.AddText(codegen.NewInstr("mov", &r12, &raxAddr))
-	// cg.AddText(codegen.NewInstr("mov", &r12, &rax))
+	cg.AddText(codegen.NewInstr("mov", &r10, &raxAddr))
+	// cg.AddText(codegen.NewInstr("mov", &r10, &rax))
 	// jmp endLabel
 	cg.AddText(codegen.NewInstr("jne", &endLabel, nil))
 }

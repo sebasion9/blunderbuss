@@ -2,5 +2,6 @@
 
 func main() int {
     str test = "test string";
+    printf("test: %s", test);
     return 1;
 }

@@ -12,7 +12,7 @@ export TERM="xterm"
 # preprocessor step and compile to asm
 echo "[BBUSS] compiler step..."
 # gcc -E -P -x c $1 | go run ./cmd
-go run ./cmd --input $1 --output $2
+go run ./cmd --input $1 --output $2 --include ./bbuss/lib
 
 echo "[BBUSS] building std lib..."
 echo "[WARN] should remove this step for realese as it is static library"

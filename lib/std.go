@@ -9,6 +9,7 @@ package main
 
 import "C"
 import (
+	"fmt"
 	"strconv"
 	"sync"
 	"unsafe"
@@ -84,7 +85,12 @@ func ____SetM(values *C.long, types *C.long, length C.long) {
 		default:
 		}
 	}
-	key := Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
+	var key uint64 
+	if len(goArgs) == 1 {
+		key = Hash(goArgs[0].(unsafe.Pointer))
+	} else {
+		key = Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
+	}
 
 
 	m[key] = cptr
@@ -114,7 +120,12 @@ func ____GetM(values *C.long, types *C.long, length C.long) unsafe.Pointer {
 		}
 	}
 
-	key := Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
+	var key uint64 
+	if len(goArgs) == 1 {
+		key = Hash(goArgs[0].(unsafe.Pointer))
+	} else {
+		key = Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
+	}
 
 	if val, ok := m[key]; ok {
 		return val

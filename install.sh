@@ -5,7 +5,7 @@ PREFIX=${PREFIX:-/opt/bbuss}
 
 echo "[*] Building binaries and standard library..."
 go build -o target/bbuss ./cmd
-go build -buildmode=c-archive -ldflags=-linkmode=external -o target/std.a ./lib
+go build -buildmode=c-archive -ldflags=-linkmode=external -o target/libstd.a ./lib
 
 echo "[*] Installing blunderbuss to $PREFIX"
 
@@ -16,7 +16,7 @@ install -d "$PREFIX/include/bbuss"
 
 install -m 0755 target/bbuss.bin "$PREFIX/bin/"
 
-install -m 0644 target/std.a "$PREFIX/lib"
+install -m 0644 target/libstd.a "$PREFIX/lib"
 
 cp bbuss/lib/* "$PREFIX/include/bbuss"
 
