@@ -11,10 +11,10 @@ func CheckSafe(funcName string, cg *codegen.Codegen) {
 	// if r12 == 1
 	// jmp 	(EndFnLabel(fmt.Sprintf("%s__CACHED", funcName)))
 
-	r12 := "r12"
+	r10 := "r10"
 	one := "1"
 	label := fmt.Sprintf("START__FN__%s", funcName)
-	cg.AddText(codegen.NewInstr("cmp", &r12, &one))
+	cg.AddText(codegen.NewInstr("cmp", &r10, &one))
 	cg.AddText(codegen.NewInstr("je", &label, nil))
 }
 

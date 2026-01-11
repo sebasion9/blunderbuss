@@ -1,7 +1,7 @@
 //#include "lib/libc.bbuss"
 //#include "lib/std.bbuss"
-#include <bbuss/std.bbuss>
-#include <bbuss/libc.bbuss>
+#include <std.bbuss>
+#include <libc.bbuss>
 
 cache func ben(str franzl, int lang, int aa, str la) int {
     printf("welcome from func call!      ", "");
@@ -21,10 +21,12 @@ func main() int {
     int n4 = ben("lang", 11, 2, "lang");
     int n5 = ben("franzl", 11, 2, "lang");
     int n6 = safe ben("franzl", 11, 2, "lang");
+    int n7 = ben("franzl", 11, 2, "lang");
 
     printf("n4: %d    ", n4);
     printf("n5: %d    ", n5);
     printf("n6: %d    ", n6);
+    printf("n7: %d    ", n7);
 
     return 0;
 }

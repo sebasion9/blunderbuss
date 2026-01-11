@@ -803,8 +803,8 @@ func (v *Visitor) VisitFunc_call(ctx *parsing.Func_callContext) any {
 		if ctx.SAFE() != nil {
 			arg = "1"
 		}
-		r12 := "r12"
-		v.AddText(codegen.NewInstr("mov", &r12, &arg))
+		r10 := "r10"
+		v.AddText(codegen.NewInstr("mov", &r10, &arg))
 
 		v.GenXor("rax", "rax")
 		v.GenCallFunc(fnName)

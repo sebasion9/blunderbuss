@@ -14,7 +14,7 @@ install -d "$PREFIX/lib"
 install -d "$PREFIX/include/bbuss"
 
 
-install -m 0755 target/bbuss.bin "$PREFIX/bin/"
+install -m 0755 target/bbuss "$PREFIX/bin/"
 
 install -m 0644 target/libstd.a "$PREFIX/lib"
 

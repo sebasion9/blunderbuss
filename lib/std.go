@@ -9,7 +9,6 @@ package main
 
 import "C"
 import (
-	"fmt"
 	"strconv"
 	"sync"
 	"unsafe"
