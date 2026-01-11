@@ -4,7 +4,7 @@ set -euo pipefail
 PREFIX=${PREFIX:-/opt/bbuss}
 
 echo "[*] Building binaries and standard library..."
-go build -o target/bbuss.bin ./cmd
+go build -o target/bbuss ./cmd
 go build -buildmode=c-archive -ldflags=-linkmode=external -o target/std.a ./lib
 
 echo "[*] Installing blunderbuss to $PREFIX"
