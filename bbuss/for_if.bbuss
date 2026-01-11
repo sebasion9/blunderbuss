@@ -17,8 +17,12 @@ func main() int {
 
         if(prod eq 11) {
             break;
+        } elseif(prod eq 7) {
+            printf("7: %d   ", prod);
+        } elseif(prod eq 6) {
+            printf("6: %d   ", prod);
         } else {
-            printf("prod: %d   ", prod);
+            printf("prod: %d    ", prod);
         }
     }
 

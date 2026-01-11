@@ -19,9 +19,9 @@ func NewRootCmd() (*cobra.Command, *Options) {
 		Short: "A compiler for blunderbuss",
 	}
 
-	cmd.Flags().StringVar(&opts.Input, "input", "", "source file")
-	cmd.Flags().StringVar(&opts.Output, "output", "a.asm", "output file")
-	cmd.Flags().StringVar(&opts.IncludeDir, "include", "", "include directory")
+	cmd.Flags().StringVarP(&opts.Input, "input", "i", "", "source file")
+	cmd.Flags().StringVarP(&opts.Output, "output", "o", "a.asm", "output file")
+	cmd.Flags().StringVarP(&opts.IncludeDir, "include", "I", "", "include directory")
 
 	cmd.MarkFlagRequired("input")
 	cmd.MarkFlagRequired("include")

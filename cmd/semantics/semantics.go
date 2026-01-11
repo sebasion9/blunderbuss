@@ -854,6 +854,10 @@ func (v *Visitor) VisitIf_stmt(ctx *parsing.If_stmtContext) any {
 		}
 
 		v.Visit(ctx.Block(i+1))
+
+		v.GenCmpAddrReg(condition.offset, "1")
+		v.GenJz(endIf)
+
 		v.GenLabel(endElseIfLabel)
 	}
 
