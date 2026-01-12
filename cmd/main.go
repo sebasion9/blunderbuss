@@ -29,7 +29,6 @@ func run(opts *cli.Options) {
 	stdin := cli.Preprocess(opts.Input, opts.IncludeDir)
 
 	input := antlr.NewInputStream(string(stdin))
-
 	lexer := parsing.NewBlunderbussLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := parsing.NewBlunderbussParser(tokens)
@@ -62,7 +61,7 @@ func run(opts *cli.Options) {
 		os.Exit(1)
 	}
 
-	fmt.Println(asm)
+	// fmt.Println(asm)
 
 
 	err := os.WriteFile(opts.Output, []byte(asm), 0644)

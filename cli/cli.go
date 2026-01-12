@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -27,9 +26,5 @@ func NewRootCmd() (*cobra.Command, *Options) {
 	cmd.MarkFlagRequired("include")
 
 	return cmd, opts
-}
-
-func run(opts *Options) {
-	fmt.Println(opts)
 }
 

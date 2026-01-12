@@ -11,13 +11,6 @@ import (
 
 var QWORD = 8
 
-// TODO:
-// 9. Semantic errors for compilers
-// 10. Go all through visits, check missing parts of grammar
-// 12. Clean up todos/comments
-// 29. maybe rename SetM and GetM
-// 28. GENERIC INSTRUCTION GEN
-// 29. safe, effect keyword
 type Visitor struct {
 	*parsing.BaseBlunderbussVisitor
 	codegen.Codegen
@@ -176,7 +169,6 @@ func (v *Visitor) VisitFunc(ctx *parsing.FuncContext) any {
 	return fn
 }
 
-//TODO:
 func (v *Visitor) VisitArgs(ctx *parsing.ArgsContext) any {
 	var args []ScopeFuncArg
 	for i, p := range ctx.AllParam() {
@@ -197,7 +189,6 @@ func (v *Visitor) VisitArgs(ctx *parsing.ArgsContext) any {
 }
 
 func (v *Visitor) VisitBlock(ctx *parsing.BlockContext) any {
-	//TODO: consider adding scope on block level
 	for _, s := range ctx.AllStmt() {
 		v.Visit(s)
 	}
@@ -206,7 +197,6 @@ func (v *Visitor) VisitBlock(ctx *parsing.BlockContext) any {
 
 func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 	parent := GetParentFunc(ctx)
-	//TODO:
 	if parent == nil {
 		return nil 
 	}
@@ -387,9 +377,6 @@ func (v *Visitor) VisitStmt(ctx *parsing.StmtContext) any {
 }
 
 func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
-	//TODO: the primitives should be saved in .data and referenced as variables
-	//TODO: then they can return the variables identifier and referenced as in scope
-	// if returns nil -> then register
 	scopeTree := v.cctx.GetCurrScope()
 	funcTree := GetWhatFunc(scopeTree)
 	scope := *scopeTree.GetVars()
@@ -486,7 +473,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	if ctx.PLUS() != nil {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
-		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
 			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
@@ -506,7 +492,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	if ctx.MINUS() != nil {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
-		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
 			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil
@@ -527,7 +512,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 	if ctx.MULT() != nil && len(ctx.AllExpr()) == 2 {
 		lhs := v.Visit(ctx.Expr(0)).(*ScopeVar)
 		rhs := v.Visit(ctx.Expr(1)).(*ScopeVar)
-		//TODO: err mismatched types
 		if lhs.Type() != rhs.Type() && lhs.Type() != INT_ {
 			v.AddError(NewTypeMismatchError(StrFromTypeEnum(lhs.Type()), StrFromTypeEnum(rhs.Type()),ctx))
 			return nil

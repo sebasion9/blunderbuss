@@ -9,9 +9,11 @@ package main
 
 import "C"
 import (
+	"fmt"
 	"strconv"
 	"sync"
 	"unsafe"
+
 )
 
 var m = make(map[uint64]unsafe.Pointer)
@@ -21,6 +23,21 @@ var mu sync.Mutex
 func Itoa(num C.long) *C.char {
 	s := strconv.FormatInt(int64(num), 10)
 	return C.CString(s)
+}
+
+//export Concat
+func Concat(a *C.char, b *C.char) *C.char {
+	return C.CString(C.GoString(a) + C.GoString(b))
+}
+
+//export PrintlnStr
+func PrintlnStr(arg *C.char) {
+	fmt.Println(C.GoString(arg))
+}
+
+//export PrintlnInt
+func PrintlnInt(arg C.long) {
+	fmt.Println(arg)
 }
 
 //export Test
@@ -90,7 +107,6 @@ func ____SetM(values *C.long, types *C.long, length C.long) {
 	} else {
 		key = Hash(goArgs[0].(unsafe.Pointer), goArgs[1:len(goArgs)-1]...)
 	}
-
 
 	m[key] = cptr
 }

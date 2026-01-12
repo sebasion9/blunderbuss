@@ -88,11 +88,6 @@ func GetAllVarsDownLen(scope *ScopeTree) int {
 
 
 func SearchIdUp(scope *ScopeTree, id string) *ScopeTree {
-	if id == "fill" {
-		fmt.Println(id)
-		fmt.Println(scope)
-	}
-
 	if scope == nil {
 		return nil
 	}
@@ -152,7 +147,6 @@ type CompilerContext struct {
 	currentScope *ScopeTree
 }
 
-//TODO: remember to set current scope when creating new
 func NewCompilerContext() CompilerContext {
 	scopes := NewScopeTree("program", nil, OTHER)
 	return CompilerContext{

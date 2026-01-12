@@ -1,29 +1,42 @@
 #include "../lib/libc.bbuss"
 #include "../lib/std.bbuss"
-#define CLOCKS_PER_SEC 1000
+#define CLOCKS_PER_SEC 1
 
-func fib(int n) int {
-    if(n le 1) {
-        return n;
+cache func test(int num) int {
+    // efekty uboczne
+    for(int i = 0; i lt num; i = i + 1;) {
+        if(i eq (num/2)) {
+            PrintlnStr("efekty uboczne");
+        }
     }
-    return fib(n - 1) + fib(n - 2);
+    return num;
 }
-
 
 func main() int {
 
     ptr start = clock();
-
-    int f1 = fib(43);
-
+    int t1 = test(999999999);
     ptr end = clock();
+    int elapsed1 = (end - start)/CLOCKS_PER_SEC;
 
-    int elapsed = (end - start)/CLOCKS_PER_SEC;
+    start = clock();
+    int t2 = safe test(999999999);
+    end = clock();
+    int elapsed2 = (end - start)/CLOCKS_PER_SEC;
 
+    start = clock();
+    int t3 = test(999999999);
+    end = clock();
+    int elapsed3 = (end - start)/CLOCKS_PER_SEC;
 
-    printf("standard fib(43) = %d         ", f1);
-    printf("        elapsed: %dms        ", elapsed);
+    PrintlnStr(Concat("pierwsze wywołanie: ", Itoa(t1)));
+    PrintlnStr(Concat("czas wykonania: ", Itoa(elapsed1)));
 
+    PrintlnStr(Concat("drugie wywołanie (z safe): ", Itoa(t2)));
+    PrintlnStr(Concat("czas wykonania: ", Itoa(elapsed2)));
+
+    PrintlnStr(Concat("trzecie wywołanie (cache): ", Itoa(t3)));
+    PrintlnStr(Concat("czas wykonania: ", Itoa(elapsed3)));
 
     return 0;
 }

@@ -23,11 +23,15 @@ echo "[BBUSS] writing to obj file..."
 nasm -f elf64 $2 -o $2.o
 
 echo "[BBUSS] linker step..."
-# gcc -no-pie target/out.o -lncurses -o target/out
-# gcc -no-pie target/out.o -lraylib -o target/out
-# gcc -no-pie target/out.o bbuss/lib/raylib.o target/std.a  -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o target/out
-# gcc -no-pie $2.o target/std.a -lncurses -o $2.bin
+
+#raylib
+#gcc -no-pie $2.o -L./bbuss/lib target/libstd.a bbuss/lib/raylib.o -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o $2.bin
+
+# ncurses
 gcc -no-pie $2.o -L./bbuss/lib target/libstd.a -lncurses -o $2.bin
+
+# standard
+#gcc -no-pie $2.o -L./bbuss/lib target/libstd.a -o $2.bin
 
 echo "[BBUSS] running executable..."
 ./$2.bin

@@ -2,3 +2,6 @@ extern func Test() str {}
 extern func ____GetM(str key) int {}
 extern func ____SetM(ptr values, ptr types, int size) any {}
 extern func Itoa(int num) str {}
+extern func Concat(str a, str b) str {}
+extern func PrintlnStr(str arg) any {}
+extern func PrintlnInt(int arg) any {}

@@ -17,7 +17,7 @@ param: TYPE ID ;
 call_args: LPAREN (expr (COMMA expr)*)? RPAREN ;
 func_call: SAFE? ID call_args ;
 
-block: LBRACE (effect_block|stmt)* RBRACE ;
+block: LBRACE stmt* RBRACE ;
 
 
 expr
@@ -48,8 +48,6 @@ stmt
     | for_stmt
     ;
 
-
-effect_block: EFFECT LBRACE stmt* RBRACE ;
 
 if_stmt: IF LPAREN expr RPAREN block
     (ELSEIF LPAREN expr RPAREN block)*
@@ -115,22 +113,19 @@ NEXT: 'next' ;
 RETURN: 'return' ;
 CACHE: 'cache' ;
 SAFE: 'safe' ;
-EFFECT: 'effect' ;
 FUNC: 'func' ;
 SQUOTE: '\'' ;
 DQUOTE: '"' ;
 SEMI: ';' ;
 
 // TYPEs
-TYPE: PTR | INT | STR | BYTE | ANY ;
+TYPE: PTR | INT | STR | ANY ;
 ANY:  'any' ;
 PTR: 'ptr' ;
 INT: 'int' ;
-BYTE: 'byte' ;
 STR: 'str' ;
 
 WS  : [ \t\n\r]+ -> skip ;
 LINE_COMMENT: '/' '/' ~[\n\r]* -> skip ;
 BLOCK_COMMENT: '/' '*' .*? '*' '/' -> skip ;
 ID  : [a-zA-Z_] [a-zA-Z0-9_]* ;
-SYM : [a-zA-Z_] [a-zA-Z0-9_]* ;

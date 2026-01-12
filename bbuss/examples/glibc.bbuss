@@ -1,0 +1,23 @@
+//#include<bbuss/libc.bbuss>
+//#include<bbuss/std.bbuss>
+#include<libc.bbuss>
+#include<std.bbuss>
+
+func fill(int size) ptr {
+    ptr arr = malloc(size*8);
+    for(int i = 0; i lt size; i = i + 1;) {
+        int scale = rand() % 10 + 1; // 1 - 10
+        arr[i] = i * 2 * scale;
+    }
+    return arr;
+}
+
+func main() int {
+    ptr array = fill(5);
+
+    for(int i = 0; i lt 5; i = i + 1;) {
+        PrintlnInt(array[i]);
+    }
+
+    return 0;
+}

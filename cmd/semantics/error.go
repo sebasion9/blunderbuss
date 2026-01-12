@@ -5,21 +5,6 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
-// type SemanticError struct {
-// 	Msg string
-// 	Ctx antlr.ParserRuleContext
-// }
-//
-// func(e *SemanticError) Error() string {
-// 	token := e.Ctx.GetStart()
-// 	return fmt.Sprintf("Semantic error at line %d:%d: %s", 
-// 		token.GetLine(), token.GetColumn(), e.Msg)
-// }
-//
-// func NewSemanticError(msg string, ctx antlr.ParserRuleContext) *SemanticError {
-// 	return &SemanticError{Msg: msg, Ctx: ctx}
-// }
-//
 
 type CompilerError interface {
 	error
