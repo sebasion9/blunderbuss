@@ -1,5 +1,3 @@
-//#include "../lib/raylib.bbuss"
-//#include "../lib/libc.bbuss"
 #include<raylib.bbuss>
 #include<std.bbuss>
 #include<libc.bbuss>
@@ -13,13 +11,13 @@
 
 func main() int {
     ptr BLUE = ColorFromInt(0, 0, 255); 
-    ptr RED = ColorFromInt(255, 0, 0);
+    ptr GRAY = ColorFromInt(180, 180, 180);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "hello");
     SetTargetFPS(FPS);
     for(int i = WindowShouldClose(); i eq 0; i = WindowShouldClose();) {
         BeginDrawing();
-        ClearBackground(RED);
-        DrawText("Witam w programie napisanym w raylib!", 200, 200, 20, BLUE);
+        ClearBackground(GRAY);
+        DrawText("Witam w programie napisanym w raylib!", 100, 200, 35, BLUE);
         EndDrawing();
     }
 

@@ -17,7 +17,6 @@ type Visitor struct {
 	cctx CompilerContext
 	Errors []error
 }
-
 func (v *Visitor) Visit(tree antlr.ParseTree) any {
 	switch ctx := tree.(type) {
 	case *parsing.ProgramContext:

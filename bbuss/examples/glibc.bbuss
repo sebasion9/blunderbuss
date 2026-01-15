@@ -1,5 +1,3 @@
-//#include<bbuss/libc.bbuss>
-//#include<bbuss/std.bbuss>
 #include<libc.bbuss>
 #include<std.bbuss>
 
