@@ -37,9 +37,6 @@ type BlunderbussVisitor interface {
 	// Visit a parse tree produced by BlunderbussParser#stmt.
 	VisitStmt(ctx *StmtContext) interface{}
 
-	// Visit a parse tree produced by BlunderbussParser#effect_block.
-	VisitEffect_block(ctx *Effect_blockContext) interface{}
-
 	// Visit a parse tree produced by BlunderbussParser#if_stmt.
 	VisitIf_stmt(ctx *If_stmtContext) interface{}
 

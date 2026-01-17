@@ -47,10 +47,6 @@ func (v *BaseBlunderbussVisitor) VisitStmt(ctx *StmtContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BaseBlunderbussVisitor) VisitEffect_block(ctx *Effect_blockContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BaseBlunderbussVisitor) VisitIf_stmt(ctx *If_stmtContext) interface{} {
 	return v.VisitChildren(ctx)
 }

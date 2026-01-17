@@ -4,8 +4,7 @@ program: (func | extern)+ EOF;
 
 
 extern
-    : EXTERN func
-    | EXTERN SYM;
+    : EXTERN func ;
 
 
 // func

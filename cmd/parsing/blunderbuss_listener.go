@@ -37,9 +37,6 @@ type BlunderbussListener interface {
 	// EnterStmt is called when entering the stmt production.
 	EnterStmt(c *StmtContext)
 
-	// EnterEffect_block is called when entering the effect_block production.
-	EnterEffect_block(c *Effect_blockContext)
-
 	// EnterIf_stmt is called when entering the if_stmt production.
 	EnterIf_stmt(c *If_stmtContext)
 
@@ -75,9 +72,6 @@ type BlunderbussListener interface {
 
 	// ExitStmt is called when exiting the stmt production.
 	ExitStmt(c *StmtContext)
-
-	// ExitEffect_block is called when exiting the effect_block production.
-	ExitEffect_block(c *Effect_blockContext)
 
 	// ExitIf_stmt is called when exiting the if_stmt production.
 	ExitIf_stmt(c *If_stmtContext)

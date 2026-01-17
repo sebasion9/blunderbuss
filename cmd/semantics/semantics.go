@@ -31,8 +31,6 @@ func (v *Visitor) Visit(tree antlr.ParseTree) any {
 		return v.VisitExpr(ctx)
 	case *parsing.ParamContext:
 		return v.VisitParam(ctx)
-	case *parsing.Effect_blockContext:
-		return v.VisitEffect_block(ctx)
 	case *parsing.BlockContext:
 		return v.VisitBlock(ctx)
 	case *parsing.For_stmtContext:
@@ -723,16 +721,6 @@ func (v *Visitor) VisitExpr(ctx *parsing.ExprContext) any {
 		scope[v.CreateId()] = prod
 		return prod
 	}
-
-	if ctx.AND() != nil {
-		return nil
-
-	}
-
-	if ctx.OR() != nil {
-		return nil
-	}
-
 
 	return nil
 }

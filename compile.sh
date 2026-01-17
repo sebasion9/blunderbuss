@@ -25,13 +25,13 @@ nasm -f elf64 $2 -o $2.o
 echo "[BBUSS] linker step..."
 
 # raylib
-#gcc -no-pie $2.o -L./bbuss/lib target/libstd.a bbuss/lib/raylib.o -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o $2.bin
+gcc -no-pie $2.o -L./bbuss/lib target/libstd.a bbuss/lib/raylib.o -lraylib -lm -ldl -lpthread -lGL -lfreetype -lrt -lX11 -o $2.bin
 
 # ncurses
 #gcc -no-pie $2.o -L./bbuss/lib target/libstd.a -lncurses -o $2.bin
 
 # standard
-gcc -no-pie $2.o -L./bbuss/lib target/libstd.a -o $2.bin
+#gcc -no-pie $2.o -L./bbuss/lib target/libstd.a -o $2.bin
 
 echo "[BBUSS] running executable..."
 ./$2.bin

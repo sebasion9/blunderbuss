@@ -80,12 +80,6 @@ func (s *BaseBlunderbussListener) EnterStmt(ctx *StmtContext) {}
 // ExitStmt is called when production stmt is exited.
 func (s *BaseBlunderbussListener) ExitStmt(ctx *StmtContext) {}
 
-// EnterEffect_block is called when production effect_block is entered.
-func (s *BaseBlunderbussListener) EnterEffect_block(ctx *Effect_blockContext) {}
-
-// ExitEffect_block is called when production effect_block is exited.
-func (s *BaseBlunderbussListener) ExitEffect_block(ctx *Effect_blockContext) {}
-
 // EnterIf_stmt is called when production if_stmt is entered.
 func (s *BaseBlunderbussListener) EnterIf_stmt(ctx *If_stmtContext) {}
 
